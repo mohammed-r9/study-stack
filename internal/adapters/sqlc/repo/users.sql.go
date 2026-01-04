@@ -12,13 +12,13 @@ import (
 	"github.com/google/uuid"
 )
 
-const getUserById = `-- name: GetUserById :one
+const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, name, email, password_hash, salt, created_at, verified_at, updated_at 
 FROM users
-WHERE id = $1
+WHERE email = $1
 `
 
-type GetUserByIdRow struct {
+type GetUserByEmailRow struct {
 	ID           uuid.UUID  `json:"id"`
 	Name         string     `json:"name"`
 	Email        string     `json:"email"`
@@ -29,9 +29,42 @@ type GetUserByIdRow struct {
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
 
-func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
-	row := q.db.QueryRowContext(ctx, getUserById, id)
-	var i GetUserByIdRow
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i GetUserByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.PasswordHash,
+		&i.Salt,
+		&i.CreatedAt,
+		&i.VerifiedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, name, email, password_hash, salt, created_at, verified_at, updated_at 
+FROM users
+WHERE id = $1
+`
+
+type GetUserByIDRow struct {
+	ID           uuid.UUID  `json:"id"`
+	Name         string     `json:"name"`
+	Email        string     `json:"email"`
+	PasswordHash []byte     `json:"-"`
+	Salt         []byte     `json:"-"`
+	CreatedAt    time.Time  `json:"created_at"`
+	VerifiedAt   *time.Time `json:"verified_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,

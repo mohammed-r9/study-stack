@@ -5,10 +5,22 @@
 package repo
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type Session struct {
+	ID         uuid.UUID    `json:"id"`
+	TokenHash  string       `json:"token_hash"`
+	UserID     uuid.UUID    `json:"user_id"`
+	DeviceName string       `json:"device_name"`
+	CsrfHash   string       `json:"csrf_hash"`
+	CreatedAt  time.Time    `json:"created_at"`
+	LastUsedAt time.Time    `json:"last_used_at"`
+	RevokedAt  sql.NullTime `json:"revoked_at"`
+}
 
 type User struct {
 	ID           uuid.UUID  `json:"id"`

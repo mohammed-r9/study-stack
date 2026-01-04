@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"study-stack/internal/db"
-	"study-stack/internal/env"
+	"study-stack/internal/shared/env"
 
 	"github.com/go-chi/chi/v5"
 )

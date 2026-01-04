@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"study-stack/internal/adapters/sqlc/repo"
-	"study-stack/internal/utils"
+	"study-stack/internal/shared/password"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +15,7 @@ type RegisterParams struct {
 }
 
 func (s *Service) RegisterUser(ctx context.Context, params RegisterParams) error {
-	password := utils.Password{}
+	password := password.Password{}
 	err := password.Set(params.Password)
 	if err != nil {
 		return err

@@ -1,11 +1,11 @@
-package utils
+package password
 
 import (
 	"crypto/rand"
 	"crypto/subtle"
 	"errors"
 	"fmt"
-	appErrors "study-stack/internal/app_errors"
+	appErrors "study-stack/internal/shared/app_errors"
 
 	"golang.org/x/crypto/argon2"
 )

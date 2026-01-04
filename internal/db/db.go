@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"study-stack/internal/db/migrations"
-	"study-stack/internal/env"
+	"study-stack/internal/shared/env"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
