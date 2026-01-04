@@ -12,6 +12,7 @@ import (
 
 type Querier interface {
 	GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error)
+	InsertUser(ctx context.Context, arg InsertUserParams) error
 }
 
 var _ Querier = (*Queries)(nil)

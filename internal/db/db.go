@@ -1,10 +1,12 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"study-stack/internal/db/migrations"
 	"study-stack/internal/env"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -15,11 +17,11 @@ func NewDb() *sql.DB {
 		log.Fatalf("Falied to open db: %v\n", err)
 	}
 
-	defer db.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("Falied to ping db: %v\n", err)
+	if err := db.PingContext(ctx); err != nil {
+		log.Fatalf("Failed To Ping Database: %v", err)
 	}
 
 	if err := migrations.MigrateFS(db, migrations.FS, "."); err != nil {

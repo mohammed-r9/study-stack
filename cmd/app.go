@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"study-stack/internal/entities/users"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -26,6 +27,7 @@ func (a *application) mount() {
 	a.router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Status Is Available"))
 	})
+	users.Init(a.db, a.router)
 }
 
 func (a *application) run() error {

@@ -44,3 +44,27 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow
 	)
 	return i, err
 }
+
+const insertUser = `-- name: InsertUser :exec
+INSERT INTO users (id, name, email, password_hash, salt)
+VALUES ($1, $2, $3, $4, $5)
+`
+
+type InsertUserParams struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash []byte    `json:"-"`
+	Salt         []byte    `json:"-"`
+}
+
+func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) error {
+	_, err := q.db.ExecContext(ctx, insertUser,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.PasswordHash,
+		arg.Salt,
+	)
+	return err
+}
