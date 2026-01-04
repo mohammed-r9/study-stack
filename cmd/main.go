@@ -1,16 +1,29 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"net/http"
-	"time"
+	"log"
+	"study-stack/internal/db"
+	"study-stack/internal/env"
+
+	"github.com/go-chi/chi/v5"
 )
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
-}
-
 func main() {
-	http.HandleFunc("/", greet)
-	http.ListenAndServe(":8080", nil)
+	var port int
+	flag.IntVar(&port, "port", 8080, "Sets The Server Port")
+	flag.Parse()
+
+	env.LoadEnv("./.env")
+	app := application{
+		db:     db.NewDb(),
+		addr:   fmt.Sprintf(":%d", port),
+		router: chi.NewMux(),
+	}
+
+	app.mount()
+	if err := app.run(); err != nil {
+		log.Fatalf("Failed To Run Application: %v", err)
+	}
 }
