@@ -44,7 +44,7 @@ func (s *Service) Login(ctx context.Context, params LoginParams) (loginTokens, e
 	}
 	isVerified := false
 	if user.VerifiedAt != nil {
-		isVerified = false
+		isVerified = true
 	}
 
 	accessToken, err := stateless.NewAcessToken(stateless.UserClaims{UserID: user.ID, IsVerified: isVerified})
