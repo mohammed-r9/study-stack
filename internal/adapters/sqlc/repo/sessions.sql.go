@@ -45,12 +45,13 @@ func (q *Queries) GetSessionByHash(ctx context.Context, tokenHash string) (GetSe
 }
 
 const newUserSession = `-- name: NewUserSession :exec
-INSERT INTO sessions(id, token_hash, device_name, csrf_hash)
-VALUES($1, $2, $3, $4)
+INSERT INTO sessions(id, user_id, token_hash, device_name, csrf_hash)
+VALUES($1, $2, $3, $4, $5)
 `
 
 type NewUserSessionParams struct {
 	ID         uuid.UUID `json:"id"`
+	UserID     uuid.UUID `json:"user_id"`
 	TokenHash  string    `json:"token_hash"`
 	DeviceName string    `json:"device_name"`
 	CsrfHash   string    `json:"csrf_hash"`
@@ -59,6 +60,7 @@ type NewUserSessionParams struct {
 func (q *Queries) NewUserSession(ctx context.Context, arg NewUserSessionParams) error {
 	_, err := q.db.ExecContext(ctx, newUserSession,
 		arg.ID,
+		arg.UserID,
 		arg.TokenHash,
 		arg.DeviceName,
 		arg.CsrfHash,

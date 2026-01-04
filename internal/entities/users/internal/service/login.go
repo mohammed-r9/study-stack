@@ -2,14 +2,18 @@ package service
 
 import (
 	"context"
+	"study-stack/internal/adapters/sqlc/repo"
 	"study-stack/internal/entities/tokens/stateful"
 	"study-stack/internal/entities/tokens/stateless"
 	"study-stack/internal/shared/password"
+
+	"github.com/google/uuid"
 )
 
 type LoginParams struct {
-	Email    string
-	Password string
+	Email       string
+	Password    string
+	Device_name string
 }
 
 type loginTokens struct {
@@ -42,10 +46,23 @@ func (s *Service) Login(ctx context.Context, params LoginParams) (loginTokens, e
 	if user.VerifiedAt != nil {
 		isVerified = false
 	}
+
 	accessToken, err := stateless.NewAcessToken(stateless.UserClaims{UserID: user.ID, IsVerified: isVerified})
 	if err != nil {
 		return loginTokens{}, err
 	}
+
+	err = s.repo.NewUserSession(ctx, repo.NewUserSessionParams{
+		ID:         uuid.New(),
+		UserID:     user.ID,
+		TokenHash:  refreshToken.Hash,
+		CsrfHash:   refreshToken.CsrfHash,
+		DeviceName: params.Device_name,
+	})
+	if err != nil {
+		return loginTokens{}, err
+	}
+
 	return loginTokens{
 		Refresh: refreshToken.PlainText,
 		Csrf:    refreshToken.CsrfPlainText,
