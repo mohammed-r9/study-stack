@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-playground/validator/v10"
 )
 
 type application struct {
@@ -27,7 +28,8 @@ func (a *application) mount() {
 	a.router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Status Is Available"))
 	})
-	users.Init(a.db, a.router)
+	validator := validator.New()
+	users.Init(a.db, a.router, validator)
 }
 
 func (a *application) run() error {

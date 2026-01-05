@@ -7,16 +7,17 @@ import (
 	"sync"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 )
 
 var once sync.Once
 
-func Init(db *sql.DB, r *chi.Mux) {
+func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 	once.Do(func() {
 		if r == nil {
 			log.Fatalln("Cannot init users layer with a nil router")
 		}
-		h := handler.NewHandler(db)
+		h := handler.NewHandler(db, v)
 		registerRoutes(r, h)
 	})
 }
@@ -26,5 +27,9 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 		r.Post("/register", h.Register)
 		r.Post("/login", h.Login)
 		r.Post("/refresh", h.RefreshToken)
+	})
+
+	r.Route("/users", func(r chi.Router) {
+		r.Patch("/{id}", h.UpdateUser)
 	})
 }

@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"study-stack/internal/entities/users/internal/service"
 	"study-stack/internal/shared/utils"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type loginRequest struct {
@@ -17,14 +15,13 @@ type loginRequest struct {
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
-	validate := validator.New()
 	req := loginRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("error decoding request: %v\n", err)
 		return
 	}
-	err := validate.Struct(req)
+	err := h.validate.Struct(req)
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("invalid request: %v\n", err)
