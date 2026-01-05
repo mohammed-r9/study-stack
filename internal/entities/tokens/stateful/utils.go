@@ -8,14 +8,14 @@ import (
 	"encoding/hex"
 )
 
-func hashFromPlainText(plainText string) string {
+func HashFromPlainText(plainText string) string {
 	hash := sha256.Sum256([]byte(plainText))
 	return hex.EncodeToString(hash[:])
 }
 
 // takes a recievedToken (plain text) and compares it to the stored token hash in the db
 func CompareOpaqueTokens(recievedToken string, storedToken string) bool {
-	receivedHash := hashFromPlainText(recievedToken)
+	receivedHash := HashFromPlainText(recievedToken)
 
 	return subtle.ConstantTimeCompare([]byte(receivedHash), []byte(storedToken)) == 1
 }

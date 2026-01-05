@@ -13,7 +13,7 @@ func NewRefreshToken() (refreshToken, error) {
 	return refreshToken{
 		PlainText:     refreshPlain,
 		CsrfPlainText: csrfPlain,
-		Hash:          hashFromPlainText(refreshPlain),
-		CsrfHash:      hashFromPlainText(csrfPlain),
+		Hash:          HashFromPlainText(refreshPlain),
+		CsrfHash:      HashFromPlainText(csrfPlain),
 	}, nil
 }

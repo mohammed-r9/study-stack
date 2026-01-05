@@ -5,6 +5,8 @@ type userError uint8
 const (
 	PasswordMismatch userError = iota
 	InvaliedAccessToken
+	InvalidRefreshToken
+	InvalidCsrfToken
 )
 
 func (e userError) Error() string {
@@ -13,6 +15,10 @@ func (e userError) Error() string {
 		return "Password Mismatch"
 	case InvaliedAccessToken:
 		return "Invalid jwt"
+	case InvalidRefreshToken:
+		return "Invalid refresh token"
+	case InvalidCsrfToken:
+		return "Invalid csrf token"
 	}
 
 	return "Unknown Error"
