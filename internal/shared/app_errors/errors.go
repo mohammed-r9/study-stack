@@ -8,6 +8,8 @@ const (
 	InvalidRefreshToken
 	InvalidCsrfToken
 	NoChange
+	InvalidUserID
+	InvalidEmail
 )
 
 func (e userError) Error() string {
@@ -22,6 +24,10 @@ func (e userError) Error() string {
 		return "Invalid csrf token"
 	case NoChange:
 		return "New field value is the same"
+	case InvalidUserID:
+		return "Invalid user ID"
+	case InvalidEmail:
+		return "Invalid email"
 	}
 
 	return "Unknown Error"

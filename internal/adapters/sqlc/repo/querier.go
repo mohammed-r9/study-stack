@@ -11,14 +11,19 @@ import (
 )
 
 type Querier interface {
+	GetAllTokensByScope(ctx context.Context, arg GetAllTokensByScopeParams) ([]Token, error)
+	GetAllTokensByUserID(ctx context.Context, userID uuid.UUID) ([]Token, error)
 	GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error)
+	GetTokenByHash(ctx context.Context, hash string) (Token, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
+	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
+	UseToken(ctx context.Context, hash string) (int64, error)
 }
 
 var _ Querier = (*Queries)(nil)

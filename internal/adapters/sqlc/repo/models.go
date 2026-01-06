@@ -22,6 +22,16 @@ type Session struct {
 	RevokedAt  sql.NullTime `json:"revoked_at"`
 }
 
+type Token struct {
+	Hash      string       `json:"hash"`
+	UserID    uuid.UUID    `json:"user_id"`
+	Scope     string       `json:"scope"`
+	CreatedAt time.Time    `json:"created_at"`
+	UsedAt    sql.NullTime `json:"used_at"`
+	RevokedAt sql.NullTime `json:"revoked_at"`
+	ExpiresAt time.Time    `json:"expires_at"`
+}
+
 type User struct {
 	ID           uuid.UUID  `json:"id"`
 	Email        string     `json:"email"`

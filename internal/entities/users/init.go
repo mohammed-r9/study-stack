@@ -31,5 +31,6 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 
 	r.Route("/users", func(r chi.Router) {
 		r.Patch("/{id}", h.UpdateUser)
+		r.Post("/password/reset", h.RequestPasswordReset)
 	})
 }
