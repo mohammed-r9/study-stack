@@ -35,3 +35,20 @@ func (e userError) Error() string {
 
 	return "Unknown Error"
 }
+
+// database errors
+
+type DBError uint8
+
+const (
+	NoRowsAffected DBError = iota
+)
+
+func (e DBError) Error() string {
+	switch e {
+	case NoRowsAffected:
+		return "DB: Now rows affected"
+	}
+
+	return "Unknown Error"
+}
