@@ -27,5 +27,6 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 	r.Route("/collections", func(r chi.Router) {
 		r.Use(middleware.Authenticate)
 		r.Post("/", h.CreateCollection)
+		r.Get("/{id}", h.GetCollectionByID)
 	})
 }
