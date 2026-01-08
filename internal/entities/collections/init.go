@@ -24,8 +24,8 @@ func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 }
 
 func registerRoutes(r *chi.Mux, h *handler.Handler) {
-	r.Use(middleware.Authenticate)
 	r.Route("/collections", func(r chi.Router) {
+		r.Use(middleware.Authenticate)
 		r.Post("/", h.CreateCollection)
 	})
 }

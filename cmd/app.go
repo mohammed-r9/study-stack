@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"study-stack/internal/entities/collections"
 	"study-stack/internal/entities/mailer"
 	"study-stack/internal/entities/users"
 	"time"
@@ -32,6 +33,7 @@ func (a *application) mount() {
 	validator := validator.New()
 	mailer.Init()
 	users.Init(a.db, a.router, validator)
+	collections.Init(a.db, a.router, validator)
 }
 
 func (a *application) run() error {
