@@ -34,6 +34,7 @@ require (
 	github.com/lestrrat-go/option/v2 v2.0.0 // indirect
 	github.com/medama-io/go-useragent v1.2.3 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
+	github.com/resend/resend-go/v2 v2.28.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/valyala/fastjson v1.6.4 // indirect

@@ -10,6 +10,7 @@ const (
 	NoChange
 	InvalidUserID
 	InvalidEmail
+	InvalidVerificationToken
 )
 
 func (e userError) Error() string {
@@ -28,6 +29,8 @@ func (e userError) Error() string {
 		return "Invalid user ID"
 	case InvalidEmail:
 		return "Invalid email"
+	case InvalidVerificationToken:
+		return "Invalid email verifcation token"
 	}
 
 	return "Unknown Error"

@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"study-stack/internal/entities/tokens/stateless"
 	"study-stack/internal/shared/consts"
 
 	"github.com/medama-io/go-useragent"
@@ -55,4 +57,9 @@ func GetDeviceNameFromUserAgent(userAgentStr string) string {
 	}
 
 	return fmt.Sprintf("%s for %s, %s", browser, device, os)
+}
+
+func DataFromContext(ctx context.Context) (stateless.UserClaims, bool) {
+	data, ok := ctx.Value(consts.UserDataContextKey).(stateless.UserClaims)
+	return data, ok
 }

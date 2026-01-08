@@ -11,8 +11,14 @@ import (
 )
 
 type Querier interface {
+	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
+	CreateCollection(ctx context.Context, arg CreateCollectionParams) (int64, error)
+	GetAllCollections(ctx context.Context, arg GetAllCollectionsParams) ([]Collection, error)
 	GetAllTokensByScope(ctx context.Context, arg GetAllTokensByScopeParams) ([]Token, error)
 	GetAllTokensByUserID(ctx context.Context, userID uuid.UUID) ([]Token, error)
+	GetArchivedCollectionByID(ctx context.Context, arg GetArchivedCollectionByIDParams) (Collection, error)
+	GetArchivedCollections(ctx context.Context, arg GetArchivedCollectionsParams) ([]Collection, error)
+	GetCollectionByID(ctx context.Context, arg GetCollectionByIDParams) (Collection, error)
 	GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error)
 	GetTokenByHash(ctx context.Context, hash string) (Token, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
@@ -20,10 +26,12 @@ type Querier interface {
 	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
+	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UseToken(ctx context.Context, hash string) (int64, error)
+	verifyUserEmail(ctx context.Context, id uuid.UUID) error
 }
 
 var _ Querier = (*Queries)(nil)

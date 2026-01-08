@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"study-stack/internal/entities/mailer"
 	"study-stack/internal/entities/users/internal/service"
 )
 
@@ -27,15 +28,22 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.svc.RegisterUser(r.Context(), service.RegisterParams{
+	token, err := h.svc.RegisterUser(r.Context(), service.RegisterParams{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: req.Password,
 	})
-
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Printf("Error registering user: %v\n", err)
+		return
+	}
+
+	err = mailer.SendVerificationEmail(req.Email, token)
+
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Printf("Error sending Verification Email: %v\n", err)
 		return
 	}
 

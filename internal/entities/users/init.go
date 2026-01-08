@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"study-stack/internal/entities/users/internal/handler"
+	"study-stack/internal/shared/middleware"
 	"sync"
 
 	"github.com/go-chi/chi/v5"
@@ -30,7 +31,13 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 	})
 
 	r.Route("/users", func(r chi.Router) {
-		r.Patch("/{id}", h.UpdateUser)
 		r.Post("/password/reset", h.RequestPasswordReset)
+		r.Get("/verify", h.VerifyEmail)
+
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.Authenticate)
+			r.With(middleware.Authenticate).Get("/me", h.GetUserByID)
+			r.Patch("/", h.UpdateUser)
+		})
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"study-stack/internal/entities/mailer"
 	"study-stack/internal/entities/users"
 	"time"
 
@@ -29,6 +30,7 @@ func (a *application) mount() {
 		w.Write([]byte("Status Is Available"))
 	})
 	validator := validator.New()
+	mailer.Init()
 	users.Init(a.db, a.router, validator)
 }
 

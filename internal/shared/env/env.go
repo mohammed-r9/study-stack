@@ -17,6 +17,9 @@ func LoadEnv(path string) {
 
 	Config = &envConfig{
 		POSTGRES_CONNECTION: mustGetEnv("POSTGRES_CONNECTION"),
+		RESEND_API_KEY:      mustGetEnv("RESEND_API_KEY"),
+		BACKEND_URL:         mustGetEnv("BACKEND_URL"),
+		FRONTEND_URL:        mustGetEnv("FRONTEND_URL"),
 
 		JWT_KEY: []byte(mustGetEnv("JWT_KEY")),
 	}
@@ -33,5 +36,8 @@ func mustGetEnv(key string) string {
 type envConfig struct {
 	POSTGRES_CONNECTION string
 	// App
-	JWT_KEY []byte
+	JWT_KEY        []byte
+	RESEND_API_KEY string
+	BACKEND_URL    string
+	FRONTEND_URL   string
 }

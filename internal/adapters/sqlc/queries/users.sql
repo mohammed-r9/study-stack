@@ -26,3 +26,8 @@ WHERE id = $2;
 UPDATE users
 SET password_hash = $1, salt = $2
 WHERE id = $3;
+
+-- name: verifyUserEmail :exec
+UPDATE users
+SET verified_at = NOW()
+WHERE id = $1;

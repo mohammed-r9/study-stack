@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS sessions (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     device_name TEXT NOT NULL,
     csrf_hash TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    last_used_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    revoked_at TIMESTAMPTZ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    last_used_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    revoked_at TIMESTAMP WITH TIME ZONE,
 
     CHECK (revoked_at IS NULL OR revoked_at >= created_at)
 );

@@ -6,9 +6,7 @@ import (
 	"net/http"
 	"study-stack/internal/entities/users/internal/service"
 	appErrors "study-stack/internal/shared/app_errors"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
+	"study-stack/internal/shared/utils"
 )
 
 type UpdateUserRequest struct {
@@ -23,18 +21,12 @@ type UpdatePasswordRequest struct {
 }
 
 func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	if idStr == "" {
+	userData, ok := utils.DataFromContext(r.Context())
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
-		log.Println("No user id provided")
 		return
 	}
-	userID, err := uuid.Parse(idStr)
-	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		log.Printf("Invalid userID: %v\n", err)
-		return
-	}
+
 	req := UpdateUserRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -55,7 +47,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = h.svc.UpdateUserName(r.Context(), service.UpdateNameParams{
-			UserID:  userID,
+			UserID:  userData.UserID,
 			NewName: *req.Name,
 		})
 		if err != nil {
@@ -75,7 +67,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = h.svc.UpdateUserEmail(r.Context(), service.UpdateEmailParams{
-			UserID:   userID,
+			UserID:   userData.UserID,
 			NewEmail: *req.Email,
 		})
 		if err != nil {
@@ -105,7 +97,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = h.svc.UpdateUserPassword(r.Context(), service.UpdatePasswordParams{
-			UserID:      userID,
+			UserID:      userData.UserID,
 			NewPassword: req.Password.New,
 			OldPassword: req.Password.Old,
 		})

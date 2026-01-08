@@ -7,7 +7,6 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,14 +27,14 @@ WHERE token_hash = $1
 `
 
 type GetSessionByHashRow struct {
-	ID         uuid.UUID    `json:"id"`
-	UserID     uuid.UUID    `json:"user_id"`
-	TokenHash  string       `json:"token_hash"`
-	CsrfHash   string       `json:"csrf_hash"`
-	DeviceName string       `json:"device_name"`
-	LastUsedAt time.Time    `json:"last_used_at"`
-	RevokedAt  sql.NullTime `json:"revoked_at"`
-	VerifiedAt *time.Time   `json:"verified_at"`
+	ID         uuid.UUID  `json:"id"`
+	UserID     uuid.UUID  `json:"user_id"`
+	TokenHash  string     `json:"token_hash"`
+	CsrfHash   string     `json:"csrf_hash"`
+	DeviceName string     `json:"device_name"`
+	LastUsedAt time.Time  `json:"last_used_at"`
+	RevokedAt  *time.Time `json:"revoked_at"`
+	VerifiedAt *time.Time `json:"verified_at"`
 }
 
 func (q *Queries) GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error) {

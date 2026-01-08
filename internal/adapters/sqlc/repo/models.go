@@ -5,31 +5,40 @@
 package repo
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
+type Collection struct {
+	ID          uuid.UUID  `json:"id"`
+	UserID      uuid.UUID  `json:"user_id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	ArchivedAt  *time.Time `json:"archived_at"`
+}
+
 type Session struct {
-	ID         uuid.UUID    `json:"id"`
-	TokenHash  string       `json:"token_hash"`
-	UserID     uuid.UUID    `json:"user_id"`
-	DeviceName string       `json:"device_name"`
-	CsrfHash   string       `json:"csrf_hash"`
-	CreatedAt  time.Time    `json:"created_at"`
-	LastUsedAt time.Time    `json:"last_used_at"`
-	RevokedAt  sql.NullTime `json:"revoked_at"`
+	ID         uuid.UUID  `json:"id"`
+	TokenHash  string     `json:"token_hash"`
+	UserID     uuid.UUID  `json:"user_id"`
+	DeviceName string     `json:"device_name"`
+	CsrfHash   string     `json:"csrf_hash"`
+	CreatedAt  time.Time  `json:"created_at"`
+	LastUsedAt time.Time  `json:"last_used_at"`
+	RevokedAt  *time.Time `json:"revoked_at"`
 }
 
 type Token struct {
-	Hash      string       `json:"hash"`
-	UserID    uuid.UUID    `json:"user_id"`
-	Scope     string       `json:"scope"`
-	CreatedAt time.Time    `json:"created_at"`
-	UsedAt    sql.NullTime `json:"used_at"`
-	RevokedAt sql.NullTime `json:"revoked_at"`
-	ExpiresAt time.Time    `json:"expires_at"`
+	Hash      string     `json:"hash"`
+	UserID    uuid.UUID  `json:"user_id"`
+	Scope     string     `json:"scope"`
+	CreatedAt time.Time  `json:"created_at"`
+	UsedAt    *time.Time `json:"used_at"`
+	RevokedAt *time.Time `json:"revoked_at"`
+	ExpiresAt time.Time  `json:"expires_at"`
 }
 
 type User struct {
