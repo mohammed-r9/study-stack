@@ -36,7 +36,7 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.Authenticate)
-			r.With(middleware.Authenticate).Get("/me", h.GetUserByID)
+			r.Get("/me", h.GetUserByID)
 			r.Patch("/", h.UpdateUser)
 		})
 	})
