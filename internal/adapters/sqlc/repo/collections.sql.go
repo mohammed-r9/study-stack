@@ -33,7 +33,7 @@ func (q *Queries) ArchiveCollection(ctx context.Context, arg ArchiveCollectionPa
 }
 
 const createCollection = `-- name: CreateCollection :execrows
-INSERT INTO collections (id, user_id, title, description)
+INSERT INTO collections(id, user_id, title, description)
 SELECT
     $1, $2, $3, $4
 WHERE (
@@ -64,23 +64,97 @@ func (q *Queries) CreateCollection(ctx context.Context, arg CreateCollectionPara
 	return result.RowsAffected()
 }
 
+const getAllArchivedCollections = `-- name: GetAllArchivedCollections :many
+SELECT id, user_id, title, description, created_at, updated_at, archived_at
+FROM collections
+WHERE user_id = $1
+  AND archived_at IS NOT NULL
+ORDER BY archived_at DESC
+LIMIT 20
+`
+
+func (q *Queries) GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error) {
+	rows, err := q.db.QueryContext(ctx, getAllArchivedCollections, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllCollections = `-- name: GetAllCollections :many
 SELECT id, user_id, title, description, created_at, updated_at, archived_at
 FROM collections
 WHERE user_id = $1
   AND archived_at IS NULL
 ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+LIMIT 20
 `
 
-type GetAllCollectionsParams struct {
-	UserID uuid.UUID `json:"user_id"`
-	Limit  int32     `json:"limit"`
-	Offset int32     `json:"offset"`
+func (q *Queries) GetAllCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error) {
+	rows, err := q.db.QueryContext(ctx, getAllCollections, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-func (q *Queries) GetAllCollections(ctx context.Context, arg GetAllCollectionsParams) ([]Collection, error) {
-	rows, err := q.db.QueryContext(ctx, getAllCollections, arg.UserID, arg.Limit, arg.Offset)
+const getAllUnarchivedCollections = `-- name: GetAllUnarchivedCollections :many
+SELECT id, user_id, title, description, created_at, updated_at, archived_at
+FROM collections
+WHERE user_id = $1
+  AND archived_at IS NULL
+ORDER BY archived_at DESC
+LIMIT 20
+`
+
+func (q *Queries) GetAllUnarchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUnarchivedCollections, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -138,52 +212,6 @@ func (q *Queries) GetArchivedCollectionByID(ctx context.Context, arg GetArchived
 	return i, err
 }
 
-const getArchivedCollections = `-- name: GetArchivedCollections :many
-SELECT id, user_id, title, description, created_at, updated_at, archived_at
-FROM collections
-WHERE user_id = $1
-  AND archived_at IS NOT NULL
-ORDER BY archived_at DESC
-LIMIT $2 OFFSET $3
-`
-
-type GetArchivedCollectionsParams struct {
-	UserID uuid.UUID `json:"user_id"`
-	Limit  int32     `json:"limit"`
-	Offset int32     `json:"offset"`
-}
-
-func (q *Queries) GetArchivedCollections(ctx context.Context, arg GetArchivedCollectionsParams) ([]Collection, error) {
-	rows, err := q.db.QueryContext(ctx, getArchivedCollections, arg.UserID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Collection
-	for rows.Next() {
-		var i Collection
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.Title,
-			&i.Description,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ArchivedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getCollectionByID = `-- name: GetCollectionByID :one
 SELECT id, user_id, title, description, created_at, updated_at, archived_at
 FROM collections
@@ -215,9 +243,15 @@ func (q *Queries) GetCollectionByID(ctx context.Context, arg GetCollectionByIDPa
 const unarchiveCollection = `-- name: UnarchiveCollection :execrows
 UPDATE collections
 SET archived_at = NULL
-WHERE id = $1
-  AND user_id = $2
-  AND archived_at IS NOT NULL
+WHERE collections.id = $1
+  AND collections.user_id = $2
+  AND collections.archived_at IS NOT NULL
+  AND (
+      SELECT COUNT(*)
+      FROM collections AS active
+      WHERE active.user_id = collections.user_id
+        AND active.archived_at IS NULL
+  ) < 20
 `
 
 type UnarchiveCollectionParams struct {
