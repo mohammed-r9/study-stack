@@ -21,7 +21,13 @@ UPDATE collections
 SET archived_at = NULL
 WHERE id = $1
   AND user_id = $2
-  AND archived_at IS NOT NULL;
+  AND archived_at IS NOT NULL
+  AND (
+      SELECT COUNT(*)
+      FROM collections
+      WHERE user_id = $2
+        AND archived_at IS NULL
+  ) < 20;
 
 -- name: UpdateCollectionTitle :execrows
 UPDATE collections
