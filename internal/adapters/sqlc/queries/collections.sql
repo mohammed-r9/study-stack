@@ -1,5 +1,5 @@
 -- name: CreateCollection :execrows
-INSERT INTO collections (id, user_id, title, description)
+INSERT INTO collections(id, user_id, title, description)
 SELECT
     $1, $2, $3, $4
 WHERE (
@@ -46,7 +46,7 @@ FROM collections
 WHERE user_id = $1
   AND archived_at IS NOT NULL
 ORDER BY archived_at DESC
-LIMIT $2 OFFSET $3;
+LIMIT 20;
 
 -- name: GetCollectionByID :one
 SELECT id, user_id, title, description, created_at, updated_at, archived_at
@@ -61,4 +61,4 @@ FROM collections
 WHERE user_id = $1
   AND archived_at IS NULL
 ORDER BY created_at DESC
-LIMIT $2 OFFSET $3;
+LIMIT 20;
