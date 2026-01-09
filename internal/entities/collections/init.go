@@ -26,10 +26,8 @@ func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 func registerRoutes(r *chi.Mux, h *handler.Handler) {
 	r.Route("/collections", func(r chi.Router) {
 		r.Use(middleware.Authenticate)
+		r.Get("/", h.GetCollections)
 		r.Get("/{id}", h.GetCollectionByID)
-		r.Get("/", h.GetAllCollections)
-		r.Get("/archived", h.GetAllArchivedCollections)
-		r.Get("/unarchived", h.GetAllUnarchivedCollections)
 		r.Post("/", h.CreateCollection)
 		r.Patch("/{id}", h.UpdateCollection)
 	})
