@@ -28,5 +28,6 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 		r.Use(middleware.Authenticate)
 		r.Post("/", h.CreateCollection)
 		r.Get("/{id}", h.GetCollectionByID)
+		r.Patch("/{id}", h.UpdateCollection)
 	})
 }

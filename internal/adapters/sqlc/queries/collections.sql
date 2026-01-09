@@ -23,6 +23,16 @@ WHERE id = $1
   AND user_id = $2
   AND archived_at IS NOT NULL;
 
+-- name: UpdateCollectionTitle :execrows
+UPDATE collections
+    SET title = $1
+    WHERE id = $2 AND user_id = $3;
+
+-- name: UpdateCollectionDescription :execrows
+UPDATE collections
+    SET description = $1
+    WHERE id = $2 AND user_id = $3;
+
 -- name: GetArchivedCollectionByID :one
 SELECT id, user_id, title, description, created_at, updated_at, archived_at
 FROM collections

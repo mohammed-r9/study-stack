@@ -42,12 +42,15 @@ type DBError uint8
 
 const (
 	NoRowsAffected DBError = iota
+	InvalidData
 )
 
 func (e DBError) Error() string {
 	switch e {
 	case NoRowsAffected:
 		return "DB: Now rows affected"
+	case InvalidData:
+		return "Invalid data"
 	}
 
 	return "Unknown Error"

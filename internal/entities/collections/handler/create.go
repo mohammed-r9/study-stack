@@ -8,7 +8,7 @@ import (
 	"study-stack/internal/shared/utils"
 )
 
-type request struct {
+type createReq struct {
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
@@ -19,7 +19,7 @@ func (h *Handler) CreateCollection(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	req := request{}
+	req := createReq{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("error decoding request: %v\n", err)

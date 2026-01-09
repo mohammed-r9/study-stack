@@ -232,3 +232,43 @@ func (q *Queries) UnarchiveCollection(ctx context.Context, arg UnarchiveCollecti
 	}
 	return result.RowsAffected()
 }
+
+const updateCollectionDescription = `-- name: UpdateCollectionDescription :execrows
+UPDATE collections
+    SET description = $1
+    WHERE id = $2 AND user_id = $3
+`
+
+type UpdateCollectionDescriptionParams struct {
+	Description string    `json:"description"`
+	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateCollectionDescription, arg.Description, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const updateCollectionTitle = `-- name: UpdateCollectionTitle :execrows
+UPDATE collections
+    SET title = $1
+    WHERE id = $2 AND user_id = $3
+`
+
+type UpdateCollectionTitleParams struct {
+	Title  string    `json:"title"`
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateCollectionTitle, arg.Title, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
