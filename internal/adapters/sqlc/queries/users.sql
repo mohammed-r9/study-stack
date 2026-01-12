@@ -19,15 +19,18 @@ WHERE id = $2;
 
 -- name: UpdateUserEmail :exec
 UPDATE users
-SET email = $1
+SET email = $1,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $2;
 
 -- name: UpdateUserPassword :exec
 UPDATE users
-SET password_hash = $1, salt = $2
+SET password_hash = $1, salt = $2,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $3;
 
 -- name: verifyUserEmail :exec
 UPDATE users
-SET verified_at = NOW()
+SET verified_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1;

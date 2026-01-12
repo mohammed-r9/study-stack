@@ -29,5 +29,6 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 		r.Post("/", h.InsertMaterial)
 		r.Get("/", h.GetAllMaterials)
 		r.Get("/{id}", h.GetMaterialByID)
+		r.Patch("/{id}", h.UpdateMaterial)
 	})
 }

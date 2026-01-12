@@ -13,7 +13,8 @@ import (
 
 const archiveCollection = `-- name: ArchiveCollection :execrows
 UPDATE collections
-SET archived_at = NOW()
+SET archived_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
   AND user_id = $2
   AND archived_at IS NULL
@@ -242,7 +243,8 @@ func (q *Queries) GetCollectionByID(ctx context.Context, arg GetCollectionByIDPa
 
 const unarchiveCollection = `-- name: UnarchiveCollection :execrows
 UPDATE collections
-SET archived_at = NULL
+SET archived_at = NULL,
+    updated_at = CURRENT_TIMESTAMP
 WHERE collections.id = $1
   AND collections.user_id = $2
   AND collections.archived_at IS NOT NULL

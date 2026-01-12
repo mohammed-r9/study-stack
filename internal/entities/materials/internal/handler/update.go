@@ -11,17 +11,17 @@ import (
 )
 
 type updateReq struct {
-	ToArchive   *bool   `json:"to_archive"`
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
+	ToArchive *bool   `json:"to_archive"`
+	Title     *string `json:"title"`
 }
 
-func (h *Handler) UpdateCollection(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateMaterial(w http.ResponseWriter, r *http.Request) {
 	userData, ok := utils.DataFromContext(r.Context())
 	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
+
 	req := updateReq{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -29,33 +29,26 @@ func (h *Handler) UpdateCollection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collectionID, err := uuid.Parse(chi.URLParam(r, "id"))
+	materialID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Printf("error parsing collection id: %v\n", err)
+		log.Printf("error parsing material id: %v\n", err)
 		return
 	}
 
 	if req.Title != nil {
-		err = h.svc.UpdateTitle(r.Context(), collectionID, userData.UserID, *req.Title)
-		return
-	}
-
-	if req.Description != nil {
-		err = h.svc.UpdateDescription(r.Context(), collectionID, userData.UserID, *req.Description)
-		return
+		err = h.svc.UpdateMaterialTitle(r.Context(), *req.Title, materialID, userData.UserID)
 	}
 
 	if req.ToArchive != nil {
-		err = h.svc.UpdateIsArchived(r.Context(), collectionID, userData.UserID, *req.ToArchive)
+		err = h.svc.UpdateMaterialArchivedAt(r.Context(), *req.ToArchive, materialID, userData.UserID)
 	}
 
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Printf("error updating collection: %v\n", err)
+		log.Printf("Error updating material: %v", err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-
 }

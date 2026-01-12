@@ -9,7 +9,8 @@ WHERE hash = $1;
 
 -- name: UseToken :execrows
 UPDATE tokens
-SET used_at = CURRENT_TIMESTAMP
+SET used_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE hash = $1;
 
 -- name: GetAllTokensByUserID :many

@@ -11,14 +11,16 @@ WHERE (
 
 -- name: ArchiveCollection :execrows
 UPDATE collections
-SET archived_at = NOW()
+SET archived_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
   AND user_id = $2
   AND archived_at IS NULL;
 
 -- name: UnarchiveCollection :execrows
 UPDATE collections
-SET archived_at = NULL
+SET archived_at = NULL,
+    updated_at = CURRENT_TIMESTAMP
 WHERE collections.id = $1
   AND collections.user_id = $2
   AND collections.archived_at IS NOT NULL
@@ -31,12 +33,14 @@ WHERE collections.id = $1
 
 -- name: UpdateCollectionTitle :execrows
 UPDATE collections
-    SET title = $1
+    SET title = $1,
+    updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3;
 
 -- name: UpdateCollectionDescription :execrows
 UPDATE collections
-    SET description = $1
+    SET description = $1,
+    updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3;
 
 -- name: GetArchivedCollectionByID :one

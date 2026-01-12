@@ -104,7 +104,8 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) error {
 
 const updateUserEmail = `-- name: UpdateUserEmail :exec
 UPDATE users
-SET email = $1
+SET email = $1,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $2
 `
 
@@ -136,7 +137,8 @@ func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) 
 
 const updateUserPassword = `-- name: UpdateUserPassword :exec
 UPDATE users
-SET password_hash = $1, salt = $2
+SET password_hash = $1, salt = $2,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $3
 `
 
@@ -153,7 +155,8 @@ func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPassword
 
 const verifyUserEmail = `-- name: verifyUserEmail :exec
 UPDATE users
-SET verified_at = NOW()
+SET verified_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 `
 

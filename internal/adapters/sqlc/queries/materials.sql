@@ -72,7 +72,8 @@ LIMIT 20;
 
 -- name: ArchiveMaterial :execrows
 UPDATE materials
-SET archived_at = CURRENT_TIMESTAMP
+SET archived_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE materials.id = $1 
   AND materials.archived_at IS NULL
   AND EXISTS (
@@ -84,7 +85,8 @@ WHERE materials.id = $1
 
 -- name: UnarchiveMaterial :execrows
 UPDATE materials
-SET archived_at = NULL
+SET archived_at = NULL,
+    updated_at = CURRENT_TIMESTAMP
 WHERE materials.id = $1 
   AND materials.archived_at IS NOT NULL
   AND EXISTS (
@@ -99,3 +101,16 @@ WHERE materials.id = $1
       WHERE collection_id = materials.collection_id 
         AND archived_at IS NULL
   ) < 20;
+
+
+-- name: UpdateMaterialTitle :execrows
+UPDATE materials m
+SET title = $1,
+    updated_at = CURRENT_TIMESTAMP
+WHERE m.id = $2
+  AND EXISTS (
+      SELECT 1 
+      FROM collections c 
+      WHERE c.id = m.collection_id 
+        AND c.user_id = $3
+  );

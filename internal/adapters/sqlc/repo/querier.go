@@ -37,6 +37,7 @@ type Querier interface {
 	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error)
+	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error

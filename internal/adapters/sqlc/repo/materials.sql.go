@@ -13,7 +13,8 @@ import (
 
 const archiveMaterial = `-- name: ArchiveMaterial :execrows
 UPDATE materials
-SET archived_at = CURRENT_TIMESTAMP
+SET archived_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE materials.id = $1 
   AND materials.archived_at IS NULL
   AND EXISTS (
@@ -257,7 +258,8 @@ func (q *Queries) InsertMaterial(ctx context.Context, arg InsertMaterialParams) 
 
 const unarchiveMaterial = `-- name: UnarchiveMaterial :execrows
 UPDATE materials
-SET archived_at = NULL
+SET archived_at = NULL,
+    updated_at = CURRENT_TIMESTAMP
 WHERE materials.id = $1 
   AND materials.archived_at IS NOT NULL
   AND EXISTS (
@@ -281,6 +283,33 @@ type UnarchiveMaterialParams struct {
 
 func (q *Queries) UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, unarchiveMaterial, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const updateMaterialTitle = `-- name: UpdateMaterialTitle :execrows
+UPDATE materials m
+SET title = $1,
+    updated_at = CURRENT_TIMESTAMP
+WHERE m.id = $2
+  AND EXISTS (
+      SELECT 1 
+      FROM collections c 
+      WHERE c.id = m.collection_id 
+        AND c.user_id = $3
+  )
+`
+
+type UpdateMaterialTitleParams struct {
+	Title  string    `json:"title"`
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateMaterialTitle, arg.Title, arg.ID, arg.UserID)
 	if err != nil {
 		return 0, err
 	}

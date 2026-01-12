@@ -149,7 +149,8 @@ func (q *Queries) InsertToken(ctx context.Context, arg InsertTokenParams) error 
 
 const useToken = `-- name: UseToken :execrows
 UPDATE tokens
-SET used_at = CURRENT_TIMESTAMP
+SET used_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
 WHERE hash = $1
 `
 
