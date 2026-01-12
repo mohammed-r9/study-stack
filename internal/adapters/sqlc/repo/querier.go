@@ -12,22 +12,27 @@ import (
 
 type Querier interface {
 	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
+	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) (int64, error)
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
 	GetAllCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
+	GetAllMaterialsInCollection(ctx context.Context, arg GetAllMaterialsInCollectionParams) ([]Material, error)
 	GetAllTokensByScope(ctx context.Context, arg GetAllTokensByScopeParams) ([]Token, error)
 	GetAllTokensByUserID(ctx context.Context, userID uuid.UUID) ([]Token, error)
 	GetAllUnarchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
 	GetArchivedCollectionByID(ctx context.Context, arg GetArchivedCollectionByIDParams) (Collection, error)
 	GetCollectionByID(ctx context.Context, arg GetCollectionByIDParams) (Collection, error)
+	GetMaterialByID(ctx context.Context, arg GetMaterialByIDParams) (Material, error)
 	GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error)
 	GetTokenByHash(ctx context.Context, hash string) (Token, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
+	InsertMaterial(ctx context.Context, arg InsertMaterialParams) error
 	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
+	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error

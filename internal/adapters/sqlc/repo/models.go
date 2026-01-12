@@ -20,6 +20,15 @@ type Collection struct {
 	ArchivedAt  *time.Time `json:"archived_at"`
 }
 
+type Material struct {
+	ID           uuid.UUID  `json:"id"`
+	CollectionID uuid.UUID  `json:"collection_id"`
+	Title        string     `json:"title"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	ArchivedAt   *time.Time `json:"archived_at"`
+}
+
 type Session struct {
 	ID         uuid.UUID  `json:"id"`
 	TokenHash  string     `json:"token_hash"`

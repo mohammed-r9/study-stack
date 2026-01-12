@@ -1,9 +1,9 @@
-package collections
+package materials
 
 import (
 	"database/sql"
 	"log"
-	"study-stack/internal/entities/collections/handler"
+	"study-stack/internal/entities/materials/internal/handler"
 	"study-stack/internal/shared/middleware"
 	"sync"
 
@@ -24,11 +24,8 @@ func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 }
 
 func registerRoutes(r *chi.Mux, h *handler.Handler) {
-	r.Route("/collections", func(r chi.Router) {
+	r.Route("/materials", func(r chi.Router) {
 		r.Use(middleware.Authenticate)
-		r.Get("/", h.GetCollections)
-		r.Get("/{id}", h.GetCollectionByID)
-		r.Post("/", h.CreateCollection)
-		r.Patch("/{id}", h.UpdateCollection)
+		r.Post("/", h.InsertMaterial)
 	})
 }

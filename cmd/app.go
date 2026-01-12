@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"study-stack/internal/entities/collections"
 	"study-stack/internal/entities/mailer"
+	"study-stack/internal/entities/materials"
 	"study-stack/internal/entities/users"
 	"time"
 
@@ -34,6 +35,7 @@ func (a *application) mount() {
 	mailer.Init()
 	users.Init(a.db, a.router, validator)
 	collections.Init(a.db, a.router, validator)
+	materials.Init(a.db, a.router, validator)
 }
 
 func (a *application) run() error {
