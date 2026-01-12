@@ -37,6 +37,57 @@ func (q *Queries) ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams
 	return result.RowsAffected()
 }
 
+const getAllArchivedMaterialsInCollection = `-- name: GetAllArchivedMaterialsInCollection :many
+SELECT 
+    m.id, 
+    m.collection_id, 
+    m.title, 
+    m.created_at, 
+    m.updated_at, 
+    m.archived_at
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = $1 
+  AND m.collection_id = $2
+  AND m.archived_at IS NOT NULL
+LIMIT 20
+`
+
+type GetAllArchivedMaterialsInCollectionParams struct {
+	UserID       uuid.UUID `json:"user_id"`
+	CollectionID uuid.UUID `json:"collection_id"`
+}
+
+func (q *Queries) GetAllArchivedMaterialsInCollection(ctx context.Context, arg GetAllArchivedMaterialsInCollectionParams) ([]Material, error) {
+	rows, err := q.db.QueryContext(ctx, getAllArchivedMaterialsInCollection, arg.UserID, arg.CollectionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Material
+	for rows.Next() {
+		var i Material
+		if err := rows.Scan(
+			&i.ID,
+			&i.CollectionID,
+			&i.Title,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllMaterialsInCollection = `-- name: GetAllMaterialsInCollection :many
 SELECT 
     m.id, 
@@ -49,7 +100,7 @@ FROM materials m
 JOIN collections c ON m.collection_id = c.id
 WHERE c.user_id = $1 
   AND m.collection_id = $2
-  AND m.archived_at IS NULL
+LIMIT 20
 `
 
 type GetAllMaterialsInCollectionParams struct {
@@ -59,6 +110,57 @@ type GetAllMaterialsInCollectionParams struct {
 
 func (q *Queries) GetAllMaterialsInCollection(ctx context.Context, arg GetAllMaterialsInCollectionParams) ([]Material, error) {
 	rows, err := q.db.QueryContext(ctx, getAllMaterialsInCollection, arg.UserID, arg.CollectionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Material
+	for rows.Next() {
+		var i Material
+		if err := rows.Scan(
+			&i.ID,
+			&i.CollectionID,
+			&i.Title,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllUnarchivedMaterialsInCollection = `-- name: GetAllUnarchivedMaterialsInCollection :many
+SELECT 
+    m.id, 
+    m.collection_id, 
+    m.title, 
+    m.created_at, 
+    m.updated_at, 
+    m.archived_at
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = $1 
+  AND m.collection_id = $2
+  AND m.archived_at IS NULL
+LIMIT 20
+`
+
+type GetAllUnarchivedMaterialsInCollectionParams struct {
+	UserID       uuid.UUID `json:"user_id"`
+	CollectionID uuid.UUID `json:"collection_id"`
+}
+
+func (q *Queries) GetAllUnarchivedMaterialsInCollection(ctx context.Context, arg GetAllUnarchivedMaterialsInCollectionParams) ([]Material, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUnarchivedMaterialsInCollection, arg.UserID, arg.CollectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -164,6 +266,12 @@ WHERE materials.id = $1
       WHERE collections.id = materials.collection_id 
         AND collections.user_id = $2
   )
+  AND (
+      SELECT COUNT(*) 
+      FROM materials 
+      WHERE collection_id = materials.collection_id 
+        AND archived_at IS NULL
+  ) < 20
 `
 
 type UnarchiveMaterialParams struct {

@@ -27,5 +27,7 @@ func registerRoutes(r *chi.Mux, h *handler.Handler) {
 	r.Route("/materials", func(r chi.Router) {
 		r.Use(middleware.Authenticate)
 		r.Post("/", h.InsertMaterial)
+		r.Get("/", h.GetAllMaterials)
+		r.Get("/{id}", h.GetMaterialByID)
 	})
 }

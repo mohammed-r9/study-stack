@@ -26,6 +26,36 @@ WHERE m.id = $1
   AND c.user_id = $2
   AND m.archived_at IS NULL;
 
+-- name: GetAllUnarchivedMaterialsInCollection :many
+SELECT 
+    m.id, 
+    m.collection_id, 
+    m.title, 
+    m.created_at, 
+    m.updated_at, 
+    m.archived_at
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = $1 
+  AND m.collection_id = $2
+  AND m.archived_at IS NULL
+LIMIT 20;
+
+-- name: GetAllArchivedMaterialsInCollection :many
+SELECT 
+    m.id, 
+    m.collection_id, 
+    m.title, 
+    m.created_at, 
+    m.updated_at, 
+    m.archived_at
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = $1 
+  AND m.collection_id = $2
+  AND m.archived_at IS NOT NULL
+LIMIT 20;
+
 -- name: GetAllMaterialsInCollection :many
 SELECT 
     m.id, 
@@ -38,7 +68,7 @@ FROM materials m
 JOIN collections c ON m.collection_id = c.id
 WHERE c.user_id = $1 
   AND m.collection_id = $2
-  AND m.archived_at IS NULL;
+LIMIT 20;
 
 -- name: ArchiveMaterial :execrows
 UPDATE materials
@@ -62,4 +92,10 @@ WHERE materials.id = $1
       FROM collections 
       WHERE collections.id = materials.collection_id 
         AND collections.user_id = $2
-  );
+  )
+  AND (
+      SELECT COUNT(*) 
+      FROM materials 
+      WHERE collection_id = materials.collection_id 
+        AND archived_at IS NULL
+  ) < 20;
