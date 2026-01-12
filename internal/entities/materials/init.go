@@ -16,7 +16,7 @@ var once sync.Once
 func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 	once.Do(func() {
 		if r == nil {
-			log.Fatalln("Cannot init collections layer with a nil router")
+			log.Fatalln("Cannot init materials layer with a nil router")
 		}
 		h := handler.NewHandler(db, v)
 		registerRoutes(r, h)
