@@ -1,0 +1,9 @@
+## .env example
+
+```
+POSTGRES_CONNECTION=?
+RESEND_API_KEY=?
+BACKEND_URL=?
+FRONTEND_URL=?
+JWT_KEY=?
+```
