@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: $0 <command> <module>"
+  echo "Example: $0 mod users"
+  exit 1
+fi
+
+COMMAND=$1
+MODULE=$2
+
+case "$COMMAND" in
+  mod)
+    echo "Generating module: $MODULE"
+    go run ./cmd/gen mod "$MODULE"
+    ;;
+  *)
+    echo "Unknown command: $COMMAND"
+    exit 1
+    ;;
+esac
