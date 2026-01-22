@@ -6,3 +6,7 @@ type UserClaims struct {
 	UserID     uuid.UUID
 	IsVerified bool
 }
+
+type ServiceClaims struct {
+	ServiceID ServiceID
+}
