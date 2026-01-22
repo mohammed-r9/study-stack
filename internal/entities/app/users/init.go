@@ -3,7 +3,7 @@ package users
 import (
 	"database/sql"
 	"log"
-	"study-stack/internal/entities/users/internal/handler"
+	"study-stack/internal/entities/app/users/internal/handler"
 	"study-stack/internal/shared/middleware"
 	"sync"
 

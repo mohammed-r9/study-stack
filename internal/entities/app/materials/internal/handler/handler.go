@@ -2,7 +2,7 @@ package handler
 
 import (
 	"database/sql"
-	"study-stack/internal/entities/collections/service"
+	"study-stack/internal/entities/app/materials/internal/service"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -18,4 +18,3 @@ func NewHandler(db *sql.DB, validator *validator.Validate) *Handler {
 		validate: validator,
 	}
 }
-

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"study-stack/internal/entities/users/internal/service"
+	"study-stack/internal/entities/app/users/internal/service"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 )

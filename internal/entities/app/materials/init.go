@@ -3,7 +3,7 @@ package materials
 import (
 	"database/sql"
 	"log"
-	"study-stack/internal/entities/materials/internal/handler"
+	"study-stack/internal/entities/app/materials/internal/handler"
 	"study-stack/internal/shared/middleware"
 	"sync"
 

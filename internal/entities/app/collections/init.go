@@ -3,7 +3,7 @@ package collections
 import (
 	"database/sql"
 	"log"
-	"study-stack/internal/entities/collections/handler"
+	"study-stack/internal/entities/app/collections/handler"
 	"study-stack/internal/shared/middleware"
 	"sync"
 

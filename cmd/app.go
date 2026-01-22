@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"study-stack/internal/entities/collections"
+	"study-stack/internal/entities/app/collections"
+	"study-stack/internal/entities/app/materials"
+	"study-stack/internal/entities/app/users"
 	"study-stack/internal/entities/mailer"
-	"study-stack/internal/entities/materials"
-	"study-stack/internal/entities/users"
 	"time"
 
 	"github.com/go-chi/chi/v5"

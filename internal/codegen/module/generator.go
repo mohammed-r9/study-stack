@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	basePath    = "internal/entities"
+	basePath    = "internal/entities/app"
 	templateDir = "internal/codegen/module/templates"
 )
 
