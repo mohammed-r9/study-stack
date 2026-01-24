@@ -36,8 +36,8 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	utils.SetRefreshCookieFiber(c, tokens.Refresh)
-	utils.SetCsrfCookieFiber(c, tokens.Csrf)
+	utils.SetRefreshCookie(c, tokens.Refresh)
+	utils.SetCsrfCookie(c, tokens.Csrf)
 
 	return c.JSON(fiber.Map{
 		"access_token": tokens.Access,

@@ -9,7 +9,7 @@ import (
 	"github.com/medama-io/go-useragent"
 )
 
-func SetRefreshCookieFiber(c *fiber.Ctx, cookieValue string) {
+func SetRefreshCookie(c *fiber.Ctx, cookieValue string) {
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    cookieValue,
@@ -21,7 +21,7 @@ func SetRefreshCookieFiber(c *fiber.Ctx, cookieValue string) {
 	})
 }
 
-func SetCsrfCookieFiber(c *fiber.Ctx, cookieValue string) {
+func SetCsrfCookie(c *fiber.Ctx, cookieValue string) {
 	c.Cookie(&fiber.Cookie{
 		Name:     "CSRF_token",
 		Value:    cookieValue,
