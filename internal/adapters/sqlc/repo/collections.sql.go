@@ -33,7 +33,7 @@ func (q *Queries) ArchiveCollection(ctx context.Context, arg ArchiveCollectionPa
 	return result.RowsAffected()
 }
 
-const createCollection = `-- name: CreateCollection :execrows
+const createCollection = `-- name: CreateCollection :exec
 INSERT INTO collections(id, user_id, title, description)
 SELECT
     $1, $2, $3, $4
@@ -52,17 +52,14 @@ type CreateCollectionParams struct {
 	Description string    `json:"description"`
 }
 
-func (q *Queries) CreateCollection(ctx context.Context, arg CreateCollectionParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createCollection,
+func (q *Queries) CreateCollection(ctx context.Context, arg CreateCollectionParams) error {
+	_, err := q.db.ExecContext(ctx, createCollection,
 		arg.ID,
 		arg.UserID,
 		arg.Title,
 		arg.Description,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+	return err
 }
 
 const getAllArchivedCollections = `-- name: GetAllArchivedCollections :many
@@ -271,7 +268,8 @@ func (q *Queries) UnarchiveCollection(ctx context.Context, arg UnarchiveCollecti
 
 const updateCollectionDescription = `-- name: UpdateCollectionDescription :execrows
 UPDATE collections
-    SET description = $1
+    SET description = $1,
+    updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3
 `
 
@@ -291,7 +289,8 @@ func (q *Queries) UpdateCollectionDescription(ctx context.Context, arg UpdateCol
 
 const updateCollectionTitle = `-- name: UpdateCollectionTitle :execrows
 UPDATE collections
-    SET title = $1
+    SET title = $1,
+    updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3
 `
 

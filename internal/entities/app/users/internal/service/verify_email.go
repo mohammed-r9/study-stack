@@ -9,17 +9,17 @@ import (
 
 func (s *Service) VerifyEmail(ctx context.Context, token string) error {
 	if token == "" {
-		return appErrors.InvalidVerificationToken
+		return appErrors.BadData
 	}
 
 	tokenHash := stateful.HashFromPlainText(token)
 	storedToken, err := s.repo.GetTokenByHash(ctx, tokenHash)
 	if err != nil {
-		return appErrors.InvalidVerificationToken
+		return err
 	}
 
 	if time.Now().After(storedToken.ExpiresAt) || storedToken.UsedAt != nil {
-		return appErrors.InvalidVerificationToken
+		return appErrors.Unauthorized
 	}
 
 	err = s.repo.VerifyUser(ctx, s.db, storedToken.UserID, storedToken.Hash)

@@ -1,4 +1,4 @@
--- name: CreateCollection :execrows
+-- name: CreateCollection :exec
 INSERT INTO collections(id, user_id, title, description)
 SELECT
     $1, $2, $3, $4

@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"study-stack/internal/entities/app/users/internal/service"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type UpdateUserRequest struct {
@@ -20,93 +20,75 @@ type UpdatePasswordRequest struct {
 	New string `json:"new"`
 }
 
-func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) UpdateUser(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
 
-	req := UpdateUserRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+	req := new(UpdateUserRequest)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
 	if req.Name == nil && req.Email == nil && req.Password == nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
-	if req.Name != nil {
-		err := h.validate.Var(*req.Name, "min=2,max=64")
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			log.Println(err)
-			return
-		}
 
-		err = h.svc.UpdateUserName(r.Context(), service.UpdateNameParams{
+	// update name
+	if req.Name != nil {
+		if err := h.validate.Var(*req.Name, "min=2,max=64"); err != nil {
+			log.Println(err)
+			return appErrors.BadData
+		}
+		if err := h.svc.UpdateUserName(c.Context(), service.UpdateNameParams{
 			UserID:  userData.UserID,
 			NewName: *req.Name,
-		})
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}); err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 	}
 
-	// TODO: send correct status codes, not always 500
+	// update email
 	if req.Email != nil {
-		err := h.validate.Var(*req.Email, "email")
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+		if err := h.validate.Var(*req.Email, "email"); err != nil {
 			log.Println(err)
-			return
+			return appErrors.BadData
 		}
-
-		err = h.svc.UpdateUserEmail(r.Context(), service.UpdateEmailParams{
+		if err := h.svc.UpdateUserEmail(c.Context(), service.UpdateEmailParams{
 			UserID:   userData.UserID,
 			NewEmail: *req.Email,
-		})
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}); err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 	}
 
+	// update password
 	if req.Password != nil {
-		err := h.validate.Var(req.Password.New, "min=8")
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+		if err := h.validate.Var(req.Password.New, "min=8"); err != nil {
 			log.Println(err)
-			return
+			return appErrors.BadData
 		}
-		err = h.validate.Var(req.Password.Old, "min=8")
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
+		if err := h.validate.Var(req.Password.Old, "min=8"); err != nil {
 			log.Println(err)
-			return
+			return appErrors.BadData
 		}
 		if req.Password.New == req.Password.Old {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
 			log.Println(appErrors.NoChange)
-			return
+			return appErrors.BadData
 		}
-
-		err = h.svc.UpdateUserPassword(r.Context(), service.UpdatePasswordParams{
+		if err := h.svc.UpdateUserPassword(c.Context(), service.UpdatePasswordParams{
 			UserID:      userData.UserID,
 			NewPassword: req.Password.New,
 			OldPassword: req.Password.Old,
-		})
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}); err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.SendStatus(fiber.StatusOK)
 }

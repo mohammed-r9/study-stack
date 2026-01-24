@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"study-stack/internal/adapters/sqlc/repo"
-	appErrors "study-stack/internal/shared/app_errors"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +14,7 @@ type CreateCollectionParams struct {
 }
 
 func (s *Service) CreateCollection(ctx context.Context, params CreateCollectionParams) error {
-	rowsAffected, err := s.repo.CreateCollection(ctx, repo.CreateCollectionParams{
+	err := s.repo.CreateCollection(ctx, repo.CreateCollectionParams{
 		ID:          uuid.New(),
 		UserID:      params.UserID,
 		Title:       params.Title,
@@ -23,10 +22,6 @@ func (s *Service) CreateCollection(ctx context.Context, params CreateCollectionP
 	})
 	if err != nil {
 		return err
-	}
-
-	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
 	}
 
 	return nil

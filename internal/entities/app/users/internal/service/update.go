@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"study-stack/internal/adapters/sqlc/repo"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/password"
 
 	"github.com/google/uuid"
@@ -50,7 +51,7 @@ func (s *Service) UpdateUserPassword(ctx context.Context, params UpdatePasswordP
 	}
 	err = oldPassword.Matches(params.OldPassword)
 	if err != nil {
-		return err
+		return appErrors.Unauthorized
 	}
 
 	newPassword := password.Password{}

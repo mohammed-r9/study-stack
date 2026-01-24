@@ -15,11 +15,11 @@ func (s *Service) RefreshToken(ctx context.Context, refreshPlain, csrfPlain stri
 	}
 
 	if !stateful.CompareOpaqueTokens(refreshPlain, session.TokenHash) {
-		return "", appErrors.InvalidRefreshToken
+		return "", appErrors.Unauthorized
 	}
 
 	if !stateful.CompareOpaqueTokens(csrfPlain, session.CsrfHash) {
-		return "", appErrors.InvalidCsrfToken
+		return "", appErrors.Unauthorized
 	}
 
 	jwt, err := stateless.NewAcessToken(stateless.UserClaims{

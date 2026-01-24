@@ -13,7 +13,7 @@ import (
 type Querier interface {
 	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
 	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
-	CreateCollection(ctx context.Context, arg CreateCollectionParams) (int64, error)
+	CreateCollection(ctx context.Context, arg CreateCollectionParams) error
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
 	GetAllArchivedMaterialsInCollection(ctx context.Context, arg GetAllArchivedMaterialsInCollectionParams) ([]Material, error)
 	GetAllCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)

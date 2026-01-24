@@ -1,13 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"study-stack/internal/adapters/sqlc/repo"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -15,76 +14,68 @@ type getAllReq struct {
 	CollectionID uuid.UUID `json:"collection_id" validate:"required"`
 }
 
-func (h *Handler) GetAllMaterials(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) GetAllMaterials(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
-	req := getAllReq{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+
+	req := new(getAllReq)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
-	err := h.validate.Struct(req)
-	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+
+	if err := h.validate.Struct(req); err != nil {
 		log.Println(err)
-		return
+		return appErrors.BadData
 	}
 
-	filter := r.URL.Query().Get("archived")
+	filter := c.Query("archived")
 
-	materials := []repo.Material{}
+	var (
+		materials []repo.Material
+		err       error
+	)
+
 	switch filter {
 	case "true":
-		materials, err = h.svc.GetAllArchived(r.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAllArchived(c.Context(), userData.UserID, req.CollectionID)
 	case "false":
-		materials, err = h.svc.GetAllUnarchived(r.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAllUnarchived(c.Context(), userData.UserID, req.CollectionID)
 	case "":
-		materials, err = h.svc.GetAll(r.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAll(c.Context(), userData.UserID, req.CollectionID)
 	default:
-		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Println("invalid filter in materials")
-		return
+		return appErrors.BadData
 	}
 
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Println(err)
-		return
+		return err
 	}
 
-	if err := json.NewEncoder(w).Encode(materials); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-	}
+	return c.JSON(materials)
 }
 
-func (h *Handler) GetMaterialByID(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) GetMaterialByID(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
 
-	idStr := chi.URLParam(r, "id")
+	idStr := c.Params("id")
 	materialID, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		log.Println(err)
-		return
+		log.Printf("Error parsin material id: %v\n", err)
+		return appErrors.BadData
 	}
 
-	material, err := h.svc.GetByID(r.Context(), userData.UserID, materialID)
+	material, err := h.svc.GetByID(c.Context(), userData.UserID, materialID)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-		return
+		log.Printf("Error getting a material: %v\n", err)
+		return err
 	}
-	if err := json.NewEncoder(w).Encode(material); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-	}
+
+	return c.JSON(material)
 }

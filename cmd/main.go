@@ -7,7 +7,7 @@ import (
 	"study-stack/internal/db"
 	"study-stack/internal/shared/env"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -17,9 +17,11 @@ func main() {
 
 	env.LoadEnv("./.env")
 	app := application{
-		db:     db.NewDb(),
-		addr:   fmt.Sprintf(":%d", port),
-		router: chi.NewMux(),
+		db:   db.NewDb(),
+		addr: fmt.Sprintf(":%d", port),
+		router: fiber.New(fiber.Config{
+			ErrorHandler: FiberErrorHandler,
+		}),
 	}
 
 	app.mount()

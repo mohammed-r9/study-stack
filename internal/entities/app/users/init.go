@@ -7,13 +7,13 @@ import (
 	"study-stack/internal/shared/middleware"
 	"sync"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 var once sync.Once
 
-func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
+func Init(db *sql.DB, r *fiber.App, v *validator.Validate) {
 	once.Do(func() {
 		if r == nil {
 			log.Fatalln("Cannot init users layer with a nil router")
@@ -23,21 +23,18 @@ func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
 	})
 }
 
-func registerRoutes(r *chi.Mux, h *handler.Handler) {
-	r.Route("/auth", func(r chi.Router) {
-		r.Post("/register", h.Register)
-		r.Post("/login", h.Login)
-		r.Post("/refresh", h.RefreshToken)
-	})
+func registerRoutes(a *fiber.App, h *handler.Handler) {
 
-	r.Route("/users", func(r chi.Router) {
-		r.Post("/password/reset", h.RequestPasswordReset)
-		r.Get("/verify", h.VerifyEmail)
+	auth := a.Group("/auth")
+	auth.Post("/register", h.Register)
+	auth.Post("/login", h.Login)
+	auth.Post("/refresh", h.RefreshToken)
 
-		r.Group(func(r chi.Router) {
-			r.Use(middleware.Authenticate)
-			r.Get("/me", h.GetUserByID)
-			r.Patch("/", h.UpdateUser)
-		})
-	})
+	users := a.Group("/users")
+	users.Post("/password/reset", h.RequestPasswordReset)
+	users.Get("/verify", h.VerifyEmail)
+
+	protected := users.Group("/", middleware.Authenticate)
+	protected.Get("/me", h.GetUserByID)
+	protected.Patch("/", h.UpdateUser)
 }

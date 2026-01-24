@@ -1,38 +1,36 @@
 package utils
 
 import (
-	"context"
 	"fmt"
-	"net/http"
 	"study-stack/internal/entities/tokens/stateless"
 	"study-stack/internal/shared/consts"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/medama-io/go-useragent"
 )
 
-func SetRefreshCookie(w http.ResponseWriter, cookieValue string) {
-	http.SetCookie(w, &http.Cookie{
+func SetRefreshCookieFiber(c *fiber.Ctx, cookieValue string) {
+	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    cookieValue,
 		Path:     "/",
-		HttpOnly: true,
+		HTTPOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: "Strict",
 		MaxAge:   int(consts.TTL_REFRESH),
 	})
 }
 
-func SetCsrfCookie(w http.ResponseWriter, cookieValue string) {
-	http.SetCookie(w, &http.Cookie{
+func SetCsrfCookieFiber(c *fiber.Ctx, cookieValue string) {
+	c.Cookie(&fiber.Cookie{
 		Name:     "CSRF_token",
 		Value:    cookieValue,
 		Path:     "/",
-		HttpOnly: false,
+		HTTPOnly: false,
 		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: "Strict",
 		MaxAge:   int(consts.TTL_CSRF),
 	})
-
 }
 
 var ua = useragent.NewParser()
@@ -59,7 +57,8 @@ func GetDeviceNameFromUserAgent(userAgentStr string) string {
 	return fmt.Sprintf("%s for %s, %s", browser, device, os)
 }
 
-func DataFromContext(ctx context.Context) (stateless.UserClaims, bool) {
-	data, ok := ctx.Value(consts.UserDataContextKey).(stateless.UserClaims)
+// extracts user claims from Fiber locals
+func DataFromLocals(c *fiber.Ctx) (stateless.UserClaims, bool) {
+	data, ok := c.Locals(consts.UserDataContextKey).(stateless.UserClaims)
 	return data, ok
 }

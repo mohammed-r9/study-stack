@@ -1,50 +1,45 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"study-stack/internal/entities/app/users/internal/service"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type loginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8"` // maybe make this validation better? idk, it's a toy project after all
+	Password string `json:"password" validate:"required,min=8"`
 }
 
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(c *fiber.Ctx) error {
+	req := new(loginRequest)
 
-	req := loginRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
-	}
-	err := h.validate.Struct(req)
-	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Printf("invalid request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
-	tokens, err := h.svc.Login(r.Context(), service.LoginParams{
+	if err := h.validate.Struct(req); err != nil {
+		log.Printf("invalid request: %v\n", err)
+		return appErrors.BadData
+	}
+
+	tokens, err := h.svc.Login(c.Context(), service.LoginParams{
 		Email:       req.Email,
 		Password:    req.Password,
-		Device_name: utils.GetDeviceNameFromUserAgent(r.UserAgent()),
+		Device_name: utils.GetDeviceNameFromUserAgent(c.Get("User-Agent")),
 	})
-
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Printf("error logging in: %v\n", err)
-		return
+		return err
 	}
 
-	utils.SetRefreshCookie(w, tokens.Refresh)
-	utils.SetCsrfCookie(w, tokens.Csrf)
+	utils.SetRefreshCookieFiber(c, tokens.Refresh)
+	utils.SetCsrfCookieFiber(c, tokens.Csrf)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
+	return c.JSON(fiber.Map{
 		"access_token": tokens.Access,
 	})
 }

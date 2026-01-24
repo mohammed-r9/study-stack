@@ -1,78 +1,62 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"study-stack/internal/adapters/sqlc/repo"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-func (h *Handler) GetCollectionByID(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) GetCollectionByID(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
 
-	collectionID, err := uuid.Parse(chi.URLParam(r, "id"))
+	collectionID, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		http.Error(w, "bad Request", http.StatusBadRequest)
 		log.Println(err)
-		return
+		return appErrors.BadData
 	}
 
-	collection, err := h.svc.GetCollectionByID(r.Context(), userData.UserID, collectionID)
+	collection, err := h.svc.GetCollectionByID(c.Context(), userData.UserID, collectionID)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Println(err)
-		return
+		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(collection); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-	}
-
+	return c.JSON(collection)
 }
 
-func (h *Handler) GetCollections(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) GetCollections(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
 
-	archived := r.URL.Query().Get("archived")
-	collections := []repo.Collection{}
+	archived := c.Query("archived")
+	var collections []repo.Collection
 	var err error
 
-	w.Header().Set("Content-Type", "application/json")
 	switch archived {
 	case "":
-		collections, err = h.svc.GetAllCollections(r.Context(), userData.UserID)
+		collections, err = h.svc.GetAllCollections(c.Context(), userData.UserID)
 	case "true":
-		collections, err = h.svc.GetAllArchived(r.Context(), userData.UserID)
+		collections, err = h.svc.GetAllArchived(c.Context(), userData.UserID)
 	case "false":
-		collections, err = h.svc.GetAllUnarchived(r.Context(), userData.UserID)
+		collections, err = h.svc.GetAllUnarchived(c.Context(), userData.UserID)
 	default:
-		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Println("invalid filter in collections")
-		return
+		return appErrors.BadData
 	}
 
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Println(err)
-		return
+		return err
 	}
 
-	if err := json.NewEncoder(w).Encode(collections); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-	}
+	return c.JSON(collections)
 }
