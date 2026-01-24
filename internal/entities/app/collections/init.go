@@ -13,13 +13,13 @@ import (
 
 var once sync.Once
 
-func Init(db *sql.DB, app *fiber.App, v *validator.Validate) {
+func Init(db *sql.DB, a *fiber.App, v *validator.Validate) {
 	once.Do(func() {
-		if app == nil {
+		if a == nil {
 			log.Fatalln("Cannot init collections layer with a nil app")
 		}
 		h := handler.NewHandler(db, v)
-		registerRoutes(app, h)
+		registerRoutes(a, h)
 	})
 }
 

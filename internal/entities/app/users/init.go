@@ -13,13 +13,13 @@ import (
 
 var once sync.Once
 
-func Init(db *sql.DB, r *fiber.App, v *validator.Validate) {
+func Init(db *sql.DB, a *fiber.App, v *validator.Validate) {
 	once.Do(func() {
-		if r == nil {
+		if a == nil {
 			log.Fatalln("Cannot init users layer with a nil router")
 		}
 		h := handler.NewHandler(db, v)
-		registerRoutes(r, h)
+		registerRoutes(a, h)
 	})
 }
 
