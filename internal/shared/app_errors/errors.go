@@ -55,3 +55,56 @@ func (e DBError) Error() string {
 
 	return "Unknown Error"
 }
+
+type ServiceError uint8
+
+const (
+	// General / system errors
+	InternalError ServiceError = iota
+	NotImplemented
+	ServiceUnavailable
+
+	// Client / user errors
+	BadRequest
+	Unauthorized
+	Forbidden
+	NotFound
+	MethodNotAllowed
+	Conflict
+	TooManyRequests
+	ValidationFailed
+	InvalidCredentials
+)
+
+func (e ServiceError) Error() string {
+	switch e {
+	case InternalError:
+		return "service: internal error"
+	case NotImplemented:
+		return "service: not implemented"
+	case ServiceUnavailable:
+		return "service: unavailable"
+
+	case BadRequest:
+		return "service: bad request"
+	case Unauthorized:
+		return "service: unauthorized"
+	case Forbidden:
+		return "service: forbidden"
+	case NotFound:
+		return "service: not found"
+	case MethodNotAllowed:
+		return "service: method not allowed"
+	case Conflict:
+		return "service: conflict"
+	case TooManyRequests:
+		return "service: too many requests"
+	case ValidationFailed:
+		return "service: validation failed"
+	case InvalidCredentials:
+		return "service: invalid credentials"
+
+	default:
+		return "service: unknown error"
+	}
+}

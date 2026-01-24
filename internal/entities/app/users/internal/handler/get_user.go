@@ -1,27 +1,22 @@
 package handler
 
 import (
-	"encoding/json"
-	"net/http"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) GetUserByID(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadRequest
 	}
 
-	user, err := h.svc.GetUserByID(r.Context(), userData.UserID)
+	user, err := h.svc.GetUserByID(c.Context(), userData.UserID)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
+		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-	}
+	return c.JSON(user)
 }

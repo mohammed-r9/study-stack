@@ -1,31 +1,31 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
+	appErrors "study-stack/internal/shared/app_errors"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type request struct {
 	Email string `json:"email"`
 }
 
-func (h *Handler) RequestPasswordReset(w http.ResponseWriter, r *http.Request) {
-	req := request{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+func (h *Handler) RequestPasswordReset(c *fiber.Ctx) error {
+	req := new(request)
+
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadRequest
 	}
-	token, err := h.svc.RequestPasswordReset(r.Context(), req.Email)
+
+	token, err := h.svc.RequestPasswordReset(c.Context(), req.Email)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Printf("error generating password reset token: %v\n", err)
-		return
+		return err
 	}
-	_ = token
-	// need to send the token on the email later
 
-	w.WriteHeader(http.StatusOK)
+	_ = token // send email later
 
+	return c.SendStatus(fiber.StatusOK)
 }

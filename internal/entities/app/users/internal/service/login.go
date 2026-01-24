@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"study-stack/internal/adapters/sqlc/repo"
 	"study-stack/internal/entities/tokens/stateful"
 	"study-stack/internal/entities/tokens/stateless"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/password"
 
 	"github.com/google/uuid"
@@ -24,6 +26,9 @@ type loginTokens struct {
 
 func (s *Service) Login(ctx context.Context, params LoginParams) (loginTokens, error) {
 	user, err := s.repo.GetUserByEmail(ctx, params.Email)
+	if err == sql.ErrNoRows {
+		return loginTokens{}, appErrors.InvalidCredentials
+	}
 	if err != nil {
 		return loginTokens{}, err
 	}
@@ -35,7 +40,7 @@ func (s *Service) Login(ctx context.Context, params LoginParams) (loginTokens, e
 
 	err = password.Matches(params.Password)
 	if err != nil {
-		return loginTokens{}, err
+		return loginTokens{}, appErrors.InvalidCredentials
 	}
 
 	refreshToken, err := stateful.NewRefreshToken()

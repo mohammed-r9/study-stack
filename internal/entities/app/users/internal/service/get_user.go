@@ -10,7 +10,8 @@ import (
 
 func (s *Service) GetUserByID(ctx context.Context, userID uuid.UUID) (repo.GetUserByIDRow, error) {
 	if userID == uuid.Nil {
-		return repo.GetUserByIDRow{}, appErrors.InvalidUserID
+		return repo.GetUserByIDRow{}, appErrors.BadRequest
 	}
 	return s.repo.GetUserByID(ctx, userID)
+
 }

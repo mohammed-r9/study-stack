@@ -1,36 +1,33 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
+
+	appErrors "study-stack/internal/shared/app_errors"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	refreshCookie, err := r.Cookie("refresh_token")
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println(err.Error())
-		return
+func (h *Handler) RefreshToken(c *fiber.Ctx) error {
+	refreshToken := c.Cookies("refresh_token")
+	if refreshToken == "" {
+		log.Println("no refresh cookie present")
+		return appErrors.Unauthorized
 	}
 
-	csrf := r.Header.Get("X-CSRF-Token")
+	csrf := c.Get("X-CSRF-Token")
 	if csrf == "" {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		log.Println("no csrf present")
-		return
+		log.Println("no CSRF token present")
+		return appErrors.Unauthorized
 	}
 
-	accessToken, err := h.svc.RefreshToken(r.Context(), refreshCookie.Value, csrf)
+	accessToken, err := h.svc.RefreshToken(c.Context(), refreshToken, csrf)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		log.Printf("Error generating the jwt: %v\n", err)
-		return
+		log.Printf("error generating the jwt: %v\n", err)
+		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
+	return c.JSON(fiber.Map{
 		"access_token": accessToken,
 	})
-
 }

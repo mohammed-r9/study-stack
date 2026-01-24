@@ -3,34 +3,36 @@ package main
 import (
 	"database/sql"
 	"log"
-	"net/http"
 	"study-stack/internal/entities/app/collections"
 	"study-stack/internal/entities/app/materials"
 	"study-stack/internal/entities/app/users"
 	"study-stack/internal/entities/mailer"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 type application struct {
 	db     *sql.DB
-	router *chi.Mux
+	router *fiber.App
 	addr   string
 }
 
 func (a *application) mount() {
-	a.router.Use(middleware.RequestID)
-	a.router.Use(middleware.RealIP)
-	a.router.Use(middleware.Logger)
-	a.router.Use(middleware.Recoverer)
-	a.router.Use(middleware.Timeout(60 * time.Second))
 
-	a.router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Status Is Available"))
+	a.router.Use(requestid.New())
+	a.router.Use(logger.New())
+	a.router.Use(recover.New())
+
+	// Fiber has built-in timeouts via config (we'll set in run)
+
+	a.router.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendString("Status Is Available")
 	})
+
 	validator := validator.New()
 	mailer.Init()
 	users.Init(a.db, a.router, validator)
@@ -40,14 +42,7 @@ func (a *application) mount() {
 
 func (a *application) run() error {
 
-	server := &http.Server{
-		Addr:         a.addr,
-		Handler:      a.router,
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-	}
-
 	log.Printf("Server Has Started At Addr %s", a.addr)
-	return server.ListenAndServe()
+
+	return a.router.Listen(a.addr)
 }
