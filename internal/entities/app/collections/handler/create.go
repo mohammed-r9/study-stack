@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"study-stack/internal/entities/app/collections/service"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type createReq struct {
@@ -13,34 +14,31 @@ type createReq struct {
 	Description string `json:"description" validate:"required"`
 }
 
-func (h *Handler) CreateCollection(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) CreateCollection(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
-	req := createReq{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+
+	req := new(createReq)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
-	err := h.validate.Struct(req)
-	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+
+	if err := h.validate.Struct(req); err != nil {
 		log.Printf("invalid request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
-	err = h.svc.CreateCollection(r.Context(), service.CreateCollectionParams{
+
+	if err := h.svc.CreateCollection(c.Context(), service.CreateCollectionParams{
 		UserID:     userData.UserID,
 		Title:      req.Title,
 		Desription: req.Description,
-	})
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}); err != nil {
 		log.Printf("error while creating collection: %v\n", err)
-		return
+		return err
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.SendStatus(fiber.StatusOK)
 }

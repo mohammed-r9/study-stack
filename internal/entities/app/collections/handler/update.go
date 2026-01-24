@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -16,46 +15,44 @@ type updateReq struct {
 	Description *string `json:"description"`
 }
 
-func (h *Handler) UpdateCollection(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) UpdateCollection(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-	req := updateReq{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
-	collectionID, err := uuid.Parse(chi.URLParam(r, "id"))
+	req := new(updateReq)
+	if err := c.BodyParser(req); err != nil {
+		log.Printf("error decoding request: %v\n", err)
+		return appErrors.BadData
+	}
+
+	collectionID, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("error parsing collection id: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
 	if req.Title != nil {
-		err = h.svc.UpdateTitle(r.Context(), collectionID, userData.UserID, *req.Title)
-		return
+		if err := h.svc.UpdateTitle(c.Context(), collectionID, userData.UserID, *req.Title); err != nil {
+			log.Printf("error updating title: %v\n", err)
+			return err
+		}
 	}
 
 	if req.Description != nil {
-		err = h.svc.UpdateDescription(r.Context(), collectionID, userData.UserID, *req.Description)
-		return
+		if err := h.svc.UpdateDescription(c.Context(), collectionID, userData.UserID, *req.Description); err != nil {
+			log.Printf("error updating description: %v\n", err)
+			return err
+		}
 	}
 
 	if req.ToArchive != nil {
-		err = h.svc.UpdateIsArchived(r.Context(), collectionID, userData.UserID, *req.ToArchive)
+		if err := h.svc.UpdateIsArchived(c.Context(), collectionID, userData.UserID, *req.ToArchive); err != nil {
+			log.Printf("error updating archive status: %v\n", err)
+			return err
+		}
 	}
 
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Printf("error updating collection: %v\n", err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
+	return c.SendStatus(fiber.StatusOK)
 }

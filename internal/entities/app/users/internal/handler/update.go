@@ -23,24 +23,24 @@ type UpdatePasswordRequest struct {
 func (h *Handler) UpdateUser(c *fiber.Ctx) error {
 	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	req := new(UpdateUserRequest)
 	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	if req.Name == nil && req.Email == nil && req.Password == nil {
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	// update name
 	if req.Name != nil {
 		if err := h.validate.Var(*req.Name, "min=2,max=64"); err != nil {
 			log.Println(err)
-			return appErrors.BadRequest
+			return appErrors.BadData
 		}
 		if err := h.svc.UpdateUserName(c.Context(), service.UpdateNameParams{
 			UserID:  userData.UserID,
@@ -55,7 +55,7 @@ func (h *Handler) UpdateUser(c *fiber.Ctx) error {
 	if req.Email != nil {
 		if err := h.validate.Var(*req.Email, "email"); err != nil {
 			log.Println(err)
-			return appErrors.BadRequest
+			return appErrors.BadData
 		}
 		if err := h.svc.UpdateUserEmail(c.Context(), service.UpdateEmailParams{
 			UserID:   userData.UserID,
@@ -70,15 +70,15 @@ func (h *Handler) UpdateUser(c *fiber.Ctx) error {
 	if req.Password != nil {
 		if err := h.validate.Var(req.Password.New, "min=8"); err != nil {
 			log.Println(err)
-			return appErrors.BadRequest
+			return appErrors.BadData
 		}
 		if err := h.validate.Var(req.Password.Old, "min=8"); err != nil {
 			log.Println(err)
-			return appErrors.BadRequest
+			return appErrors.BadData
 		}
 		if req.Password.New == req.Password.Old {
 			log.Println(appErrors.NoChange)
-			return appErrors.BadRequest
+			return appErrors.BadData
 		}
 		if err := h.svc.UpdateUserPassword(c.Context(), service.UpdatePasswordParams{
 			UserID:      userData.UserID,

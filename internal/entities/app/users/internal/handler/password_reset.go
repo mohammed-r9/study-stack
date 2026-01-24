@@ -16,7 +16,7 @@ func (h *Handler) RequestPasswordReset(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	token, err := h.svc.RequestPasswordReset(c.Context(), req.Email)

@@ -10,7 +10,7 @@ import (
 func (h *Handler) GetUserByID(c *fiber.Ctx) error {
 	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	user, err := h.svc.GetUserByID(c.Context(), userData.UserID)

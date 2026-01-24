@@ -65,7 +65,7 @@ const (
 	ServiceUnavailable
 
 	// Client / user errors
-	BadRequest
+	BadData
 	Unauthorized
 	Forbidden
 	NotFound
@@ -85,7 +85,7 @@ func (e ServiceError) Error() string {
 	case ServiceUnavailable:
 		return "service: unavailable"
 
-	case BadRequest:
+	case BadData:
 		return "service: bad request"
 	case Unauthorized:
 		return "service: unauthorized"

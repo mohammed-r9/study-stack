@@ -15,7 +15,7 @@ func (s *Service) UpdateMaterialTitle(ctx context.Context, newTitle string, mate
 		UserID: userID,
 	})
 	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
+		return appErrors.NotFound
 	}
 	return err
 }
@@ -30,7 +30,7 @@ func (s *Service) UpdateMaterialArchivedAt(ctx context.Context, val bool, materi
 		})
 
 		if rowsAffected == 0 {
-			return appErrors.NoRowsAffected
+			return appErrors.NotFound
 		}
 		return err
 	}
@@ -41,7 +41,7 @@ func (s *Service) UpdateMaterialArchivedAt(ctx context.Context, val bool, materi
 	})
 
 	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
+		return appErrors.NotFound
 	}
 	return err
 

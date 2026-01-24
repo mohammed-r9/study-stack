@@ -19,7 +19,7 @@ func (s *Service) UpdateIsArchived(ctx context.Context, collectionID, userID uui
 			return err
 		}
 		if rowsAffected == 0 {
-			return appErrors.NoRowsAffected
+			return appErrors.NotFound
 		}
 	}
 
@@ -31,7 +31,7 @@ func (s *Service) UpdateIsArchived(ctx context.Context, collectionID, userID uui
 		return err
 	}
 	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
+		return appErrors.NotFound
 	}
 
 	return nil
@@ -39,7 +39,7 @@ func (s *Service) UpdateIsArchived(ctx context.Context, collectionID, userID uui
 
 func (s *Service) UpdateTitle(ctx context.Context, collectionID, userID uuid.UUID, title string) error {
 	if len(title) < 3 {
-		return appErrors.InvalidData
+		return appErrors.BadData
 	}
 
 	rowsAffected, err := s.repo.UpdateCollectionTitle(ctx, repo.UpdateCollectionTitleParams{
@@ -52,7 +52,7 @@ func (s *Service) UpdateTitle(ctx context.Context, collectionID, userID uuid.UUI
 		return err
 	}
 	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
+		return appErrors.NotFound
 	}
 	return nil
 
@@ -60,7 +60,7 @@ func (s *Service) UpdateTitle(ctx context.Context, collectionID, userID uuid.UUI
 
 func (s *Service) UpdateDescription(ctx context.Context, collectionID, userID uuid.UUID, desc string) error {
 	if len(desc) < 3 {
-		return appErrors.InvalidData
+		return appErrors.BadData
 	}
 
 	rowsAffected, err := s.repo.UpdateCollectionDescription(ctx, repo.UpdateCollectionDescriptionParams{
@@ -74,7 +74,7 @@ func (s *Service) UpdateDescription(ctx context.Context, collectionID, userID uu
 	}
 
 	if rowsAffected == 0 {
-		return appErrors.NoRowsAffected
+		return appErrors.NotFound
 	}
 	return nil
 

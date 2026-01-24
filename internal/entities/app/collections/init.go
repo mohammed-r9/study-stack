@@ -7,28 +7,26 @@ import (
 	"study-stack/internal/shared/middleware"
 	"sync"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 var once sync.Once
 
-func Init(db *sql.DB, r *chi.Mux, v *validator.Validate) {
+func Init(db *sql.DB, app *fiber.App, v *validator.Validate) {
 	once.Do(func() {
-		if r == nil {
-			log.Fatalln("Cannot init collections layer with a nil router")
+		if app == nil {
+			log.Fatalln("Cannot init collections layer with a nil app")
 		}
 		h := handler.NewHandler(db, v)
-		registerRoutes(r, h)
+		registerRoutes(app, h)
 	})
 }
 
-func registerRoutes(r *chi.Mux, h *handler.Handler) {
-	r.Route("/collections", func(r chi.Router) {
-		r.Use(middleware.Authenticate)
-		r.Get("/", h.GetCollections)
-		r.Get("/{id}", h.GetCollectionByID)
-		r.Post("/", h.CreateCollection)
-		r.Patch("/{id}", h.UpdateCollection)
-	})
+func registerRoutes(a *fiber.App, h *handler.Handler) {
+	collections := a.Group("/collections", middleware.Authenticate)
+	collections.Get("/", h.GetCollections)
+	collections.Get("/:id", h.GetCollectionByID)
+	collections.Post("/", h.CreateCollection)
+	collections.Patch("/:id", h.UpdateCollection)
 }

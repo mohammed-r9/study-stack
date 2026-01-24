@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -15,40 +14,36 @@ type updateReq struct {
 	Title     *string `json:"title"`
 }
 
-func (h *Handler) UpdateMaterial(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) UpdateMaterial(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
 
-	req := updateReq{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+	req := new(updateReq)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
-	materialID, err := uuid.Parse(chi.URLParam(r, "id"))
+	materialID, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
 		log.Printf("error parsing material id: %v\n", err)
-		return
+		return appErrors.BadData
 	}
 
 	if req.Title != nil {
-		err = h.svc.UpdateMaterialTitle(r.Context(), *req.Title, materialID, userData.UserID)
+		err = h.svc.UpdateMaterialTitle(c.Context(), *req.Title, materialID, userData.UserID)
 	}
 
 	if req.ToArchive != nil {
-		err = h.svc.UpdateMaterialArchivedAt(r.Context(), *req.ToArchive, materialID, userData.UserID)
+		err = h.svc.UpdateMaterialArchivedAt(c.Context(), *req.ToArchive, materialID, userData.UserID)
 	}
 
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		log.Printf("Error updating material: %v", err)
-		return
+		return err
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.SendStatus(fiber.StatusOK)
 }

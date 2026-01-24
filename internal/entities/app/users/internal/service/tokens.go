@@ -36,7 +36,7 @@ func (s *Service) RequestPasswordReset(ctx context.Context, email string) (strin
 
 func (s *Service) NewEmailVerificationToken(ctx context.Context, userID uuid.UUID) (string, error) {
 	if userID == uuid.Nil {
-		return "", appErrors.BadRequest
+		return "", appErrors.BadData
 	}
 
 	token, err := stateful.NewOpaqueToken(userID, stateful.EmailVerification)

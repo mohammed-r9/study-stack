@@ -23,14 +23,14 @@ func Init(db *sql.DB, r *fiber.App, v *validator.Validate) {
 	})
 }
 
-func registerRoutes(r *fiber.App, h *handler.Handler) {
+func registerRoutes(a *fiber.App, h *handler.Handler) {
 
-	auth := r.Group("/auth")
+	auth := a.Group("/auth")
 	auth.Post("/register", h.Register)
 	auth.Post("/login", h.Login)
 	auth.Post("/refresh", h.RefreshToken)
 
-	users := r.Group("/users")
+	users := a.Group("/users")
 	users.Post("/password/reset", h.RequestPasswordReset)
 	users.Get("/verify", h.VerifyEmail)
 

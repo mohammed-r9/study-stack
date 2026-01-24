@@ -9,7 +9,7 @@ import (
 
 func (s *Service) VerifyEmail(ctx context.Context, token string) error {
 	if token == "" {
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	tokenHash := stateful.HashFromPlainText(token)

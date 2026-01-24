@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
+	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -14,31 +14,27 @@ type materialCreationReq struct {
 	Title        string    `json:"title" validate:"required,min=4"`
 }
 
-func (h *Handler) InsertMaterial(w http.ResponseWriter, r *http.Request) {
-	userData, ok := utils.DataFromContext(r.Context())
+func (h *Handler) InsertMaterial(c *fiber.Ctx) error {
+	userData, ok := utils.DataFromLocals(c)
 	if !ok {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
+		return appErrors.BadData
 	}
-	req := materialCreationReq{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+
+	req := new(materialCreationReq)
+	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return
-	}
-	err := h.validate.Struct(req)
-	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		log.Println(err)
-		return
+		return appErrors.BadData
 	}
 
-	err = h.svc.InsertMaterial(r.Context(), req.Title, userData.UserID, req.CollectionID)
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		log.Println(err)
-		return
+	if err := h.validate.Struct(req); err != nil {
+		log.Printf("error decoding stuct: %v\n", err)
+		return appErrors.BadData
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	if err := h.svc.InsertMaterial(c.Context(), req.Title, userData.UserID, req.CollectionID); err != nil {
+		log.Printf("error inseting material: %v\n", err)
+		return err
+	}
+
+	return c.SendStatus(fiber.StatusCreated)
 }

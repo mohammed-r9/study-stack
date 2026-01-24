@@ -27,8 +27,6 @@ func (a *application) mount() {
 	a.router.Use(logger.New())
 	a.router.Use(recover.New())
 
-	// Fiber has built-in timeouts via config (we'll set in run)
-
 	a.router.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("Status Is Available")
 	})

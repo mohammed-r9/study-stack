@@ -20,12 +20,12 @@ func (h *Handler) Register(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(req); err != nil {
 		log.Printf("error decoding request: %v\n", err)
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	if err := h.validate.Struct(req); err != nil {
 		log.Printf("invalid request: %v\n", err)
-		return appErrors.BadRequest
+		return appErrors.BadData
 	}
 
 	token, err := h.svc.RegisterUser(c.Context(), service.RegisterParams{
