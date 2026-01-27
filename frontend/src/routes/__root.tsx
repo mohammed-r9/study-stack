@@ -1,21 +1,25 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import {
+  Outlet,
+  createRootRouteWithContext,
+  redirect,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-
-import Header from '../components/Header'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import type { QueryClient } from '@tanstack/react-query'
+import type { AuthContext } from '@/lib/context/auth'
+import { authLoader } from '@/lib/auth-loader'
 
-interface MyRouterContext {
+export interface MyRouterContext {
   queryClient: QueryClient
+  auth: AuthContext
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
-      <Header />
       <Outlet />
       <TanStackDevtools
         config={{
@@ -31,4 +35,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       />
     </>
   ),
+  loader: async ({ context }) => {
+    await authLoader(context)
+    if (
+      !context.auth.isAuthenticated &&
+      !window.location.pathname.startsWith('/auth')
+    )
+      throw redirect({ to: '/auth', replace: true })
+  },
 })

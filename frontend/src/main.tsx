@@ -9,6 +9,8 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
+import { authContext } from './lib/context/auth.ts'
+import { queryClient } from './lib/query-client.ts'
 
 // Create a new router instance
 
@@ -16,13 +18,15 @@ const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
   routeTree,
   context: {
-    ...TanStackQueryProviderContext,
+    auth: authContext,
+    queryClient: queryClient,
   },
   defaultPreload: 'intent',
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
 })
+authContext.invalidate = () => router.invalidate()
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
