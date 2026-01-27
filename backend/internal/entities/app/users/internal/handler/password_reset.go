@@ -29,3 +29,25 @@ func (h *Handler) RequestPasswordReset(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusOK)
 }
+
+type confirmReq struct {
+	NewPassword string `json:"new_password"`
+	Token       string `json:"token"`
+}
+
+func (h *Handler) ConfirmPasswordReset(c *fiber.Ctx) error {
+	req := new(confirmReq)
+
+	if err := c.BodyParser(req); err != nil {
+		log.Printf("error decoding request: %v\n", err)
+		return appErrors.BadData
+	}
+
+	err := h.svc.ConfirmPasswordReset(c.Context(), req.Token, req.NewPassword)
+	if err != nil {
+		log.Printf("error resetting password: %v\n", err)
+		return err
+	}
+
+	return c.SendStatus(fiber.StatusOK)
+}

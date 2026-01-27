@@ -102,7 +102,7 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) error {
 	return err
 }
 
-const updateUserEmail = `-- name: UpdateUserEmail :exec
+const updateUserEmail = `-- name: UpdateUserEmail :execrows
 UPDATE users
 SET email = $1,
     updated_at = CURRENT_TIMESTAMP
@@ -114,12 +114,15 @@ type UpdateUserEmailParams struct {
 	ID    uuid.UUID `json:"id"`
 }
 
-func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserEmail, arg.Email, arg.ID)
-	return err
+func (q *Queries) UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateUserEmail, arg.Email, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserName = `-- name: UpdateUserName :exec
+const updateUserName = `-- name: UpdateUserName :execrows
 UPDATE users
 SET name = $1
 WHERE id = $2
@@ -130,12 +133,15 @@ type UpdateUserNameParams struct {
 	ID   uuid.UUID `json:"id"`
 }
 
-func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserName, arg.Name, arg.ID)
-	return err
+func (q *Queries) UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateUserName, arg.Name, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserPassword = `-- name: UpdateUserPassword :exec
+const updateUserPassword = `-- name: UpdateUserPassword :execrows
 UPDATE users
 SET password_hash = $1, salt = $2,
     updated_at = CURRENT_TIMESTAMP
@@ -148,19 +154,25 @@ type UpdateUserPasswordParams struct {
 	ID           uuid.UUID `json:"id"`
 }
 
-func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.PasswordHash, arg.Salt, arg.ID)
-	return err
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateUserPassword, arg.PasswordHash, arg.Salt, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const verifyUserEmail = `-- name: verifyUserEmail :exec
+const verifyUserEmail = `-- name: verifyUserEmail :execrows
 UPDATE users
 SET verified_at = CURRENT_TIMESTAMP,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 `
 
-func (q *Queries) verifyUserEmail(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, verifyUserEmail, id)
-	return err
+func (q *Queries) verifyUserEmail(ctx context.Context, id uuid.UUID) (int64, error) {
+	result, err := q.db.ExecContext(ctx, verifyUserEmail, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

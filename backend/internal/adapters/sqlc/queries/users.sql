@@ -12,24 +12,24 @@ WHERE email = $1;
 INSERT INTO users (id, name, email, password_hash, salt)
 VALUES ($1, $2, $3, $4, $5);
 
--- name: UpdateUserName :exec
+-- name: UpdateUserName :execrows
 UPDATE users
 SET name = $1
 WHERE id = $2;
 
--- name: UpdateUserEmail :exec
+-- name: UpdateUserEmail :execrows
 UPDATE users
 SET email = $1,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $2;
 
--- name: UpdateUserPassword :exec
+-- name: UpdateUserPassword :execrows
 UPDATE users
 SET password_hash = $1, salt = $2,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $3;
 
--- name: verifyUserEmail :exec
+-- name: verifyUserEmail :execrows
 UPDATE users
 SET verified_at = CURRENT_TIMESTAMP,
     updated_at = CURRENT_TIMESTAMP

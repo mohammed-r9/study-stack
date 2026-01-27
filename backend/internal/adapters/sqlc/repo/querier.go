@@ -38,11 +38,11 @@ type Querier interface {
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error)
 	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error)
-	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) error
-	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) error
-	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
+	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (int64, error)
+	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (int64, error)
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (int64, error)
 	UseToken(ctx context.Context, hash string) (int64, error)
-	verifyUserEmail(ctx context.Context, id uuid.UUID) error
+	verifyUserEmail(ctx context.Context, id uuid.UUID) (int64, error)
 }
 
 var _ Querier = (*Queries)(nil)

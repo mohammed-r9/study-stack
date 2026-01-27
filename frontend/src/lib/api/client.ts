@@ -18,15 +18,15 @@ class HttpClient {
 
         // interceptors
         // store the jwt on success
-        this.api.interceptors.response.use((response) => {
-            if (response.config.url?.endsWith("refresh")) {
-                const token = response.data.access_token
-                if (token) useAuthStore.getState().setAccessToken(token)
-            }
-            return response
-        },
-            (error) => Promise.reject(error)
-        )
+        // this.api.interceptors.response.use((response) => {
+        //     if (response.config.url?.endsWith("refresh")) {
+        //         const token = response.data.access_token
+        //         if (token) useAuthStore.getState().setAccessToken(token)
+        //     }
+        //     return response
+        // },
+        //     (error) => Promise.reject(error)
+        // )
         // attach the token
         this.api.interceptors.request.use(
             (config) => {

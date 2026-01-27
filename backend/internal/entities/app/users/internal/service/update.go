@@ -26,18 +26,36 @@ type UpdatePasswordParams struct {
 }
 
 func (s *Service) UpdateUserName(ctx context.Context, params UpdateNameParams) error {
-	return s.repo.UpdateUserName(ctx, repo.UpdateUserNameParams{
+	rowsAffected, err := s.repo.UpdateUserName(ctx, repo.UpdateUserNameParams{
 		ID:   params.UserID,
 		Name: params.NewName,
 	})
 
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return appErrors.NotFound
+	}
+
+	return nil
+
 }
 
 func (s *Service) UpdateUserEmail(ctx context.Context, params UpdateEmailParams) error {
-	return s.repo.UpdateUserEmail(ctx, repo.UpdateUserEmailParams{
+	rowsAffected, err := s.repo.UpdateUserEmail(ctx, repo.UpdateUserEmailParams{
 		ID:    params.UserID,
 		Email: params.NewEmail,
 	})
+
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return appErrors.NotFound
+	}
+	return nil
 }
 
 func (s *Service) UpdateUserPassword(ctx context.Context, params UpdatePasswordParams) error {
@@ -60,11 +78,18 @@ func (s *Service) UpdateUserPassword(ctx context.Context, params UpdatePasswordP
 		return err
 	}
 
-	err = s.repo.UpdateUserPassword(ctx, repo.UpdateUserPasswordParams{
+	rowsAffected, err := s.repo.UpdateUserPassword(ctx, repo.UpdateUserPasswordParams{
 		PasswordHash: newPassword.Hash,
 		Salt:         newPassword.Salt,
 		ID:           params.UserID,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	if rowsAffected == 0 {
+		return appErrors.NotFound
+	}
+
+	return nil
 }
