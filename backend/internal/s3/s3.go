@@ -33,8 +33,8 @@ func NewStorage(bucket string) Storage {
 
 func (s *s3Storage) Upload(ctx context.Context, key string, data []byte) error {
 	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      &s.bucket,
-		Key:         &key,
+		Bucket:      aws.String(s.bucket),
+		Key:         aws.String(key),
 		Body:        bytes.NewReader(data),
 		ContentType: aws.String("application/pdf"),
 	})
@@ -44,8 +44,8 @@ func (s *s3Storage) Upload(ctx context.Context, key string, data []byte) error {
 func (s *s3Storage) GetURL(ctx context.Context, key string) (string, error) {
 	presignClient := s3.NewPresignClient(s.client)
 	req, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
-		Bucket: &s.bucket,
-		Key:    &key,
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
 	})
 	if err != nil {
 		return "", err
@@ -55,8 +55,8 @@ func (s *s3Storage) GetURL(ctx context.Context, key string) (string, error) {
 
 func (s *s3Storage) Delete(ctx context.Context, key string) error {
 	_, err := s.client.DeleteObject(ctx, &s3.DeleteObjectInput{
-		Bucket: &s.bucket,
-		Key:    &key,
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
 	})
 	return err
 }
