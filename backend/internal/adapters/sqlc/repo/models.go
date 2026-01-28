@@ -20,6 +20,17 @@ type Collection struct {
 	ArchivedAt  *time.Time `json:"archived_at"`
 }
 
+type Lecture struct {
+	ID         uuid.UUID  `json:"id"`
+	MaterialID uuid.UUID  `json:"material_id"`
+	Title      string     `json:"title"`
+	FileKey    string     `json:"file_key"`
+	FileSize   int64      `json:"file_size"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	ArchivedAt *time.Time `json:"archived_at"`
+}
+
 type Material struct {
 	ID           uuid.UUID  `json:"id"`
 	CollectionID uuid.UUID  `json:"collection_id"`

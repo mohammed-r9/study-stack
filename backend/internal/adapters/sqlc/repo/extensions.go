@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	appErrors "study-stack/internal/shared/app_errors"
 
 	"github.com/google/uuid"
 )
@@ -16,9 +17,13 @@ func (q *Queries) VerifyUser(ctx context.Context, db *sql.DB, userID uuid.UUID, 
 
 	qtx := q.WithTx(tx)
 
-	err = qtx.verifyUserEmail(ctx, userID)
+	rowsAffected, err := qtx.verifyUserEmail(ctx, userID)
+
 	if err != nil {
 		return err
+	}
+	if rowsAffected == 0 {
+		return appErrors.NotFound
 	}
 
 	_, err = qtx.UseToken(ctx, tokenHash)

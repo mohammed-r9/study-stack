@@ -1,0 +1,62 @@
+package S3
+
+import (
+	"bytes"
+	"context"
+	"study-stack/internal/shared/env"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+)
+
+type s3Storage struct {
+	client *s3.Client
+	bucket string
+}
+
+func NewStorage(bucket string) Storage {
+	cfg := aws.Config{
+		Region:      "us-east-1",
+		Credentials: credentials.NewStaticCredentialsProvider(env.Config.S3_KEY, env.Config.S3_SECRET, ""),
+	}
+
+	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(env.Config.S3_URL)
+	})
+
+	return &s3Storage{
+		client: client,
+		bucket: bucket,
+	}
+}
+
+func (s *s3Storage) Upload(ctx context.Context, key string, data []byte) error {
+	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      &s.bucket,
+		Key:         &key,
+		Body:        bytes.NewReader(data),
+		ContentType: aws.String("application/pdf"),
+	})
+	return err
+}
+
+func (s *s3Storage) GetURL(ctx context.Context, key string) (string, error) {
+	presignClient := s3.NewPresignClient(s.client)
+	req, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+		Bucket: &s.bucket,
+		Key:    &key,
+	})
+	if err != nil {
+		return "", err
+	}
+	return req.URL, nil
+}
+
+func (s *s3Storage) Delete(ctx context.Context, key string) error {
+	_, err := s.client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: &s.bucket,
+		Key:    &key,
+	})
+	return err
+}

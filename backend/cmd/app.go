@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"log"
 	"study-stack/internal/entities/app/collections"
+	"study-stack/internal/entities/app/lectures"
 	"study-stack/internal/entities/app/materials"
 	"study-stack/internal/entities/app/users"
 	"study-stack/internal/entities/mailer"
+	S3 "study-stack/internal/s3"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -32,10 +34,12 @@ func (a *application) mount() {
 	})
 
 	validator := validator.New()
+	appS3Bucket := S3.NewStorage("app-bucket")
 	mailer.Init()
 	users.Init(a.db, a.router, validator)
 	collections.Init(a.db, a.router, validator)
 	materials.Init(a.db, a.router, validator)
+	lectures.Init(a.db, a.router, validator, appS3Bucket)
 }
 
 func (a *application) run() error {

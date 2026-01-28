@@ -19,6 +19,10 @@ func LoadEnv(path string) {
 		RESEND_API_KEY:      mustGetEnv("RESEND_API_KEY"),
 		BACKEND_URL:         mustGetEnv("BACKEND_URL"),
 		FRONTEND_URL:        mustGetEnv("FRONTEND_URL"),
+		S3_KEY:              mustGetEnv("S3_KEY"),
+		S3_SECRET:           mustGetEnv("S3_SECRET"),
+		S3_SESSION:          mustGetEnv("S3_SESSION"),
+		S3_URL:              mustGetEnv("S3_URL"),
 
 		JWT_KEY: []byte(mustGetEnv("JWT_KEY")),
 	}
@@ -39,4 +43,8 @@ type envConfig struct {
 	RESEND_API_KEY string
 	BACKEND_URL    string
 	FRONTEND_URL   string
+	S3_KEY         string
+	S3_SECRET      string
+	S3_SESSION     string
+	S3_URL         string
 }

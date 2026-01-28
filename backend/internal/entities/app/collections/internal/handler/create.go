@@ -2,7 +2,7 @@ package handler
 
 import (
 	"log"
-	"study-stack/internal/entities/app/collections/service"
+	"study-stack/internal/entities/app/collections/internal/service"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
