@@ -12,33 +12,28 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarProvider,
+  SidebarHeader,
 } from '@/components/ui/sidebar'
-import {
-  Award,
-  Book,
-  BookOpen,
-  Clipboard,
-  Folder,
-  FolderOpen,
-} from 'lucide-react'
+import { BookOpen, Folder, FolderOpen } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { Separator } from '../ui/separator'
 
 const collections = [
   {
     id: 'collection-1',
     name: 'Collection 1',
     materials: [
-      { id: 'material-1', name: 'Material 1' },
-      { id: 'material-2', name: 'Material 2' },
-      { id: 'material-3', name: 'Material 3' },
+      { id: '7d36b776-21fb-4a90-8896-fb4555228567', name: 'Material 1' },
+      { id: 'dd666607-400d-4d75-bcac-fedeab413954', name: 'Material 2' },
+      { id: 'f0ffef38-6453-411a-b3cf-46ea029646d4', name: 'Material 3' },
     ],
   },
   {
     id: 'collection-2',
     name: 'Collection 2',
     materials: [
-      { id: 'material-4', name: 'Material 4' },
-      { id: 'material-5', name: 'Material 5' },
+      { id: 'f3ee6265-0c4c-473f-b655-609923682bc4', name: 'Material 4' },
+      { id: 'f8c9c660-d981-4150-ad04-68562a9b81d4', name: 'Material 5' },
     ],
   },
 ]
@@ -55,6 +50,10 @@ export default function AppSidebar() {
   return (
     <SidebarProvider>
       <Sidebar collapsible="none" className="h-screen">
+        <SidebarHeader className="font-bold text-2xl">
+          Study Stack
+        </SidebarHeader>
+        <Separator orientation="horizontal" />
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Collections</SidebarGroupLabel>
@@ -83,11 +82,15 @@ export default function AppSidebar() {
                           <SidebarMenuSubItem key={material.id}>
                             <SidebarMenuSubButton asChild>
                               <Link
-                                to={`/dashboard/material/${material.id}`}
-                                activeOptions={{ exact: true }}
+                                to="/dashboard/material/$id"
+                                params={{ id: material.id }}
+                                search={{ title: material.name }}
+                                activeOptions={{
+                                  exact: true,
+                                }}
                                 activeProps={{
                                   className:
-                                    'bg-primary/20 border-2 border-primary/20 text-accent-foreground',
+                                    'bg-primary/20 border-2 border-primary/20 text-accent-foreground hover:bg-primary/20! font-bold',
                                 }}
                               >
                                 <BookOpen className="mr-2" />

@@ -7,13 +7,16 @@ export const Route = createFileRoute('/dashboard')({
 
 function RouteComponent() {
   return (
-    <div className="flex h-svh w-full bg-background my-2 gap-2">
-      <div className="w-64 z-10 rounded-r-2xl overflow-clip">
-        <AppSidebar />
-      </div>
+    <div className="h-svh w-full p-2 bg-background">
+      <div className="flex h-full w-full rounded-2xl overflow-hidden border border-accent">
+        <div className="w-64 z-10 overflow-y-auto border-r border-r-accent shrink-0">
+          <AppSidebar />
+        </div>
 
-      <div className="h-full w-full overflow-auto p-2 rounded-l-2xl bg-accent z-30 flex flex-1">
-        <Outlet />
+        {/* Main Content */}
+        <div className="flex-1 h-full overflow-auto bg-background z-30">
+          <Outlet />
+        </div>
       </div>
     </div>
   )

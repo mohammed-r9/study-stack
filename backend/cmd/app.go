@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -28,6 +29,12 @@ func (a *application) mount() {
 	a.router.Use(requestid.New())
 	a.router.Use(logger.New())
 	a.router.Use(recover.New())
+	a.router.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000",
+		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, X-CSRF-Token",
+		AllowCredentials: true,
+	}))
 
 	a.router.Get("/health", func(c *fiber.Ctx) error {
 		return c.SendString("Status Is Available")

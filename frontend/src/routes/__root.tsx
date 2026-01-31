@@ -12,6 +12,8 @@ import type { QueryClient } from '@tanstack/react-query'
 import type { AuthContext } from '@/lib/context/auth'
 import { authLoader } from '@/lib/auth-loader'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
+import { useAuthStore } from '@/lib/store/auth'
 
 export interface MyRouterContext {
   queryClient: QueryClient
@@ -22,6 +24,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Outlet />
+
       <TanStackDevtools
         config={{
           position: 'bottom-right',
@@ -34,14 +37,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           TanStackQueryDevtools,
         ]}
       />
+      <Toaster />
     </ThemeProvider>
   ),
-  // loader: async ({ context }) => {
-  //   await authLoader(context)
-  //   if (
-  //     !context.auth.isAuthenticated &&
-  //     !window.location.pathname.startsWith('/auth')
-  //   )
-  //     throw redirect({ to: '/auth', replace: true })
-  // },
+  loader: async ({ context }) => {
+    await authLoader(context)
+
+    const path = window.location.pathname
+    const isAuth = context.auth.isAuthenticated
+
+    if (
+      !isAuth &&
+      !path.startsWith('/login') &&
+      !path.startsWith('/register')
+    ) {
+      throw redirect({ to: '/login', replace: true })
+    }
+
+    if (isAuth && (path.startsWith('/login') || path.startsWith('/register'))) {
+      throw redirect({
+        to: '/dashboard',
+        replace: true,
+      })
+    }
+  },
 })

@@ -19,7 +19,7 @@ func FiberErrorHandler(c *fiber.Ctx, err error) error {
 		case appErrors.InternalError, appErrors.NotImplemented, appErrors.ServiceUnavailable:
 			code = fiber.StatusInternalServerError
 			msg = "Internal Server Error"
-		case appErrors.BadData, appErrors.ValidationFailed, appErrors.InvalidCredentials:
+		case appErrors.BadData, appErrors.ValidationFailed:
 			code = fiber.StatusBadRequest
 			msg = "Bad Request"
 		case appErrors.Unauthorized:
@@ -40,6 +40,9 @@ func FiberErrorHandler(c *fiber.Ctx, err error) error {
 		case appErrors.TooManyRequests:
 			code = fiber.StatusTooManyRequests
 			msg = "Too Many Requests"
+		case appErrors.InvalidCredentials:
+			code = fiber.StatusBadRequest
+			msg = "Invalid Credentials"
 		}
 
 	}
