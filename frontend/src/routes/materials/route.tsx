@@ -1,7 +1,7 @@
-import AppSidebar from '@/components/app-sidebar/app-sidebar'
+import AppSidebar from '@/components/app-sidebar'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute('/materials')({
   component: RouteComponent,
 })
 

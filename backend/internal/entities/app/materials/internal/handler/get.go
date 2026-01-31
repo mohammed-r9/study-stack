@@ -10,41 +10,28 @@ import (
 	"github.com/google/uuid"
 )
 
-type getAllReq struct {
-	CollectionID uuid.UUID `json:"collection_id" validate:"required"`
-}
-
 func (h *Handler) GetAllMaterials(c *fiber.Ctx) error {
 	userData, ok := utils.DataFromLocals(c)
 	if !ok {
 		return appErrors.BadData
 	}
 
-	req := new(getAllReq)
-	if err := c.BodyParser(req); err != nil {
-		log.Printf("error decoding request: %v\n", err)
-		return appErrors.BadData
-	}
-
-	if err := h.validate.Struct(req); err != nil {
-		log.Println(err)
+	collectionID, err := uuid.Parse(c.Query("collection_id"))
+	if err != nil {
 		return appErrors.BadData
 	}
 
 	filter := c.Query("archived")
 
-	var (
-		materials []repo.Material
-		err       error
-	)
+	var materials []repo.Material
 
 	switch filter {
 	case "true":
-		materials, err = h.svc.GetAllArchived(c.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAllArchived(c.Context(), userData.UserID, collectionID)
 	case "false":
-		materials, err = h.svc.GetAllUnarchived(c.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAllUnarchived(c.Context(), userData.UserID, collectionID)
 	case "":
-		materials, err = h.svc.GetAll(c.Context(), userData.UserID, req.CollectionID)
+		materials, err = h.svc.GetAll(c.Context(), userData.UserID, collectionID)
 	default:
 		log.Println("invalid filter in materials")
 		return appErrors.BadData

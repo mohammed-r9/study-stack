@@ -12,11 +12,11 @@ import (
 
 type Querier interface {
 	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
-	ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (Lecture, error)
+	ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (int64, error)
 	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) error
-	CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error)
-	DeleteLecture(ctx context.Context, arg DeleteLectureParams) error
+	CreateLecture(ctx context.Context, arg CreateLectureParams) error
+	DeleteLecture(ctx context.Context, arg DeleteLectureParams) (int64, error)
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
 	GetAllArchivedMaterialsInCollection(ctx context.Context, arg GetAllArchivedMaterialsInCollectionParams) ([]Material, error)
 	GetAllCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
@@ -33,6 +33,7 @@ type Querier interface {
 	GetTokenByHash(ctx context.Context, hash string) (Token, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
+	GetUserLibrary(ctx context.Context, userID uuid.UUID) ([]GetUserLibraryRow, error)
 	InsertMaterial(ctx context.Context, arg InsertMaterialParams) error
 	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
@@ -41,7 +42,7 @@ type Querier interface {
 	ListLectures(ctx context.Context, arg ListLecturesParams) ([]Lecture, error)
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
-	UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (Lecture, error)
+	UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (int64, error)
 	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error)

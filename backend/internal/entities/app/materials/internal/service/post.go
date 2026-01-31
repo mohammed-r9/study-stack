@@ -12,5 +12,6 @@ func (s *Service) InsertMaterial(ctx context.Context, title string, userID, coll
 		ID:           uuid.New(),
 		CollectionID: collectionID,
 		Title:        title,
+		UserID:       userID,
 	})
 }
