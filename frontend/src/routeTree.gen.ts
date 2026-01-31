@@ -11,9 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as MaterialsRouteRouteImport } from './routes/materials/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardMaterialIdRouteImport } from './routes/dashboard/material.$id'
+import { Route as MaterialsIdRouteImport } from './routes/materials/$id'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -25,9 +25,9 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRouteRoute = DashboardRouteRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const MaterialsRouteRoute = MaterialsRouteRouteImport.update({
+  id: '/materials',
+  path: '/materials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -35,56 +35,51 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardMaterialIdRoute = DashboardMaterialIdRouteImport.update({
-  id: '/material/$id',
-  path: '/material/$id',
-  getParentRoute: () => DashboardRouteRoute,
+const MaterialsIdRoute = MaterialsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MaterialsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/dashboard/material/$id': typeof DashboardMaterialIdRoute
+  '/materials/$id': typeof MaterialsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/dashboard/material/$id': typeof DashboardMaterialIdRoute
+  '/materials/$id': typeof MaterialsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/dashboard/material/$id': typeof DashboardMaterialIdRoute
+  '/materials/$id': typeof MaterialsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/dashboard'
-    | '/login'
-    | '/register'
-    | '/dashboard/material/$id'
+  fullPaths: '/' | '/materials' | '/login' | '/register' | '/materials/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/register' | '/dashboard/material/$id'
+  to: '/' | '/materials' | '/login' | '/register' | '/materials/$id'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
+    | '/materials'
     | '/login'
     | '/register'
-    | '/dashboard/material/$id'
+    | '/materials/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  MaterialsRouteRoute: typeof MaterialsRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -105,11 +100,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteRouteImport
+    '/materials': {
+      id: '/materials'
+      path: '/materials'
+      fullPath: '/materials'
+      preLoaderRoute: typeof MaterialsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -119,31 +114,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/material/$id': {
-      id: '/dashboard/material/$id'
-      path: '/material/$id'
-      fullPath: '/dashboard/material/$id'
-      preLoaderRoute: typeof DashboardMaterialIdRouteImport
-      parentRoute: typeof DashboardRouteRoute
+    '/materials/$id': {
+      id: '/materials/$id'
+      path: '/$id'
+      fullPath: '/materials/$id'
+      preLoaderRoute: typeof MaterialsIdRouteImport
+      parentRoute: typeof MaterialsRouteRoute
     }
   }
 }
 
-interface DashboardRouteRouteChildren {
-  DashboardMaterialIdRoute: typeof DashboardMaterialIdRoute
+interface MaterialsRouteRouteChildren {
+  MaterialsIdRoute: typeof MaterialsIdRoute
 }
 
-const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardMaterialIdRoute: DashboardMaterialIdRoute,
+const MaterialsRouteRouteChildren: MaterialsRouteRouteChildren = {
+  MaterialsIdRoute: MaterialsIdRoute,
 }
 
-const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
-  DashboardRouteRouteChildren,
+const MaterialsRouteRouteWithChildren = MaterialsRouteRoute._addFileChildren(
+  MaterialsRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  MaterialsRouteRoute: MaterialsRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }

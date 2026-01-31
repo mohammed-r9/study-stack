@@ -11,13 +11,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const archiveLecture = `-- name: ArchiveLecture :one
+const archiveLecture = `-- name: ArchiveLecture :execrows
 UPDATE lectures l
 SET archived_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
 FROM materials m
 JOIN collections c ON c.id = m.collection_id
 WHERE l.id = $1 AND l.material_id = m.id AND c.user_id = $2
-RETURNING l.id, l.material_id, l.title, l.file_key, l.file_size, l.created_at, l.updated_at, l.archived_at
 `
 
 type ArchiveLectureParams struct {
@@ -25,23 +24,15 @@ type ArchiveLectureParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (Lecture, error) {
-	row := q.db.QueryRowContext(ctx, archiveLecture, arg.ID, arg.UserID)
-	var i Lecture
-	err := row.Scan(
-		&i.ID,
-		&i.MaterialID,
-		&i.Title,
-		&i.FileKey,
-		&i.FileSize,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.ArchivedAt,
-	)
-	return i, err
+func (q *Queries) ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, archiveLecture, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const createLecture = `-- name: CreateLecture :one
+const createLecture = `-- name: CreateLecture :exec
 INSERT INTO lectures (id, material_id, title, file_key, file_size)
 SELECT $1, $2, $3, $4, $5
 WHERE EXISTS (
@@ -50,7 +41,6 @@ WHERE EXISTS (
     JOIN collections c ON c.id = m.collection_id
     WHERE m.id = $2 AND c.user_id = $6
 )
-RETURNING id, material_id, title, file_key, file_size, created_at, updated_at, archived_at
 `
 
 type CreateLectureParams struct {
@@ -62,8 +52,8 @@ type CreateLectureParams struct {
 	UserID     uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error) {
-	row := q.db.QueryRowContext(ctx, createLecture,
+func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) error {
+	_, err := q.db.ExecContext(ctx, createLecture,
 		arg.ID,
 		arg.MaterialID,
 		arg.Title,
@@ -71,21 +61,10 @@ func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) (L
 		arg.FileSize,
 		arg.UserID,
 	)
-	var i Lecture
-	err := row.Scan(
-		&i.ID,
-		&i.MaterialID,
-		&i.Title,
-		&i.FileKey,
-		&i.FileSize,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.ArchivedAt,
-	)
-	return i, err
+	return err
 }
 
-const deleteLecture = `-- name: DeleteLecture :exec
+const deleteLecture = `-- name: DeleteLecture :execrows
 DELETE FROM lectures l
 USING materials m, collections c
 WHERE l.id = $1 AND l.material_id = m.id
@@ -98,9 +77,12 @@ type DeleteLectureParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) DeleteLecture(ctx context.Context, arg DeleteLectureParams) error {
-	_, err := q.db.ExecContext(ctx, deleteLecture, arg.ID, arg.UserID)
-	return err
+func (q *Queries) DeleteLecture(ctx context.Context, arg DeleteLectureParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteLecture, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getLectureByID = `-- name: GetLectureByID :one
@@ -138,7 +120,7 @@ FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = $1 AND l.archived_at IS NULL
-ORDER BY l.created_at DESC
+ORDER BY l.created_at DESC, l.id DESC
 LIMIT 20 OFFSET $2
 `
 
@@ -185,7 +167,7 @@ FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = $1 AND l.archived_at IS NOT NULL
-ORDER BY l.created_at DESC
+ORDER BY l.created_at DESC, l.id DESC
 LIMIT 20 OFFSET $2
 `
 
@@ -232,7 +214,7 @@ FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = $1
-ORDER BY l.created_at DESC
+ORDER BY l.created_at DESC, l.id DESC
 LIMIT 20 OFFSET $2
 `
 
@@ -273,13 +255,12 @@ func (q *Queries) ListLectures(ctx context.Context, arg ListLecturesParams) ([]L
 	return items, nil
 }
 
-const unarchiveLecture = `-- name: UnarchiveLecture :one
+const unarchiveLecture = `-- name: UnarchiveLecture :execrows
 UPDATE lectures l
 SET archived_at = NULL, updated_at = CURRENT_TIMESTAMP
 FROM materials m
 JOIN collections c ON c.id = m.collection_id
 WHERE l.id = $1 AND l.material_id = m.id AND c.user_id = $2
-RETURNING l.id, l.material_id, l.title, l.file_key, l.file_size, l.created_at, l.updated_at, l.archived_at
 `
 
 type UnarchiveLectureParams struct {
@@ -287,20 +268,12 @@ type UnarchiveLectureParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (Lecture, error) {
-	row := q.db.QueryRowContext(ctx, unarchiveLecture, arg.ID, arg.UserID)
-	var i Lecture
-	err := row.Scan(
-		&i.ID,
-		&i.MaterialID,
-		&i.Title,
-		&i.FileKey,
-		&i.FileSize,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.ArchivedAt,
-	)
-	return i, err
+func (q *Queries) UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, unarchiveLecture, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const updateLectureTitle = `-- name: UpdateLectureTitle :execrows

@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 type MaterialSerach = {
   title: string
 }
-export const Route = createFileRoute('/dashboard/material/$id')({
+export const Route = createFileRoute('/materials/$id')({
   component: RouteComponent,
   validateSearch: (search: Record<string, string>): MaterialSerach => {
     return {

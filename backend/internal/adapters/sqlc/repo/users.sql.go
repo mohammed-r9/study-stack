@@ -7,6 +7,7 @@ package repo
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -76,6 +77,55 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getUserLibrary = `-- name: GetUserLibrary :many
+SELECT 
+    c.id AS id,
+    c.title AS name,
+    COALESCE(
+        json_agg(
+            json_build_object(
+                'id', m.id,
+                'name', m.title
+            )
+        ) FILTER (WHERE m.id IS NOT NULL), 
+        '[]'
+    )::jsonb AS materials -- ADD THIS CAST
+FROM collections c
+LEFT JOIN materials m ON m.collection_id = c.id
+WHERE c.user_id = $1
+GROUP BY c.id, c.title
+ORDER BY c.created_at
+`
+
+type GetUserLibraryRow struct {
+	ID        uuid.UUID       `json:"id"`
+	Name      string          `json:"name"`
+	Materials json.RawMessage `json:"materials"`
+}
+
+func (q *Queries) GetUserLibrary(ctx context.Context, userID uuid.UUID) ([]GetUserLibraryRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserLibrary, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserLibraryRow
+	for rows.Next() {
+		var i GetUserLibraryRow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Materials); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertUser = `-- name: InsertUser :exec

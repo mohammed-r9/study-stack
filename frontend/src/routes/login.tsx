@@ -22,7 +22,8 @@ function RouteComponent() {
     onSubmit: async ({ value }) => {
       try {
         await httpClient.login({ email: value.email, password: value.password })
-        navigate({ to: '/dashboard', replace: true })
+        toast.success('Login successful')
+        navigate({ to: '/materials', replace: true })
       } catch (e: any) {
         console.error(e)
         toast.error(e?.response.data)

@@ -36,4 +36,5 @@ func registerRoutes(a *fiber.App, h *handler.Handler) {
 	protected := users.Group("/", middleware.Authenticate)
 	protected.Get("/me", h.GetUserByID)
 	protected.Patch("/", h.UpdateUser)
+	protected.Get("/me/library", h.GetUserLibrary)
 }

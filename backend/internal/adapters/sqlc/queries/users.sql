@@ -34,3 +34,22 @@ UPDATE users
 SET verified_at = CURRENT_TIMESTAMP,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = $1;
+
+-- name: GetUserLibrary :many
+SELECT 
+    c.id AS id,
+    c.title AS name,
+    COALESCE(
+        json_agg(
+            json_build_object(
+                'id', m.id,
+                'name', m.title
+            )
+        ) FILTER (WHERE m.id IS NOT NULL), 
+        '[]'
+    )::jsonb AS materials 
+FROM collections c
+LEFT JOIN materials m ON m.collection_id = c.id
+WHERE c.user_id = $1
+GROUP BY c.id, c.title
+ORDER BY c.created_at;

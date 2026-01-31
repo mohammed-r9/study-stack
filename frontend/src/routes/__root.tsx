@@ -40,11 +40,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       <Toaster />
     </ThemeProvider>
   ),
-  loader: async ({ context }) => {
-    await authLoader(context)
+  loader: async ({ context: ctx }) => {
+    await authLoader(ctx)
 
     const path = window.location.pathname
-    const isAuth = context.auth.isAuthenticated
+    const isAuth = ctx.auth.isAuthenticated
+    console.log(useAuthStore.getState().accessToken)
 
     if (
       !isAuth &&
@@ -56,7 +57,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     if (isAuth && (path.startsWith('/login') || path.startsWith('/register'))) {
       throw redirect({
-        to: '/dashboard',
+        to: '/materials',
         replace: true,
       })
     }
