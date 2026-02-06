@@ -38,12 +38,13 @@ WHERE id = $1;
 -- name: GetUserLibrary :many
 SELECT 
     c.id AS id,
-    c.title AS name,
+    c.title AS title,
+	c.description AS description,
     COALESCE(
         json_agg(
             json_build_object(
                 'id', m.id,
-                'name', m.title
+                'title', m.title
             )
         ) FILTER (WHERE m.id IS NOT NULL), 
         '[]'

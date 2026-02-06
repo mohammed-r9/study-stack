@@ -16,29 +16,12 @@ import {
 } from '@/components/ui/sidebar'
 import { BookOpen, Folder, FolderOpen } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { Separator } from './ui/separator'
-
-const collections = [
-  {
-    id: 'collection-1',
-    name: 'Collection 1',
-    materials: [
-      { id: '7d36b776-21fb-4a90-8896-fb4555228567', name: 'Material 1' },
-      { id: 'dd666607-400d-4d75-bcac-fedeab413954', name: 'Material 2' },
-      { id: 'f0ffef38-6453-411a-b3cf-46ea029646d4', name: 'Material 3' },
-    ],
-  },
-  {
-    id: 'collection-2',
-    name: 'Collection 2',
-    materials: [
-      { id: 'f3ee6265-0c4c-473f-b655-609923682bc4', name: 'Material 4' },
-      { id: 'f8c9c660-d981-4150-ad04-68562a9b81d4', name: 'Material 5' },
-    ],
-  },
-]
+import { Separator } from '../ui/separator'
+import { useLibrary } from '@/lib/queries/user'
+import UpdateCollectionDialog from './dialogs/update-collection'
 
 export default function AppSidebar() {
+  const { data: library, isError, isLoading } = useLibrary()
   const [openCollections, setOpenCollections] = useState<
     Record<string, boolean>
   >({})
@@ -60,31 +43,35 @@ export default function AppSidebar() {
 
             <SidebarGroupContent>
               <SidebarMenu>
-                {collections.map((collection) => (
+                {library?.data?.map?.((collection) => (
                   <SidebarMenuItem key={collection.id}>
                     {/* Collection button */}
                     <SidebarMenuButton
-                      className="hover:cursor-pointer"
+                      className="hover:cursor-pointer flex items-center justify-between"
                       onClick={() => toggleCollection(collection.id)}
                     >
-                      {openCollections[collection.id] ? (
-                        <FolderOpen className="mr-2" />
-                      ) : (
-                        <Folder className="mr-2" />
-                      )}
-                      {collection.name}
+                      <div className="flex items-center gap-2">
+                        {openCollections[collection.id] ? (
+                          <FolderOpen className="size-4" />
+                        ) : (
+                          <Folder className="size-4" />
+                        )}
+                        <span className="truncate">{collection.title}</span>
+                      </div>
+
+                      <UpdateCollectionDialog collectionID={collection.id} />
                     </SidebarMenuButton>
 
                     {/* Submenu, collapsible */}
                     {openCollections[collection.id] && (
                       <SidebarMenuSub>
-                        {collection.materials.map((material) => (
+                        {collection?.materials.map((material) => (
                           <SidebarMenuSubItem key={material.id}>
                             <SidebarMenuSubButton asChild>
                               <Link
                                 to="/materials/$id"
                                 params={{ id: material.id }}
-                                search={{ title: material.name }}
+                                search={{ title: material.title }}
                                 activeOptions={{
                                   exact: true,
                                 }}
@@ -94,7 +81,7 @@ export default function AppSidebar() {
                                 }}
                               >
                                 <BookOpen className="mr-2" />
-                                {material.name}
+                                {material.title}
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>

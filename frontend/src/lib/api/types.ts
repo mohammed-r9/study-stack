@@ -33,3 +33,19 @@ export type Material = {
 	collection_id: string
 	title: string
 }
+
+export type UserLibrary = {
+	id: string
+	title: string
+	description: string
+	materials: {
+		id: string
+		title: string
+		description: string
+	}[]
+}[]
+
+export type UpdateCollectionReq = {
+	new_title: string
+	new_description: string
+}

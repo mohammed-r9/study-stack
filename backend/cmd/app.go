@@ -32,7 +32,7 @@ func (a *application) mount() {
 	a.router.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000",
 		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-		AllowHeaders:     "Origin, Content-Type, Accept, X-CSRF-Token",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, X-CSRF-Token",
 		AllowCredentials: true,
 	}))
 

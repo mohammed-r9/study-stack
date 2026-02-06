@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { LoginReq, RefreshRes, RegisterReq, User } from "./types";
+import type { LoginReq, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
 import { getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 
@@ -51,6 +51,18 @@ class HttpClient {
 
 	public async getCurrentUser() {
 		return this.api.get<User>("/users/me")
+	}
+
+	public async getLibrary() {
+		return this.api.get<UserLibrary>("/users/me/library")
+	}
+
+	public async updateCollection(body: UpdateCollectionReq, id: string) {
+		const finalReq = {
+			new_title: body.new_title || null,
+			new_description: body.new_description || null
+		}
+		return this.api.patch(`/collections/${id}`, finalReq)
 	}
 
 

@@ -11,8 +11,8 @@ import (
 
 type updateReq struct {
 	ToArchive   *bool   `json:"to_archive"`
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
+	Title       *string `json:"new_title"`
+	Description *string `json:"new_description"`
 }
 
 func (h *Handler) UpdateCollection(c *fiber.Ctx) error {

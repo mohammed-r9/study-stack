@@ -82,16 +82,17 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 const getUserLibrary = `-- name: GetUserLibrary :many
 SELECT 
     c.id AS id,
-    c.title AS name,
+    c.title AS title,
+	c.description AS description,
     COALESCE(
         json_agg(
             json_build_object(
                 'id', m.id,
-                'name', m.title
+                'title', m.title
             )
         ) FILTER (WHERE m.id IS NOT NULL), 
         '[]'
-    )::jsonb AS materials -- ADD THIS CAST
+    )::jsonb AS materials 
 FROM collections c
 LEFT JOIN materials m ON m.collection_id = c.id
 WHERE c.user_id = $1
@@ -100,9 +101,10 @@ ORDER BY c.created_at
 `
 
 type GetUserLibraryRow struct {
-	ID        uuid.UUID       `json:"id"`
-	Name      string          `json:"name"`
-	Materials json.RawMessage `json:"materials"`
+	ID          uuid.UUID       `json:"id"`
+	Title       string          `json:"title"`
+	Description string          `json:"description"`
+	Materials   json.RawMessage `json:"materials"`
 }
 
 func (q *Queries) GetUserLibrary(ctx context.Context, userID uuid.UUID) ([]GetUserLibraryRow, error) {
@@ -114,7 +116,12 @@ func (q *Queries) GetUserLibrary(ctx context.Context, userID uuid.UUID) ([]GetUs
 	var items []GetUserLibraryRow
 	for rows.Next() {
 		var i GetUserLibraryRow
-		if err := rows.Scan(&i.ID, &i.Name, &i.Materials); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.Materials,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
