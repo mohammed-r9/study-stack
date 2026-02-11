@@ -9,6 +9,8 @@ import (
 
 func (h *Handler) VerifyEmail(c *fiber.Ctx) error {
 	tokenStr := c.Query("t")
+	// something.com/verfiy?t=xx_xxx_xxx
+	// reigster -> generate a token -> store it -> send it
 
 	if tokenStr == "" {
 		return appErrors.InvalidVerificationToken

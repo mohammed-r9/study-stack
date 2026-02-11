@@ -27,6 +27,9 @@ func (h *Handler) UpdateCollection(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
+	if req.ToArchive == nil && req.Description == nil && req.Title == nil {
+		return appErrors.BadData
+	}
 	collectionID, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		log.Printf("error parsing collection id: %v\n", err)

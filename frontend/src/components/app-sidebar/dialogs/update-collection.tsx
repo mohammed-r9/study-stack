@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { FieldGroup } from '@/components/ui/field'
 import { useAppForm } from '@/hooks/form'
-import { useMutateCollection } from '@/lib/queries/user'
+import { useMutateCollection } from '@/lib/queries/library'
 import { updateCollectionSchema } from '@/lib/schemas/update'
 import { Pen, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -21,7 +21,7 @@ export default function UpdateCollectionDialog({
 }: {
   collectionID: string
 }) {
-  const mutate = useMutateCollection()
+  const { mutate, isError } = useMutateCollection(collectionID)
   const [open, setOpen] = useState(false)
   const form = useAppForm({
     defaultValues: {
@@ -29,18 +29,18 @@ export default function UpdateCollectionDialog({
       new_description: '',
     },
     onSubmit: ({ value }) => {
-      try {
-        mutate.mutate({
-          id: collectionID,
-          body: {
-            new_title: value.new_title,
-            new_description: value.new_description,
-          },
-        })
-        setOpen(false)
-      } catch (e: any) {
+      mutate({
+        body: {
+          new_title: value.new_title,
+          new_description: value.new_description,
+        },
+      })
+      if (isError) {
         toast.error('Failed to update collection')
+        return
       }
+      setOpen(false)
+      toast.success('Collection updated successfully')
     },
     validators: {
       onChange: updateCollectionSchema,
@@ -66,7 +66,7 @@ export default function UpdateCollectionDialog({
         >
           <FieldGroup>
             <form.AppField name="new_title">
-              {(field) => (
+              {() => (
                 <AppField
                   type="text"
                   id="new_title"
@@ -76,7 +76,7 @@ export default function UpdateCollectionDialog({
               )}
             </form.AppField>
             <form.AppField name="new_description">
-              {(field) => (
+              {() => (
                 <AppField
                   type="text"
                   id="new_description"

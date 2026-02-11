@@ -17,8 +17,8 @@ export type User = {
 	id: string
 	name: string
 	email: string
-	updated_at: string
-	created_at: string
+	updated_at: Date
+	created_at: Date
 	verified_at: string | null
 }
 
@@ -26,12 +26,16 @@ export type Collection = {
 	id: string
 	title: string
 	description: string
+	updated_at: Date
+	created_at: Date
 }
 
 export type Material = {
 	id: string
 	collection_id: string
 	title: string
+	created_at: Date
+	updated_at: Date
 }
 
 export type UserLibrary = {
@@ -48,4 +52,14 @@ export type UserLibrary = {
 export type UpdateCollectionReq = {
 	new_title: string
 	new_description: string
+}
+
+
+export type CreateMaterialReq = {
+	collection_id: string
+	title: string
+}
+export type CreateCollectionReq = {
+	title: string
+	description: string
 }

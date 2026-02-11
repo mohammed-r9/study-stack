@@ -1,9 +1,10 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { LoginReq, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
+import type { Collection, CreateMaterialReq, LoginReq, Material, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
 import { getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
+import { toast } from "sonner";
 
 class HttpClient {
 	private api!: AxiosInstance
@@ -57,7 +58,24 @@ class HttpClient {
 		return this.api.get<UserLibrary>("/users/me/library")
 	}
 
+	public async getMaterialsByCollection(collectionID: string, archived: boolean) {
+		return this.api.get<Material[]>(`/materials/?collection_id=${collectionID}&archived=${archived}`)
+	}
+	public async getAllCollections(getArchived: boolean) {
+		return this.api.get<Collection[]>(`/collections?archived=${getArchived}`)
+	}
+	public async newMaterial(body: CreateMaterialReq) {
+		return this.api.post("/materials", body)
+	}
+	public async newCollection(body: CreateCollectionReq) {
+		return this.api.post("/collections", body)
+	}
+
 	public async updateCollection(body: UpdateCollectionReq, id: string) {
+		if (!body.new_description && !body.new_title) {
+			toast.error("Please enter some values first")
+			return
+		}
 		const finalReq = {
 			new_title: body.new_title || null,
 			new_description: body.new_description || null

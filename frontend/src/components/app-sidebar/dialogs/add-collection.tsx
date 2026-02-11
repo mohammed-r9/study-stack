@@ -1,3 +1,4 @@
+import AppField from '@/components/form/app-field'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -7,13 +8,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { FieldGroup } from '@/components/ui/field'
+import { useAppForm } from '@/hooks/form'
+import { useCreateCollection } from '@/lib/queries/library'
+import { insertCollectionSchema } from '@/lib/schemas/post'
 import { FolderPlus } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function AddCollectionDialog() {
+  const [open, setOpen] = useState(false)
+  const { mutate, isError } = useCreateCollection()
+
+  const form = useAppForm({
+    defaultValues: {
+      title: '',
+      description: '',
+    },
+    onSubmit: ({ value }) => {
+      mutate({
+        body: {
+          title: value.title,
+          description: value.description,
+        },
+      })
+      if (isError) {
+        toast.error('Failed to update collection')
+        return
+      }
+      setOpen(false)
+      toast.success('Collection Created Successfully')
+    },
+    validators: {
+      onChange: insertCollectionSchema,
+    },
+  })
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant={'outline'} className="mb-3">
           <FolderPlus />
         </Button>
       </DialogTrigger>
@@ -22,11 +55,34 @@ export function AddCollectionDialog() {
           <DialogTitle className="text-xl">Add New Collection</DialogTitle>
         </DialogHeader>
 
-        <div className="py-4">form</div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
+          <FieldGroup>
+            <form.AppField name="title">
+              {() => (
+                <AppField type="text" id="title" label="Title" placeholder="" />
+              )}
+            </form.AppField>
 
-        <DialogFooter>
-          <Button type="submit">Create</Button>
-        </DialogFooter>
+            <form.AppField name="description">
+              {() => (
+                <AppField
+                  type="text"
+                  id="description"
+                  label="Description"
+                  placeholder=""
+                />
+              )}
+            </form.AppField>
+          </FieldGroup>
+          <DialogFooter className="flex justify-between mt-4">
+            <Button type="submit">Create Collection</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
