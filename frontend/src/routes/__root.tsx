@@ -14,7 +14,7 @@ import { authLoader } from '@/lib/auth-loader'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
 import { useAuthStore } from '@/lib/store/auth'
-import ModeToggle from '@/components/mode-toggle'
+import { AppHeader } from '@/components/app-header/app-header'
 
 export interface MyRouterContext {
   queryClient: QueryClient
@@ -24,7 +24,7 @@ export interface MyRouterContext {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <ModeToggle />
+      <AppHeader />
       <Outlet />
 
       <TanStackDevtools
