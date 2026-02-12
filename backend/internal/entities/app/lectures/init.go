@@ -5,6 +5,7 @@ import (
 	"log"
 	"study-stack/internal/entities/app/lectures/internal/handler"
 	S3 "study-stack/internal/s3"
+	"study-stack/internal/shared/middleware"
 	"sync"
 
 	"github.com/go-playground/validator/v10"
@@ -25,4 +26,6 @@ func Init(db *sql.DB, a *fiber.App, v *validator.Validate, b S3.Storage) {
 
 func registerRoutes(a *fiber.App, h *handler.Handler) {
 	// TODO: Define routes
+	lectures := a.Group("/lectures", middleware.Authenticate)
+	lectures.Post("/", h.InsertLecture)
 }

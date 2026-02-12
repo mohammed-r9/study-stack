@@ -6,12 +6,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '../ui/sidebar'
-import { BookOpen, Folder, FolderOpen, Pen } from 'lucide-react'
+import { BookOpen, Folder, FolderOpen } from 'lucide-react'
 import UpdateCollectionDialog from './dialogs/update-collection'
 import type { Collection, Material } from '@/lib/api/types'
 import { Link } from '@tanstack/react-router'
-import { Button } from '../ui/button'
-import { AddCollectionDialog } from './dialogs/add-collection'
 import { AddMaterialDialog } from './dialogs/add-material'
 
 export default function CollectionItem({
@@ -54,7 +52,7 @@ export default function CollectionItem({
             <SidebarMenuSubItem key={material.id}>
               <SidebarMenuSubButton asChild>
                 <Link
-                  to="/materials/$id"
+                  to="/materials/$id/"
                   params={{ id: material.id }}
                   search={{ title: material.title }}
                   activeOptions={{ exact: true }}

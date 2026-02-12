@@ -1,8 +1,9 @@
 package S3
 
 import (
-	"bytes"
 	"context"
+	"io"
+	"log"
 	"study-stack/internal/shared/env"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -23,20 +24,24 @@ func NewStorage(bucket string) Storage {
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.BaseEndpoint = aws.String(env.Config.S3_URL)
+		o.UsePathStyle = true
 	})
-
+	ctx := context.Background()
+	if err := ensureBucketExists(ctx, client, bucket); err != nil {
+		log.Fatalf("Error creating s3 bucket: %v\n", err)
+	}
 	return &s3Storage{
 		client: client,
 		bucket: bucket,
 	}
 }
 
-func (s *s3Storage) Upload(ctx context.Context, key string, data []byte) error {
+func (s *s3Storage) Upload(ctx context.Context, key string, r io.Reader, contentType string) error {
 	_, err := s.client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(s.bucket),
 		Key:         aws.String(key),
-		Body:        bytes.NewReader(data),
-		ContentType: aws.String("application/pdf"),
+		Body:        r,
+		ContentType: aws.String(contentType),
 	})
 	return err
 }

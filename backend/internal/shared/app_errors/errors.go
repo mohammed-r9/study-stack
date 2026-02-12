@@ -74,6 +74,7 @@ const (
 	TooManyRequests
 	ValidationFailed
 	InvalidCredentials
+	FileTooLarge
 )
 
 func (e ServiceError) Error() string {
@@ -103,6 +104,8 @@ func (e ServiceError) Error() string {
 		return "service: validation failed"
 	case InvalidCredentials:
 		return "service: invalid credentials"
+	case FileTooLarge:
+		return "service: file too large"
 
 	default:
 		return "service: unknown error"

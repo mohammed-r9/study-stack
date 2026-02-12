@@ -1,8 +1,8 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateMaterialReq, LoginReq, Material, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
-import { getCSRFCookie } from "./utils";
+import type { Collection, CreateCollectionReq, createLectureReq, CreateMaterialReq, LoginReq, Material, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
+import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
 
@@ -14,7 +14,6 @@ class HttpClient {
 			baseURL: API_URL,
 			withCredentials: true,
 			timeout: 10000,
-			headers: { "Content-Type": "application/json" },
 		})
 
 		// interceptors
@@ -81,6 +80,15 @@ class HttpClient {
 			new_description: body.new_description || null
 		}
 		return this.api.patch(`/collections/${id}`, finalReq)
+	}
+
+	public async createLecture(body: createLectureReq) {
+		const formData = buildLectureFormData(body)
+		return this.api.post("/lectures", formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			}
+		})
 	}
 
 

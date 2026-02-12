@@ -15,7 +15,10 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaterialsRouteRouteImport } from './routes/materials/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MaterialsIdRouteImport } from './routes/materials/$id'
+import { Route as MaterialsIdRouteRouteImport } from './routes/materials/$id/route'
+import { Route as MaterialsIdIndexRouteImport } from './routes/materials/$id/index'
+import { Route as MaterialsIdEditRouteImport } from './routes/materials/$id/edit'
+import { Route as MaterialsIdAddRouteImport } from './routes/materials/$id/add'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -47,10 +50,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MaterialsIdRoute = MaterialsIdRouteImport.update({
+const MaterialsIdRouteRoute = MaterialsIdRouteRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => MaterialsRouteRoute,
+} as any)
+const MaterialsIdIndexRoute = MaterialsIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MaterialsIdRouteRoute,
+} as any)
+const MaterialsIdEditRoute = MaterialsIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => MaterialsIdRouteRoute,
+} as any)
+const MaterialsIdAddRoute = MaterialsIdAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => MaterialsIdRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -60,7 +78,10 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
-  '/materials/$id': typeof MaterialsIdRoute
+  '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
+  '/materials/$id/add': typeof MaterialsIdAddRoute
+  '/materials/$id/edit': typeof MaterialsIdEditRoute
+  '/materials/$id/': typeof MaterialsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +90,9 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
-  '/materials/$id': typeof MaterialsIdRoute
+  '/materials/$id/add': typeof MaterialsIdAddRoute
+  '/materials/$id/edit': typeof MaterialsIdEditRoute
+  '/materials/$id': typeof MaterialsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +102,10 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
-  '/materials/$id': typeof MaterialsIdRoute
+  '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
+  '/materials/$id/add': typeof MaterialsIdAddRoute
+  '/materials/$id/edit': typeof MaterialsIdEditRoute
+  '/materials/$id/': typeof MaterialsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +117,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/materials/$id'
+    | '/materials/$id/add'
+    | '/materials/$id/edit'
+    | '/materials/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,6 +128,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/settings'
+    | '/materials/$id/add'
+    | '/materials/$id/edit'
     | '/materials/$id'
   id:
     | '__root__'
@@ -109,6 +140,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/materials/$id'
+    | '/materials/$id/add'
+    | '/materials/$id/edit'
+    | '/materials/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,18 +202,54 @@ declare module '@tanstack/react-router' {
       id: '/materials/$id'
       path: '/$id'
       fullPath: '/materials/$id'
-      preLoaderRoute: typeof MaterialsIdRouteImport
+      preLoaderRoute: typeof MaterialsIdRouteRouteImport
       parentRoute: typeof MaterialsRouteRoute
+    }
+    '/materials/$id/': {
+      id: '/materials/$id/'
+      path: '/'
+      fullPath: '/materials/$id/'
+      preLoaderRoute: typeof MaterialsIdIndexRouteImport
+      parentRoute: typeof MaterialsIdRouteRoute
+    }
+    '/materials/$id/edit': {
+      id: '/materials/$id/edit'
+      path: '/edit'
+      fullPath: '/materials/$id/edit'
+      preLoaderRoute: typeof MaterialsIdEditRouteImport
+      parentRoute: typeof MaterialsIdRouteRoute
+    }
+    '/materials/$id/add': {
+      id: '/materials/$id/add'
+      path: '/add'
+      fullPath: '/materials/$id/add'
+      preLoaderRoute: typeof MaterialsIdAddRouteImport
+      parentRoute: typeof MaterialsIdRouteRoute
     }
   }
 }
 
+interface MaterialsIdRouteRouteChildren {
+  MaterialsIdAddRoute: typeof MaterialsIdAddRoute
+  MaterialsIdEditRoute: typeof MaterialsIdEditRoute
+  MaterialsIdIndexRoute: typeof MaterialsIdIndexRoute
+}
+
+const MaterialsIdRouteRouteChildren: MaterialsIdRouteRouteChildren = {
+  MaterialsIdAddRoute: MaterialsIdAddRoute,
+  MaterialsIdEditRoute: MaterialsIdEditRoute,
+  MaterialsIdIndexRoute: MaterialsIdIndexRoute,
+}
+
+const MaterialsIdRouteRouteWithChildren =
+  MaterialsIdRouteRoute._addFileChildren(MaterialsIdRouteRouteChildren)
+
 interface MaterialsRouteRouteChildren {
-  MaterialsIdRoute: typeof MaterialsIdRoute
+  MaterialsIdRouteRoute: typeof MaterialsIdRouteRouteWithChildren
 }
 
 const MaterialsRouteRouteChildren: MaterialsRouteRouteChildren = {
-  MaterialsIdRoute: MaterialsIdRoute,
+  MaterialsIdRouteRoute: MaterialsIdRouteRouteWithChildren,
 }
 
 const MaterialsRouteRouteWithChildren = MaterialsRouteRoute._addFileChildren(

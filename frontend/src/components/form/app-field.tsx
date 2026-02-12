@@ -8,28 +8,30 @@ import { Input } from '@/components/ui/input'
 import { useFieldContext } from '@/hooks/form-context'
 import type { HTMLInputTypeAttribute } from 'react'
 
-type FieldProps = {
+type FieldProps<T> = {
   id: string
   label: string
   description?: string
   placeholder?: string
   type?: HTMLInputTypeAttribute
+  accept?: string
 }
 
 /**
  * Field > Label + Description + Input
  */
-function AppField({
+function AppField<T>({
   id,
   label,
   description,
   placeholder,
   type = 'text',
-}: FieldProps) {
-  const field = useFieldContext<string>()
+  accept,
+}: FieldProps<T>) {
+  const field = useFieldContext<T>()
   const hasError =
     field.state.meta.isTouched && field.state.meta.errors.length > 0
-
+  const isFile = type === 'file'
   return (
     <Field>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
@@ -39,10 +41,17 @@ function AppField({
       <Input
         id={id}
         type={type}
+        accept={accept}
         placeholder={placeholder}
-        value={(field.state.value as string) ?? ''}
+        value={isFile ? undefined : ((field.state.value as any) ?? '')}
         onBlur={field.handleBlur}
-        onChange={(e) => field.handleChange(e.target.value)}
+        onChange={(e) => {
+          if (isFile) {
+            field.handleChange((e.target.files?.[0] ?? null) as T)
+          } else {
+            field.handleChange(e.target.value as T)
+          }
+        }}
         aria-invalid={hasError}
       />
 

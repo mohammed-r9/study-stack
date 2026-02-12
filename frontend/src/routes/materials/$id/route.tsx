@@ -1,9 +1,14 @@
 import { Separator } from '@/components/ui/separator'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-type MaterialSerach = {
+export type MaterialSerach = {
   title: string
 }
+
+export type MaterialParams = {
+  id: string
+}
+
 export const Route = createFileRoute('/materials/$id')({
   component: RouteComponent,
   validateSearch: (search: Record<string, string>): MaterialSerach => {
@@ -14,9 +19,6 @@ export const Route = createFileRoute('/materials/$id')({
 })
 
 function RouteComponent() {
-  const { id } = Route.useParams()
-  // title is temporary, it should be gotten from the backend
-  // it works for now tho
   const { title } = Route.useSearch()
   return (
     <div>
@@ -24,8 +26,9 @@ function RouteComponent() {
         {title || 'Invalid material name'}
       </p>
       <Separator orientation="horizontal" />
-      <div className="p-2">
-        <p>Material id: {id}</p>
+      <div className="p-4">
+        {' '}
+        <Outlet />
       </div>
     </div>
   )

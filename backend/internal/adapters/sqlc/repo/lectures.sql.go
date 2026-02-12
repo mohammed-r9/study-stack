@@ -47,7 +47,7 @@ type CreateLectureParams struct {
 	ID         uuid.UUID `json:"id"`
 	MaterialID uuid.UUID `json:"material_id"`
 	Title      string    `json:"title"`
-	FileKey    string    `json:"file_key"`
+	FileKey    uuid.UUID `json:"file_key"`
 	FileSize   int64     `json:"file_size"`
 	UserID     uuid.UUID `json:"user_id"`
 }

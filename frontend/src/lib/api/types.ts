@@ -63,3 +63,9 @@ export type CreateCollectionReq = {
 	title: string
 	description: string
 }
+
+export type createLectureReq = {
+	lecture_title: string
+	lecture_file: File
+	material_id: string
+}
