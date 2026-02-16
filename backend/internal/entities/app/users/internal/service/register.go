@@ -24,7 +24,10 @@ func (s *Service) RegisterUser(ctx context.Context, params RegisterParams) (stri
 		return "", err
 	}
 
-	userID := uuid.New()
+	userID, err := uuid.NewV7()
+	if err != nil {
+		return "", err
+	}
 	err = s.repo.InsertUser(ctx, repo.InsertUserParams{
 		ID:           userID,
 		Name:         params.Name,

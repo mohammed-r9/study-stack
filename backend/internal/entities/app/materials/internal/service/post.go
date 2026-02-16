@@ -8,8 +8,12 @@ import (
 )
 
 func (s *Service) InsertMaterial(ctx context.Context, title string, userID, collectionID uuid.UUID) error {
+	id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
 	return s.repo.InsertMaterial(ctx, repo.InsertMaterialParams{
-		ID:           uuid.New(),
+		ID:           id,
 		CollectionID: collectionID,
 		Title:        title,
 		UserID:       userID,

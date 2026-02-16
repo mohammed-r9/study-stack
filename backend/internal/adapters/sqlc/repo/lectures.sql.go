@@ -209,22 +209,30 @@ func (q *Queries) ListArchivedLectures(ctx context.Context, arg ListArchivedLect
 }
 
 const listLectures = `-- name: ListLectures :many
-SELECT l.id, l.material_id, l.title, l.file_key, l.file_size, l.created_at, l.updated_at, l.archived_at
+SELECT l.id,
+       l.material_id,
+       l.title,
+       l.file_key,
+       l.file_size,
+       l.created_at,
+       l.updated_at,
+       l.archived_at
 FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = $1
-ORDER BY l.created_at DESC, l.id DESC
-LIMIT 20 OFFSET $2
+  AND ($2::uuid IS NULL OR l.id < $2::uuid)
+ORDER BY l.id DESC
+LIMIT 20
 `
 
 type ListLecturesParams struct {
-	UserID uuid.UUID `json:"user_id"`
-	Offset int32     `json:"offset"`
+	UserID            uuid.UUID `json:"user_id"`
+	LastSeenLectureID uuid.UUID `json:"last_seen_lecture_id"`
 }
 
 func (q *Queries) ListLectures(ctx context.Context, arg ListLecturesParams) ([]Lecture, error) {
-	rows, err := q.db.QueryContext(ctx, listLectures, arg.UserID, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listLectures, arg.UserID, arg.LastSeenLectureID)
 	if err != nil {
 		return nil, err
 	}

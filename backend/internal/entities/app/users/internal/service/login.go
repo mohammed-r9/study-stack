@@ -57,8 +57,12 @@ func (s *Service) Login(ctx context.Context, params LoginParams) (loginTokens, e
 		return loginTokens{}, err
 	}
 
+	id, err := uuid.NewV7()
+	if err != nil {
+		return loginTokens{}, err
+	}
 	err = s.repo.NewUserSession(ctx, repo.NewUserSessionParams{
-		ID:         uuid.New(),
+		ID:         id,
 		UserID:     user.ID,
 		TokenHash:  refreshToken.Hash,
 		CsrfHash:   refreshToken.CsrfHash,

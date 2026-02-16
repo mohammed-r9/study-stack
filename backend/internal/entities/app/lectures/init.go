@@ -25,7 +25,8 @@ func Init(db *sql.DB, a *fiber.App, v *validator.Validate, b S3.Storage) {
 }
 
 func registerRoutes(a *fiber.App, h *handler.Handler) {
-	// TODO: Define routes
 	lectures := a.Group("/lectures", middleware.Authenticate)
+
 	lectures.Post("/", h.InsertLecture)
+	lectures.Get("/", h.GetAll)
 }

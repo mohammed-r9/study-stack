@@ -35,9 +35,14 @@ func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUI
 		return err
 	}
 
+	lectureID, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+
 	err = s.repo.CreateLecture(ctx, repo.CreateLectureParams{
 		UserID:     userID,
-		ID:         uuid.New(),
+		ID:         lectureID,
 		Title:      lectureTitle,
 		MaterialID: materialID,
 		FileKey:    fileKey,

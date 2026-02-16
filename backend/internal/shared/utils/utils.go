@@ -6,6 +6,7 @@ import (
 	"study-stack/internal/shared/consts"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/medama-io/go-useragent"
 )
 
@@ -61,4 +62,16 @@ func GetDeviceNameFromUserAgent(userAgentStr string) string {
 func DataFromLocals(c *fiber.Ctx) (stateless.UserClaims, bool) {
 	data, ok := c.Locals(consts.UserDataContextKey).(stateless.UserClaims)
 	return data, ok
+}
+
+// takes a string uuid and return a pointer to `uuid.UUID`
+func ParseOptionalUUID(s string) (*uuid.UUID, error) {
+	if s == "" {
+		return nil, nil
+	}
+	id, err := uuid.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	return &id, nil
 }

@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import type { MaterialSerach } from './route'
 import { useAppForm } from '@/hooks/form'
 import { lectureFormSchema } from '@/lib/schemas/post'
@@ -21,6 +21,7 @@ export const Route = createFileRoute('/materials/$id/add')({
 function RouteComponent() {
   const { id } = Route.useParams()
   const { mutate } = useCreateLecture()
+  const { title } = Route.useSearch()
   const router = useRouter()
   const form = useAppForm({
     defaultValues: {
@@ -42,11 +43,14 @@ function RouteComponent() {
   return (
     <div className="flex flex-col gap-5">
       <Button
+        asChild
         variant={'outline'}
         onClick={() => router.history.back()}
         className="self-start"
       >
-        <ArrowLeft /> Go Back
+        <Link to="/materials" params={{ id: id }} search={{ title: title }}>
+          <ArrowLeft /> Go Back
+        </Link>
       </Button>
       <form
         className="w-1/2"

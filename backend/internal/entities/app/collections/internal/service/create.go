@@ -14,15 +14,14 @@ type CreateCollectionParams struct {
 }
 
 func (s *Service) CreateCollection(ctx context.Context, params CreateCollectionParams) error {
-	err := s.repo.CreateCollection(ctx, repo.CreateCollectionParams{
-		ID:          uuid.New(),
+	id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+	return s.repo.CreateCollection(ctx, repo.CreateCollectionParams{
+		ID:          id,
 		UserID:      params.UserID,
 		Title:       params.Title,
 		Description: params.Desription,
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
