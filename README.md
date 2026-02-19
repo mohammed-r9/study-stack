@@ -18,3 +18,8 @@ S3_URL=?
 ```
 VITE_API_URL="http://localhost:8080"
 ```
+
+## A 2 year valid JWT for testing
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4MzQ1MzEyMDAsImlhdCI6MTc3MTUxMDIwMiwiaXNfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiIwMTljNjc1YS0zMzYyLTc5MzEtOWNkMi05ZjA4OTQ5MWYwZWQifQ.PU94_jsNcasBC_Dxl3y-Jz-6OGcSm8D0D53PJsIdWCY
+```

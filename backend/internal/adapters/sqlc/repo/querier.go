@@ -39,7 +39,7 @@ type Querier interface {
 	InsertUser(ctx context.Context, arg InsertUserParams) error
 	ListActiveLectures(ctx context.Context, arg ListActiveLecturesParams) ([]Lecture, error)
 	ListArchivedLectures(ctx context.Context, arg ListArchivedLecturesParams) ([]Lecture, error)
-	ListLectures(ctx context.Context, arg ListLecturesParams) ([]Lecture, error)
+	ListLectures(ctx context.Context, arg ListLecturesParams) ([]ListLecturesRow, error)
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
 	UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (int64, error)

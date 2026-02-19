@@ -24,7 +24,7 @@ type Lecture struct {
 	ID         uuid.UUID  `json:"id"`
 	MaterialID uuid.UUID  `json:"material_id"`
 	Title      string     `json:"title"`
-	FileKey    uuid.UUID  `json:"file_key"`
+	FileKey    string     `json:"file_key"`
 	FileSize   int64      `json:"file_size"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`

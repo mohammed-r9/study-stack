@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"study-stack/internal/entities/tokens/stateless"
 	"study-stack/internal/shared/consts"
@@ -74,4 +76,20 @@ func ParseOptionalUUID(s string) (*uuid.UUID, error) {
 		return nil, err
 	}
 	return &id, nil
+}
+
+func GenerateRandomBase64(nBytes int) (string, error) {
+	if nBytes <= 0 {
+		return "", fmt.Errorf("number of bytes must be > 0")
+	}
+
+	b := make([]byte, nBytes)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate random bytes: %w", err)
+	}
+
+	// Encode to Base64
+	return base64.RawURLEncoding.EncodeToString(b), nil
 }

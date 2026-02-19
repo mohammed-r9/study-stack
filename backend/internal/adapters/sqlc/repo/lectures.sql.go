@@ -7,6 +7,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -47,7 +48,7 @@ type CreateLectureParams struct {
 	ID         uuid.UUID `json:"id"`
 	MaterialID uuid.UUID `json:"material_id"`
 	Title      string    `json:"title"`
-	FileKey    uuid.UUID `json:"file_key"`
+	FileKey    string    `json:"file_key"`
 	FileSize   int64     `json:"file_size"`
 	UserID     uuid.UUID `json:"user_id"`
 }
@@ -212,7 +213,6 @@ const listLectures = `-- name: ListLectures :many
 SELECT l.id,
        l.material_id,
        l.title,
-       l.file_key,
        l.file_size,
        l.created_at,
        l.updated_at,
@@ -221,30 +221,41 @@ FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = $1
-  AND ($2::uuid IS NULL OR l.id < $2::uuid)
+  AND m.id = $2
+  AND l.id < $3
 ORDER BY l.id DESC
 LIMIT 20
 `
 
 type ListLecturesParams struct {
 	UserID            uuid.UUID `json:"user_id"`
+	MaterialID        uuid.UUID `json:"material_id"`
 	LastSeenLectureID uuid.UUID `json:"last_seen_lecture_id"`
 }
 
-func (q *Queries) ListLectures(ctx context.Context, arg ListLecturesParams) ([]Lecture, error) {
-	rows, err := q.db.QueryContext(ctx, listLectures, arg.UserID, arg.LastSeenLectureID)
+type ListLecturesRow struct {
+	ID         uuid.UUID  `json:"id"`
+	MaterialID uuid.UUID  `json:"material_id"`
+	Title      string     `json:"title"`
+	FileSize   int64      `json:"file_size"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	ArchivedAt *time.Time `json:"archived_at"`
+}
+
+func (q *Queries) ListLectures(ctx context.Context, arg ListLecturesParams) ([]ListLecturesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listLectures, arg.UserID, arg.MaterialID, arg.LastSeenLectureID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Lecture
+	var items []ListLecturesRow
 	for rows.Next() {
-		var i Lecture
+		var i ListLecturesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.MaterialID,
 			&i.Title,
-			&i.FileKey,
 			&i.FileSize,
 			&i.CreatedAt,
 			&i.UpdatedAt,

@@ -47,7 +47,6 @@ WHERE l.id = $1 AND l.material_id = m.id AND c.user_id = $2;
 SELECT l.id,
        l.material_id,
        l.title,
-       l.file_key,
        l.file_size,
        l.created_at,
        l.updated_at,
@@ -56,7 +55,8 @@ FROM lectures l
 JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = @user_id
-  AND (@last_seen_lecture_id::uuid IS NULL OR l.id < @last_seen_lecture_id::uuid)
+  AND m.id = @material_id
+  AND l.id < @last_seen_lecture_id
 ORDER BY l.id DESC
 LIMIT 20;
 

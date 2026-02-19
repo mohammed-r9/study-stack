@@ -6,6 +6,7 @@ import (
 	"strings"
 	"study-stack/internal/adapters/sqlc/repo"
 	appErrors "study-stack/internal/shared/app_errors"
+	"study-stack/internal/shared/utils"
 
 	"github.com/google/uuid"
 )
@@ -26,11 +27,11 @@ func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUI
 	}
 	defer src.Close()
 
-	fileKey, err := uuid.NewV7()
+	fileKey, err := utils.GenerateRandomBase64(16)
 	if err != nil {
 		return err
 	}
-	err = s.bucket.Upload(ctx, fileKey.String(), src, "application/pdf")
+	err = s.bucket.Upload(ctx, fileKey, src, "application/pdf")
 	if err != nil {
 		return err
 	}
