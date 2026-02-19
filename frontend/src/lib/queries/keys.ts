@@ -11,5 +11,7 @@ export const queryKeys = {
 
 		update: (collectionId: string) =>
 			[...queryKeys.library.all, "collection", collectionId, "update"] as const,
+		lectures: (materialId: string) =>
+			[...queryKeys.library.all, "material", materialId, "lectures"] as const,
 	},
 }

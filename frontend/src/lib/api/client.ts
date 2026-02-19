@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateCollectionReq, createLectureReq, CreateMaterialReq, LoginReq, Material, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
+import type { Collection, CreateCollectionReq, createLectureReq, CreateMaterialReq, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, UpdateCollectionReq, User, UserLibrary } from "./types";
 import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
@@ -89,6 +89,10 @@ class HttpClient {
 				"Content-Type": "multipart/form-data",
 			}
 		})
+	}
+
+	public async getAllLectures(params: GetAllLecturesParams) {
+		return this.api.get<GetAllLecturesRes>(`/lectures?m_id=${params.material_id}&last_seen=${params.last_seen_id}`)
 	}
 
 

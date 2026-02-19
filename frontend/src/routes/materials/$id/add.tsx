@@ -20,9 +20,9 @@ export const Route = createFileRoute('/materials/$id/add')({
 
 function RouteComponent() {
   const { id } = Route.useParams()
-  const { mutate } = useCreateLecture()
-  const { title } = Route.useSearch()
   const router = useRouter()
+  const { title } = Route.useSearch()
+  const { mutate } = useCreateLecture(id, title)
   const form = useAppForm({
     defaultValues: {
       lecture_title: '',

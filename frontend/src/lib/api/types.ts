@@ -69,3 +69,23 @@ export type createLectureReq = {
 	lecture_file: File
 	material_id: string
 }
+
+export type GetAllLecturesParams = {
+	material_id: string
+	last_seen_id: string
+}
+
+export type Lecture = {
+	id: string
+	material_id: string
+	title: string
+	file_size: string
+	created_at: Date
+	updated_at: Date
+	archived_at: Date
+}
+
+export type GetAllLecturesRes = {
+	lectures: Lecture[]
+	has_next_page: boolean
+}
