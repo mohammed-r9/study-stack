@@ -28,6 +28,7 @@ type Querier interface {
 	GetArchivedCollectionByID(ctx context.Context, arg GetArchivedCollectionByIDParams) (Collection, error)
 	GetCollectionByID(ctx context.Context, arg GetCollectionByIDParams) (Collection, error)
 	GetLectureByID(ctx context.Context, arg GetLectureByIDParams) (Lecture, error)
+	GetLectureFileKey(ctx context.Context, arg GetLectureFileKeyParams) (GetLectureFileKeyRow, error)
 	GetMaterialByID(ctx context.Context, arg GetMaterialByIDParams) (Material, error)
 	GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error)
 	GetTokenByHash(ctx context.Context, hash string) (Token, error)

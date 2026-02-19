@@ -29,4 +29,5 @@ func registerRoutes(a *fiber.App, h *handler.Handler) {
 
 	lectures.Post("/", h.InsertLecture)
 	lectures.Get("/", h.GetAll)
+	lectures.Get("/:id/download-link", h.GetSignedURL)
 }

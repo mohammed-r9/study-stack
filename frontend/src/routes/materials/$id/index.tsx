@@ -40,9 +40,13 @@ function RouteComponent() {
       </Button>
 
       <div className="grid-cols-4 grid gap-4 my-3">
-        {allLectures.map((lecture) => (
-          <LectureCard key={lecture.id} lecture={lecture} />
-        ))}
+        {allLectures.map((lecture) =>
+          lecture ? (
+            <LectureCard key={lecture.id} lecture={lecture} />
+          ) : (
+            <p>No lectures found yet</p>
+          ),
+        )}
       </div>
 
       {isFetchingNextPage && <LecturesLoader />}

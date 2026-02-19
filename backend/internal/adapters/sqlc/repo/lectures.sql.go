@@ -115,6 +115,31 @@ func (q *Queries) GetLectureByID(ctx context.Context, arg GetLectureByIDParams) 
 	return i, err
 }
 
+const getLectureFileKey = `-- name: GetLectureFileKey :one
+SELECT l.file_key, l.id
+FROM lectures l
+JOIN materials m ON m.id = l.material_id
+JOIN collections c ON c.id = m.collection_id
+WHERE l.id = $1 AND c.user_id = $2
+`
+
+type GetLectureFileKeyParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+type GetLectureFileKeyRow struct {
+	FileKey string    `json:"file_key"`
+	ID      uuid.UUID `json:"id"`
+}
+
+func (q *Queries) GetLectureFileKey(ctx context.Context, arg GetLectureFileKeyParams) (GetLectureFileKeyRow, error) {
+	row := q.db.QueryRowContext(ctx, getLectureFileKey, arg.ID, arg.UserID)
+	var i GetLectureFileKeyRow
+	err := row.Scan(&i.FileKey, &i.ID)
+	return i, err
+}
+
 const listActiveLectures = `-- name: ListActiveLectures :many
 SELECT l.id, l.material_id, l.title, l.file_key, l.file_size, l.created_at, l.updated_at, l.archived_at
 FROM lectures l

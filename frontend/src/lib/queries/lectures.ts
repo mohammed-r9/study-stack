@@ -19,7 +19,6 @@ export function useCreateLecture(materialID: string, title: string) {
 				queryKey: queryKeys.library.lectures(materialID),
 				refetchType: "all"
 			})
-			console.log(materialID)
 			router.navigate({ to: "/materials/$id", params: { id: materialID }, search: { title: title } })
 		},
 		onError: (err: any) => {

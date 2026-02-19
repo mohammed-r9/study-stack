@@ -15,6 +15,13 @@ JOIN materials m ON m.id = l.material_id
 JOIN collections c ON c.id = m.collection_id
 WHERE l.id = $1 AND c.user_id = $2;
 
+-- name: GetLectureFileKey :one
+SELECT l.file_key, l.id
+FROM lectures l
+JOIN materials m ON m.id = l.material_id
+JOIN collections c ON c.id = m.collection_id
+WHERE l.id = $1 AND c.user_id = $2;
+
 -- name: UpdateLectureTitle :execrows
 UPDATE lectures l
 SET title = $3, updated_at = CURRENT_TIMESTAMP
