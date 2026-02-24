@@ -89,12 +89,14 @@ export default function UpdateCollectionDialog({
               )}
             </form.AppField>
           </FieldGroup>
-          <DialogFooter className="flex justify-between mt-4">
-            <Button variant="destructive" className="gap-2">
+          <DialogFooter className="flex mt-4 w-full">
+            <Button variant="destructive" className="gap-2 flex-1">
               <Trash2 className="size-4" />
               Delete
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" className="flex-1">
+              Save Changes
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

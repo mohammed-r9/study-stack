@@ -73,7 +73,7 @@ export function UserButton() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="text-destructive focus:text-destructive hover:cursor-pointer">
+        <DropdownMenuItem className="hover:cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </DropdownMenuItem>

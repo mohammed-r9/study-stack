@@ -80,7 +80,9 @@ export function AddCollectionDialog() {
             </form.AppField>
           </FieldGroup>
           <DialogFooter className="flex justify-between mt-4">
-            <Button type="submit">Create Collection</Button>
+            <Button type="submit" className="w-full">
+              Create Collection
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
