@@ -21,6 +21,7 @@ func main() {
 		addr: fmt.Sprintf(":%d", port),
 		router: fiber.New(fiber.Config{
 			ErrorHandler: FiberErrorHandler,
+			BodyLimit:    50 * 1024 * 1024,
 		}),
 	}
 

@@ -13,13 +13,15 @@ import { useAppForm } from '@/hooks/form'
 import { useMutateCollection } from '@/lib/queries/library'
 import { updateCollectionSchema } from '@/lib/schemas/update'
 import { Pen, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 import { toast } from 'sonner'
 
 export default function UpdateCollectionDialog({
   collectionID,
+  setIsHoveredOn,
 }: {
   collectionID: string
+  setIsHoveredOn: Dispatch<SetStateAction<boolean>>
 }) {
   const { mutate, isError } = useMutateCollection(collectionID)
   const [open, setOpen] = useState(false)
@@ -46,10 +48,11 @@ export default function UpdateCollectionDialog({
       onChange: updateCollectionSchema,
     },
   })
+  setIsHoveredOn(false)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="bg-accent-foreground/10 p-1.5!">
+        <Button variant="ghost" className="p-3!">
           <Pen />
         </Button>
       </DialogTrigger>

@@ -12,7 +12,7 @@ import { FieldGroup } from '@/components/ui/field'
 import { useAppForm } from '@/hooks/form'
 import { useCreateCollection } from '@/lib/queries/library'
 import { insertCollectionSchema } from '@/lib/schemas/post'
-import { FolderPlus } from 'lucide-react'
+import { FolderPlus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -46,7 +46,7 @@ export function AddCollectionDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={'outline'} className="mb-3">
+        <Button variant={'ghost'}>
           <FolderPlus />
         </Button>
       </DialogTrigger>

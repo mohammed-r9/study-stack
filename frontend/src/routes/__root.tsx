@@ -11,10 +11,11 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import type { QueryClient } from '@tanstack/react-query'
 import type { AuthContext } from '@/lib/context/auth'
 import { authLoader } from '@/lib/auth-loader'
-import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
 import { useAuthStore } from '@/lib/store/auth'
 import { AppHeader } from '@/components/app-header/app-header'
+import { useEffect } from 'react'
+import { useThemeStore } from '@/lib/store/theme'
 
 export interface MyRouterContext {
   queryClient: QueryClient
@@ -22,26 +23,36 @@ export interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: () => (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AppHeader />
-      <Outlet />
+  component: () => {
+    const theme = useThemeStore((state) => state.theme)
 
-      <TanStackDevtools
-        config={{
-          position: 'bottom-right',
-        }}
-        plugins={[
-          {
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-          TanStackQueryDevtools,
-        ]}
-      />
-      <Toaster />
-    </ThemeProvider>
-  ),
+    useEffect(() => {
+      const root = window.document.documentElement
+      root.classList.remove('light', 'dark')
+      root.classList.add(theme)
+    }, [theme])
+
+    return (
+      <>
+        <AppHeader />
+        <Outlet />
+
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            TanStackQueryDevtools,
+          ]}
+        />
+        <Toaster />
+      </>
+    )
+  },
   loader: async ({ context: ctx }) => {
     await authLoader(ctx)
 

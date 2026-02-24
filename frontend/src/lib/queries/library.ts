@@ -3,11 +3,21 @@ import { httpClient } from "../api"
 import { queryKeys } from "./keys"
 import type { CreateCollectionReq, CreateMaterialReq, UpdateCollectionReq } from "../api/types"
 
-export const useMaterials = (collectionID: string, getArchived = false as boolean) => {
+type UseMaterialsOptions = {
+	archived?: boolean
+	enabled?: boolean
+}
+export const useMaterials = (
+	collectionID: string,
+	options?: UseMaterialsOptions
+) => {
+	const { archived = false, enabled = true } = options ?? {}
 	return useQuery({
-		queryFn: () => httpClient.getMaterialsByCollection(collectionID, getArchived),
+		queryFn: () => httpClient.getMaterialsByCollection(collectionID, archived),
 		queryKey: queryKeys.library.materials(collectionID),
-		staleTime: Infinity
+		staleTime: Infinity,
+		enabled: enabled,
+		retry: false
 	})
 }
 

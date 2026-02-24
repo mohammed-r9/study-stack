@@ -22,7 +22,7 @@ function RouteComponent() {
   const { title } = Route.useSearch()
   return (
     <div>
-      <p className="font-bold text-2xl p-2">
+      <p className="font-bold text-2xl p-4">
         {title || 'Invalid material name'}
       </p>
       <Separator orientation="horizontal" />

@@ -11,6 +11,8 @@ import UpdateCollectionDialog from './dialogs/update-collection'
 import type { Collection, Material } from '@/lib/api/types'
 import { Link } from '@tanstack/react-router'
 import { AddMaterialDialog } from './dialogs/add-material'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 export default function CollectionItem({
   collection,
@@ -21,54 +23,66 @@ export default function CollectionItem({
   isOpen: boolean
   toggleCollection: (id: string) => void
 }) {
-  const materialsQuery = isOpen
-    ? useMaterials(collection.id)
-    : { data: { data: [] } }
+  const materialsQuery = useMaterials(collection.id, { enabled: isOpen })
 
+  const [isHoveredOn, setIsHoveredOn] = useState(false)
   const materialsData = materialsQuery.data
 
   return (
-    <SidebarMenuItem key={collection.id}>
-      <SidebarMenuButton
-        className="hover:cursor-pointer flex items-center justify-between"
-        onClick={() => toggleCollection(collection.id)}
+    <>
+      <SidebarMenuItem
+        onMouseEnter={() => setIsHoveredOn(true)}
+        onMouseLeave={() => setIsHoveredOn(false)}
       >
-        <div className="flex items-center gap-2">
-          {isOpen ? (
-            <FolderOpen className="size-4" />
-          ) : (
-            <Folder className="size-4" />
-          )}
-          <span className="truncate">{collection.title}</span>
+        <div key={collection.id} className="flex gap-2">
+          <SidebarMenuButton
+            isActive={isOpen}
+            className="hover:cursor-pointer flex items-center justify-between h-9 rounded-sm"
+            onClick={() => toggleCollection(collection.id)}
+          >
+            <div className="flex items-center gap-2">
+              {isOpen ? (
+                <FolderOpen className="size-4" />
+              ) : (
+                <Folder className="size-4" />
+              )}
+              <span className="truncate">{collection.title}</span>
+            </div>
+          </SidebarMenuButton>
+
+          <div className={cn(isHoveredOn ? 'opacity-100' : 'opacity-0')}>
+            <UpdateCollectionDialog
+              collectionID={collection.id}
+              setIsHoveredOn={setIsHoveredOn}
+            />
+          </div>
         </div>
-
-        <UpdateCollectionDialog collectionID={collection.id} />
-      </SidebarMenuButton>
-
-      {isOpen && (
-        <SidebarMenuSub>
-          <AddMaterialDialog collectionID={collection.id} />
-          {materialsData?.data?.map?.((material: Material) => (
-            <SidebarMenuSubItem key={material.id}>
-              <SidebarMenuSubButton asChild>
-                <Link
-                  to="/materials/$id/"
-                  params={{ id: material.id }}
-                  search={{ title: material.title }}
-                  activeOptions={{ exact: true }}
-                  activeProps={{
-                    className:
-                      'bg-primary/20 border-2 border-primary/20 text-accent-foreground hover:bg-primary/20! font-bold',
-                  }}
-                >
-                  <BookOpen className="mr-2" />
-                  {material.title}
-                </Link>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-          ))}
-        </SidebarMenuSub>
-      )}
-    </SidebarMenuItem>
+        {isOpen && (
+          <SidebarMenuSub>
+            <AddMaterialDialog collectionID={collection.id} />
+            {materialsData?.data?.map?.((material: Material) => (
+              <SidebarMenuSubItem key={material.id}>
+                <SidebarMenuSubButton asChild>
+                  <Link
+                    to="/materials/$id"
+                    params={{ id: material.id }}
+                    search={{ title: material.title }}
+                    activeOptions={{ exact: true }}
+                    className="w-72 rounded-none"
+                    activeProps={{
+                      className:
+                        'bg-primary/20 border-2 border-primary/20 text-accent-foreground hover:bg-primary/20! font-bold',
+                    }}
+                  >
+                    <BookOpen className="mr-2" />
+                    {material.title}
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        )}
+      </SidebarMenuItem>
+    </>
   )
 }
