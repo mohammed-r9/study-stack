@@ -26,7 +26,6 @@ export default function AppSidebar() {
   const toggleCollection = (id: string) => {
     setOpenCollections((prev) => ({ ...prev, [id]: !prev[id] }))
   }
-  console.log(collections?.data.length)
 
   return (
     <Sidebar collapsible="none" className="w-full h-screen">
