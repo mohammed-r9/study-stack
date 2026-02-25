@@ -43,7 +43,7 @@ export function UserButton() {
         <Button variant="ghost" className="flex items-center gap-2 p-2">
           <Avatar className="h-8 w-8">
             <AvatarFallback>
-              {user.data.name.charAt(0).toUpperCase()}
+              {user?.data?.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
