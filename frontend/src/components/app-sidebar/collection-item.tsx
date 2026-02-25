@@ -13,6 +13,7 @@ import { Link } from '@tanstack/react-router'
 import { AddMaterialDialog } from './dialogs/add-material'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { Spinner } from '../ui/spinner'
 
 export default function CollectionItem({
   collection,
@@ -25,7 +26,9 @@ export default function CollectionItem({
   toggleCollection: (id: string) => void
   className?: string
 }) {
-  const materialsQuery = useMaterials(collection.id, { enabled: isOpen })
+  const materialsQuery = useMaterials(collection.id, {
+    enabled: isOpen ?? false,
+  })
 
   const [isHoveredOn, setIsHoveredOn] = useState(false)
   const materialsData = materialsQuery.data
@@ -60,36 +63,41 @@ export default function CollectionItem({
             />
           </div>
         </div>
-        {isOpen && (
-          <SidebarMenuSub>
-            {materialsData?.data?.map?.((material: Material) => (
-              <SidebarMenuSubItem key={material.id} className="h-8 mt-1">
-                <SidebarMenuSubButton asChild>
-                  <Link
-                    to="/materials/$id"
-                    params={{ id: material.id }}
-                    search={{ title: material.title }}
-                    activeOptions={{ exact: true }}
-                    className="w-72 rounded-none h-full"
-                    activeProps={{
-                      className:
-                        'bg-primary/20 text-accent-foreground hover:bg-primary/20!',
-                    }}
-                  >
-                    <BookOpen className="mr-2" />
-                    {material.title}
-                  </Link>
-                </SidebarMenuSubButton>
+        {isOpen &&
+          (materialsQuery.isLoading ? (
+            <div className="w-full flex items-center justify-center mt-2">
+              <Spinner className="text-center size-5.5" />
+            </div>
+          ) : (
+            <SidebarMenuSub>
+              {materialsData?.data?.map?.((material: Material) => (
+                <SidebarMenuSubItem key={material.id} className="h-8 mt-1">
+                  <SidebarMenuSubButton asChild>
+                    <Link
+                      to="/materials/$id"
+                      params={{ id: material.id }}
+                      search={{ title: material.title }}
+                      activeOptions={{ exact: true }}
+                      className="w-72 rounded-none h-full"
+                      activeProps={{
+                        className:
+                          'bg-primary/20 text-accent-foreground hover:bg-primary/20!',
+                      }}
+                    >
+                      <BookOpen className="mr-2" />
+                      {material.title}
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              ))}
+              <SidebarMenuSubItem>
+                {' '}
+                <SidebarMenuButton asChild>
+                  <AddMaterialDialog collectionID={collection.id} />
+                </SidebarMenuButton>
               </SidebarMenuSubItem>
-            ))}
-            <SidebarMenuSubItem>
-              {' '}
-              <SidebarMenuButton asChild>
-                <AddMaterialDialog collectionID={collection.id} />
-              </SidebarMenuButton>
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        )}
+            </SidebarMenuSub>
+          ))}
       </SidebarMenuItem>
     </>
   )
