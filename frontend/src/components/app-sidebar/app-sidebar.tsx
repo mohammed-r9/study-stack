@@ -16,7 +16,6 @@ import { AddCollectionDialog } from './dialogs/add-collection'
 import { BookOpen } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { ScrollArea } from '../ui/scroll-area'
-import { cn } from '@/lib/utils'
 
 export default function AppSidebar() {
   const { data: collections } = useCollections()
@@ -27,6 +26,7 @@ export default function AppSidebar() {
   const toggleCollection = (id: string) => {
     setOpenCollections((prev) => ({ ...prev, [id]: !prev[id] }))
   }
+  console.log(collections?.data.length)
 
   return (
     <Sidebar collapsible="none" className="w-full h-screen">
