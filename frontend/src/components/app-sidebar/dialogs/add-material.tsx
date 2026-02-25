@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { FieldGroup } from '@/components/ui/field'
+import { SidebarMenuButton } from '@/components/ui/sidebar'
 import { useAppForm } from '@/hooks/form'
 import { useCreateMaterial } from '@/lib/queries/library'
 import { insertMaterialSchema } from '@/lib/schemas/post'
@@ -44,9 +45,10 @@ export function AddMaterialDialog({ collectionID }: { collectionID: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={'ghost'}>
-          <BookPlus />
-        </Button>
+        <SidebarMenuButton className="h-9 w-72 justify-start gap-2 text-muted-foreground hover:text-foreground hover:cursor-pointer rounded-none">
+          <BookPlus className="size-4! mr-2" />
+          Add new material
+        </SidebarMenuButton>
       </DialogTrigger>
       <DialogContent className="rounded-2xl">
         <DialogHeader>

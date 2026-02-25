@@ -9,16 +9,15 @@ export const Route = createFileRoute('/materials')({
 
 function RouteComponent() {
   return (
-    <div className="h-svh w-full p-2 bg-background pt-0">
-      <div className="flex h-full w-full overflow-hidden border border-accent border-t-0">
-        <div className="w-72 z-10 overflow-y-auto border-r border-r-accent shrink-0 overflow-x-hidden">
+    <div className="h-screen w-full bg-background overflow-hidden">
+      <div className="flex h-full w-full border border-accent border-t-0">
+        <div className="w-72 shrink-0 border-r border-accent">
           <SidebarProvider>
             <AppSidebar />
           </SidebarProvider>
         </div>
 
-        {/* Main Content */}
-        <ScrollArea className="flex-1 h-full bg-background z-30 w-full">
+        <ScrollArea className="flex-1 h-full overflow-y-auto bg-background">
           <Outlet />
         </ScrollArea>
       </div>

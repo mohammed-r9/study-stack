@@ -18,10 +18,12 @@ export default function CollectionItem({
   collection,
   isOpen,
   toggleCollection,
+  className,
 }: {
   collection: Collection
   isOpen: boolean
   toggleCollection: (id: string) => void
+  className?: string
 }) {
   const materialsQuery = useMaterials(collection.id, { enabled: isOpen })
 
@@ -33,6 +35,7 @@ export default function CollectionItem({
       <SidebarMenuItem
         onMouseEnter={() => setIsHoveredOn(true)}
         onMouseLeave={() => setIsHoveredOn(false)}
+        className={className || ''}
       >
         <div key={collection.id} className="flex gap-2">
           <SidebarMenuButton
@@ -59,19 +62,18 @@ export default function CollectionItem({
         </div>
         {isOpen && (
           <SidebarMenuSub>
-            <AddMaterialDialog collectionID={collection.id} />
             {materialsData?.data?.map?.((material: Material) => (
-              <SidebarMenuSubItem key={material.id}>
+              <SidebarMenuSubItem key={material.id} className="h-8 mt-1">
                 <SidebarMenuSubButton asChild>
                   <Link
                     to="/materials/$id"
                     params={{ id: material.id }}
                     search={{ title: material.title }}
                     activeOptions={{ exact: true }}
-                    className="w-72 rounded-none"
+                    className="w-72 rounded-none h-full"
                     activeProps={{
                       className:
-                        'bg-primary/20 border-2 border-primary/20 text-accent-foreground hover:bg-primary/20! font-bold',
+                        'bg-primary/20 text-accent-foreground hover:bg-primary/20!',
                     }}
                   >
                     <BookOpen className="mr-2" />
@@ -80,6 +82,12 @@ export default function CollectionItem({
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
+            <SidebarMenuSubItem>
+              {' '}
+              <SidebarMenuButton asChild>
+                <AddMaterialDialog collectionID={collection.id} />
+              </SidebarMenuButton>
+            </SidebarMenuSubItem>
           </SidebarMenuSub>
         )}
       </SidebarMenuItem>

@@ -1,11 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { useInfiniteLectures } from '@/lib/queries/lectures'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { AlertTriangle, Plus } from 'lucide-react'
 import LectureCard from './-components/lecture-card'
 import { Spinner } from '@/components/ui/spinner'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 
 export const Route = createFileRoute('/materials/$id/')({
   component: RouteComponent,
@@ -29,22 +37,36 @@ function RouteComponent() {
   }
   return (
     <div>
-      <Button asChild>
-        <Link
-          to="/materials/$id/add"
-          params={{ id: id }}
-          search={{ title: title }}
-        >
-          Add a lecture <Plus />{' '}
-        </Link>
-      </Button>
-
       <div className="grid-cols-4 grid gap-4 my-3">
         {allLectures.map((lecture) =>
           lecture ? (
             <LectureCard key={lecture.id} lecture={lecture} />
           ) : (
-            <p>No lectures found yet</p>
+            <Empty className="border col-span-4">
+              <EmptyHeader>
+                <EmptyMedia variant={'icon'}>
+                  {' '}
+                  <AlertTriangle />{' '}
+                </EmptyMedia>
+                <EmptyTitle>No lectures found</EmptyTitle>
+                <EmptyDescription>
+                  Please add some lectures first.
+                </EmptyDescription>
+                <EmptyContent>
+                  <Button asChild variant={'secondary'}>
+                    <Link
+                      to="/materials/$id/add"
+                      params={{ id }}
+                      search={{ title }}
+                      className="flex items-center gap-2"
+                    >
+                      Add a lecture
+                      <Plus className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                </EmptyContent>
+              </EmptyHeader>
+            </Empty>
           ),
         )}
       </div>

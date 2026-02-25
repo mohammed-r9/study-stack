@@ -16,6 +16,7 @@ import { useAuthStore } from '@/lib/store/auth'
 import { AppHeader } from '@/components/app-header/app-header'
 import { useEffect } from 'react'
 import { useThemeStore } from '@/lib/store/theme'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 export interface MyRouterContext {
   queryClient: QueryClient
@@ -33,14 +34,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }, [theme])
 
     return (
-      <>
-        <AppHeader />
-        <Outlet />
+      <TooltipProvider>
+        <div className="h-screen flex flex-col overflow-hidden">
+          <AppHeader />
+
+          <div className="flex-1 overflow-hidden">
+            <Outlet />
+          </div>
+        </div>
 
         <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
+          config={{ position: 'bottom-right' }}
           plugins={[
             {
               name: 'Tanstack Router',
@@ -49,8 +53,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
             TanStackQueryDevtools,
           ]}
         />
-        <Toaster />
-      </>
+
+        <Toaster richColors theme={theme} position="top-center" />
+      </TooltipProvider>
     )
   },
   loader: async ({ context: ctx }) => {

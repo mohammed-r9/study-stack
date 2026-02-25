@@ -44,7 +44,7 @@ function RouteComponent() {
     <div className="flex flex-col gap-5">
       <Button
         asChild
-        variant={'outline'}
+        variant={'secondary'}
         onClick={() => router.history.back()}
         className="self-start"
       >
