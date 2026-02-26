@@ -15,7 +15,7 @@ func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUI
 	if userID == uuid.Nil || materialID == uuid.Nil || lectureTitle == "" {
 		return appErrors.BadData
 	}
-	if file.Size > 20*1024*1024 {
+	if file.Size > 50*1024*1024 {
 		return appErrors.FileTooLarge
 	}
 	if !strings.HasSuffix(file.Filename, ".pdf") {

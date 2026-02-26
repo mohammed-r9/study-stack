@@ -89,3 +89,7 @@ export type GetAllLecturesRes = {
 	lectures: Lecture[]
 	has_next_page: boolean
 }
+
+export type SignedURL = {
+	url: string
+}

@@ -15,6 +15,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaterialsRouteRouteImport } from './routes/materials/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LectureIdRouteImport } from './routes/lecture.$id'
 import { Route as MaterialsIdRouteRouteImport } from './routes/materials/$id/route'
 import { Route as MaterialsIdIndexRouteImport } from './routes/materials/$id/index'
 import { Route as MaterialsIdEditRouteImport } from './routes/materials/$id/edit'
@@ -50,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LectureIdRoute = LectureIdRouteImport.update({
+  id: '/lecture/$id',
+  path: '/lecture/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MaterialsIdRouteRoute = MaterialsIdRouteRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
+  '/lecture/$id': typeof LectureIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
+  '/lecture/$id': typeof LectureIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id': typeof MaterialsIdIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
+  '/lecture/$id': typeof LectureIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/materials/$id'
+    | '/lecture/$id'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/settings'
+    | '/lecture/$id'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/materials/$id'
+    | '/lecture/$id'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   SettingsRoute: typeof SettingsRoute
+  LectureIdRoute: typeof LectureIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lecture/$id': {
+      id: '/lecture/$id'
+      path: '/lecture/$id'
+      fullPath: '/lecture/$id'
+      preLoaderRoute: typeof LectureIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/materials/$id': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   SettingsRoute: SettingsRoute,
+  LectureIdRoute: LectureIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

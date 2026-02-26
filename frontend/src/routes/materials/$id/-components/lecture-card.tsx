@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Lecture } from '@/lib/api/types'
+import { Link } from '@tanstack/react-router'
 import { Calendar, HardDrive, FileText } from 'lucide-react'
 
 // Helper to convert bytes into a human-readable string
@@ -23,9 +24,11 @@ type LectureCardProps = {
 export default function LectureCard({ lecture }: LectureCardProps) {
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md group h-full flex flex-col">
-      <div className="flex items-center justify-center h-40 bg-muted/40 group-hover:bg-muted/60 transition-colors border-b hover:cursor-pointer">
-        <FileText className="w-16 h-16 text-muted-foreground/60 group-hover:text-primary/80 transition-all duration-300 group-hover:scale-110" />
-      </div>
+      <Link to="/lecture/$id" params={{ id: lecture.id }}>
+        <div className="flex items-center justify-center h-40 bg-muted/40 group-hover:bg-muted/60 transition-colors border-b hover:cursor-pointer">
+          <FileText className="w-16 h-16 text-muted-foreground/60 group-hover:text-primary/80 transition-all duration-300 group-hover:scale-110" />
+        </div>
+      </Link>
 
       <CardHeader className="p-4 grow">
         <CardTitle
