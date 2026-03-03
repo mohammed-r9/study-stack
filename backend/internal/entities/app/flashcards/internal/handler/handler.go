@@ -2,7 +2,7 @@ package handler
 
 import (
 	"database/sql"
-	"study-stack/internal/entities/flashcards/internal/service"
+	"study-stack/internal/entities/app/flashcards/internal/service"
 
 	"github.com/go-playground/validator/v10"
 )

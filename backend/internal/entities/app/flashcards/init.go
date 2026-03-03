@@ -24,5 +24,6 @@ func Init(db *sql.DB, a *fiber.App, v *validator.Validate) {
 }
 
 func registerRoutes(a *fiber.App, h *handler.Handler) {
-// TODO: Define routes
+	flashcards := a.Group("/flashcards", middleware.Authenticate)
+	flashcards.Post("/", h.CreateFlashcard)
 }

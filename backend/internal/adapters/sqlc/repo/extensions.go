@@ -34,7 +34,7 @@ func (q *Queries) VerifyUser(ctx context.Context, db *sql.DB, userID uuid.UUID, 
 	return tx.Commit()
 }
 
-// return the oldest flashcard and updates its last_used field to the current time
+// returns the oldest flashcard and updates its last_used field to the current time
 func (q *Queries) GetAndUseFlashCard(ctx context.Context, db *sql.DB, userID uuid.UUID) (Flashcard, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
