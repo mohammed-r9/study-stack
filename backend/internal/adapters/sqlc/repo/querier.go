@@ -15,6 +15,7 @@ type Querier interface {
 	ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (int64, error)
 	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) error
+	CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error
 	CreateLecture(ctx context.Context, arg CreateLectureParams) error
 	DeleteLecture(ctx context.Context, arg DeleteLectureParams) (int64, error)
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
@@ -53,6 +54,8 @@ type Querier interface {
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (int64, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (int64, error)
 	UseToken(ctx context.Context, hash string) (int64, error)
+	getOldestFlashcard(ctx context.Context, userID uuid.UUID) (Flashcard, error)
+	useFlashcard(ctx context.Context, id uuid.UUID) (int64, error)
 	verifyUserEmail(ctx context.Context, id uuid.UUID) (int64, error)
 }
 

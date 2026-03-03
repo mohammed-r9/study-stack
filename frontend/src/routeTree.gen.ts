@@ -14,12 +14,14 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaterialsRouteRouteImport } from './routes/materials/route'
+import { Route as FlashCardsRouteRouteImport } from './routes/flash-cards/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LectureIdRouteImport } from './routes/lecture.$id'
 import { Route as MaterialsIdRouteRouteImport } from './routes/materials/$id/route'
 import { Route as MaterialsIdIndexRouteImport } from './routes/materials/$id/index'
 import { Route as MaterialsIdEditRouteImport } from './routes/materials/$id/edit'
 import { Route as MaterialsIdAddRouteImport } from './routes/materials/$id/add'
+import { Route as FlashCardsAddMaterialIdRouteImport } from './routes/flash-cards/add.$materialId'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -44,6 +46,11 @@ const LoginRoute = LoginRouteImport.update({
 const MaterialsRouteRoute = MaterialsRouteRouteImport.update({
   id: '/materials',
   path: '/materials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlashCardsRouteRoute = FlashCardsRouteRouteImport.update({
+  id: '/flash-cards',
+  path: '/flash-cards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -76,9 +83,15 @@ const MaterialsIdAddRoute = MaterialsIdAddRouteImport.update({
   path: '/add',
   getParentRoute: () => MaterialsIdRouteRoute,
 } as any)
+const FlashCardsAddMaterialIdRoute = FlashCardsAddMaterialIdRouteImport.update({
+  id: '/add/$materialId',
+  path: '/add/$materialId',
+  getParentRoute: () => FlashCardsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/flash-cards': typeof FlashCardsRouteRouteWithChildren
   '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
@@ -86,18 +99,21 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
   '/lecture/$id': typeof LectureIdRoute
+  '/flash-cards/add/$materialId': typeof FlashCardsAddMaterialIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/flash-cards': typeof FlashCardsRouteRouteWithChildren
   '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/lecture/$id': typeof LectureIdRoute
+  '/flash-cards/add/$materialId': typeof FlashCardsAddMaterialIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id': typeof MaterialsIdIndexRoute
@@ -105,6 +121,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/flash-cards': typeof FlashCardsRouteRouteWithChildren
   '/materials': typeof MaterialsRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
@@ -112,6 +129,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
   '/lecture/$id': typeof LectureIdRoute
+  '/flash-cards/add/$materialId': typeof FlashCardsAddMaterialIdRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
@@ -120,6 +138,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/flash-cards'
     | '/materials'
     | '/login'
     | '/profile'
@@ -127,24 +146,28 @@ export interface FileRouteTypes {
     | '/settings'
     | '/materials/$id'
     | '/lecture/$id'
+    | '/flash-cards/add/$materialId'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/flash-cards'
     | '/materials'
     | '/login'
     | '/profile'
     | '/register'
     | '/settings'
     | '/lecture/$id'
+    | '/flash-cards/add/$materialId'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id'
   id:
     | '__root__'
     | '/'
+    | '/flash-cards'
     | '/materials'
     | '/login'
     | '/profile'
@@ -152,6 +175,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/materials/$id'
     | '/lecture/$id'
+    | '/flash-cards/add/$materialId'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
@@ -159,6 +183,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FlashCardsRouteRoute: typeof FlashCardsRouteRouteWithChildren
   MaterialsRouteRoute: typeof MaterialsRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
@@ -204,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaterialsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/flash-cards': {
+      id: '/flash-cards'
+      path: '/flash-cards'
+      fullPath: '/flash-cards'
+      preLoaderRoute: typeof FlashCardsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -246,8 +278,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaterialsIdAddRouteImport
       parentRoute: typeof MaterialsIdRouteRoute
     }
+    '/flash-cards/add/$materialId': {
+      id: '/flash-cards/add/$materialId'
+      path: '/add/$materialId'
+      fullPath: '/flash-cards/add/$materialId'
+      preLoaderRoute: typeof FlashCardsAddMaterialIdRouteImport
+      parentRoute: typeof FlashCardsRouteRoute
+    }
   }
 }
+
+interface FlashCardsRouteRouteChildren {
+  FlashCardsAddMaterialIdRoute: typeof FlashCardsAddMaterialIdRoute
+}
+
+const FlashCardsRouteRouteChildren: FlashCardsRouteRouteChildren = {
+  FlashCardsAddMaterialIdRoute: FlashCardsAddMaterialIdRoute,
+}
+
+const FlashCardsRouteRouteWithChildren = FlashCardsRouteRoute._addFileChildren(
+  FlashCardsRouteRouteChildren,
+)
 
 interface MaterialsIdRouteRouteChildren {
   MaterialsIdAddRoute: typeof MaterialsIdAddRoute
@@ -278,6 +329,7 @@ const MaterialsRouteRouteWithChildren = MaterialsRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FlashCardsRouteRoute: FlashCardsRouteRouteWithChildren,
   MaterialsRouteRoute: MaterialsRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,

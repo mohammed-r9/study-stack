@@ -5,7 +5,6 @@ import {
   Link,
   Outlet,
   useLocation,
-  useMatchRoute,
 } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 
@@ -40,17 +39,30 @@ function RouteComponent() {
           </p>
 
           {!isAddRoute && (
-            <Button asChild>
-              <Link
-                to="/materials/$id/add"
-                params={{ id }}
-                search={{ title }}
-                className="flex items-center gap-2"
-              >
-                Add a lecture
-                <Plus className="w-4 h-4" />
-              </Link>
-            </Button>
+            <div className="flex gap-4">
+              <Button asChild>
+                <Link
+                  to="/materials/$id/add"
+                  params={{ id }}
+                  search={{ title }}
+                  className="flex items-center gap-2"
+                >
+                  Add a lecture
+                  <Plus className="w-4 h-4" />
+                </Link>
+              </Button>
+
+              <Button asChild variant={'secondary'}>
+                <Link
+                  to="/flash-cards/add/$materialId"
+                  params={{ materialId: id }}
+                  className="flex items-center gap-2"
+                >
+                  Add a flashcard
+                  <Plus className="w-4 h-4" />
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
 
