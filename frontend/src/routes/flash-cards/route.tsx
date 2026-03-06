@@ -61,7 +61,11 @@ function RouteComponent() {
       </div>
 
       <div className="flex justify-center w-full">
-        <Button variant="ghost" onClick={() => setCursor((prev) => prev + 1)}>
+        <Button
+          variant="outline"
+          onClick={() => setCursor((prev) => prev + 1)}
+          disabled={isLoading}
+        >
           <ArrowRight />
         </Button>
       </div>

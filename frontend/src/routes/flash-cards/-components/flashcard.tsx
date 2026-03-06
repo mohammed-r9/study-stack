@@ -2,13 +2,9 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 type Props = {
   front: string | undefined
@@ -28,24 +24,35 @@ export default function Flashcard({ front, back }: Props) {
           exit={{ rotateY: 90 }}
           transition={{ duration: 0.2 }}
         >
-          <Card className="p-4 text-center">
+          <Card
+            className={cn(
+              'p-4 text-center',
+              flip ? 'dark:bg-card/30 bg-border/25' : '',
+            )}
+          >
             <CardHeader>
-              <CardTitle>{flip ? 'Back' : 'Front'}</CardTitle>
+              <CardTitle className="text-lg">
+                {flip ? 'Back' : 'Front'}
+              </CardTitle>
             </CardHeader>
 
-            <CardContent>
-              {flip
-                ? back
-                  ? back
-                  : 'Loading...'
-                : front
-                  ? front
-                  : 'Loading...'}
+            <CardContent className="text-lg">
+              {flip ? (
+                back ? (
+                  back
+                ) : (
+                  <Spinner className="text-primary size-6!" />
+                )
+              ) : front ? (
+                front
+              ) : (
+                <Spinner className="text-primary size-6!" />
+              )}
             </CardContent>
 
-            <CardFooter className="flex justify-end">
+            <div className="flex justify-end">
               <Button onClick={() => setFlip((prev) => !prev)}>Flip</Button>
-            </CardFooter>
+            </div>
           </Card>
         </motion.div>
       </AnimatePresence>
