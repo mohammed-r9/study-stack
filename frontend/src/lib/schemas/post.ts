@@ -18,6 +18,12 @@ export const lectureFormSchema = z.object({
 		.refine(file => !file || file.type === "application/pdf", { message: "Only PDF allowed" })
 })
 
+export const flashcardSchema = z.object({
+	back: z.string().min(4, "The back should be more than 4 characters"),
+	front: z.string().min(4, "The front should be more than 4 characters")
+})
+
 export type insertMaterialInput = z.infer<typeof insertMaterialSchema>
 export type InsetCollectionInput = z.infer<typeof insertMaterialSchema>
 export type insertLectureInput = z.infer<typeof lectureFormSchema>
+export type insertFlashcardInput = z.infer<typeof lectureFormSchema>

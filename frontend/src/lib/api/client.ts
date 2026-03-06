@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateCollectionReq, createLectureReq, CreateMaterialReq, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, User, UserLibrary } from "./types";
+import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, User, UserLibrary } from "./types";
 import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ class HttpClient {
 		})
 
 		// interceptors
-		// attach the token to auhtenticate requests
+		// attach the token to authenticate requests
 		this.api.interceptors.request.use(
 			(config) => {
 				const token = useAuthStore.getState().accessToken
@@ -27,6 +27,23 @@ class HttpClient {
 				return config;
 			},
 			(error) => Promise.reject(error)
+		);
+		this.api.interceptors.response.use(
+			(response) => response,
+			async (error) => {
+				if (error.response?.status === 401 && !error.config.url.endsWith("/refresh")) {
+					try {
+						const token = await this.refreshToken();
+						useAuthStore.getState().setAccessToken(token.data.access_token);
+						return Promise.reject(error);
+
+					} catch (refreshError) {
+						useAuthStore.getState().logout();
+						return Promise.reject(refreshError);
+					}
+				}
+				return Promise.reject(error);
+			}
 		);
 
 	}
@@ -97,6 +114,14 @@ class HttpClient {
 
 	public async getSignedURL(id: string) {
 		return this.api.get<SignedURL>(`/lectures/${id}/download-link`)
+	}
+
+	public async createFlashcard(body: CreateFlashCardBody) {
+		return this.api.post("/flashcards", body)
+	}
+
+	public async getOneFlashcard() {
+		return this.api.get<Flashcard>("/flashcards?quantity=one")
 	}
 
 }

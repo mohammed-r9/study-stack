@@ -93,3 +93,18 @@ export type GetAllLecturesRes = {
 export type SignedURL = {
 	url: string
 }
+
+export type CreateFlashCardBody = {
+	back: string
+	front: string
+	material_id: string
+}
+
+export type Flashcard = {
+	id: string
+	back: string
+	front: string
+	last_used: Date
+	created_at: Date
+	updated_at: Date
+}

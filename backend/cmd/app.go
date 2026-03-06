@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"study-stack/internal/entities/app/collections"
+	"study-stack/internal/entities/app/flashcards"
 	"study-stack/internal/entities/app/lectures"
 	"study-stack/internal/entities/app/materials"
 	"study-stack/internal/entities/app/users"
@@ -47,6 +48,7 @@ func (a *application) mount() {
 	collections.Init(a.db, a.router, validator)
 	materials.Init(a.db, a.router, validator)
 	lectures.Init(a.db, a.router, validator, appS3Bucket)
+	flashcards.Init(a.db, a.router, validator)
 }
 
 func (a *application) run() error {

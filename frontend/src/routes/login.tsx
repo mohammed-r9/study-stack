@@ -46,7 +46,7 @@ function RouteComponent() {
         >
           <FieldGroup>
             <form.AppField name="email">
-              {(field) => (
+              {() => (
                 <AppField
                   type="email"
                   id="email"
@@ -57,7 +57,7 @@ function RouteComponent() {
             </form.AppField>
 
             <form.AppField name="password">
-              {(field) => (
+              {() => (
                 <AppField
                   type="password"
                   id="password"

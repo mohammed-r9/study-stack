@@ -7,6 +7,7 @@ import {
   useLocation,
 } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import AddFlashcard from './-components/add-flashcard'
 
 export type MaterialSerach = {
   title: string
@@ -52,16 +53,7 @@ function RouteComponent() {
                 </Link>
               </Button>
 
-              <Button asChild variant={'secondary'}>
-                <Link
-                  to="/flash-cards/add/$materialId"
-                  params={{ materialId: id }}
-                  className="flex items-center gap-2"
-                >
-                  Add a flashcard
-                  <Plus className="w-4 h-4" />
-                </Link>
-              </Button>
+              <AddFlashcard materialId={id} />
             </div>
           )}
         </div>
