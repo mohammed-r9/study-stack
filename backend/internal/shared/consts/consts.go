@@ -8,4 +8,9 @@ const (
 	UserDataContextKey = "user-data"
 	// pagination page size
 	PAGE_SIZE = 20
+
+	// RateLimit
+	RL_AUTH    = "authed_user"
+	RL_REFRESH = "refresh"
+	RL_PUBLIC  = "public"
 )
