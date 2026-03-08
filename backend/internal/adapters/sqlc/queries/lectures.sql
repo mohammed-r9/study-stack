@@ -66,23 +66,3 @@ WHERE c.user_id = @user_id
   AND l.id < @last_seen_lecture_id
 ORDER BY l.id DESC
 LIMIT 20;
-
-
--- name: ListActiveLectures :many
-SELECT l.*
-FROM lectures l
-JOIN materials m ON m.id = l.material_id
-JOIN collections c ON c.id = m.collection_id
-WHERE c.user_id = $1 AND l.archived_at IS NULL
-ORDER BY l.created_at DESC, l.id DESC
-LIMIT 20 OFFSET $2;
-
-
--- name: ListArchivedLectures :many
-SELECT l.*
-FROM lectures l
-JOIN materials m ON m.id = l.material_id
-JOIN collections c ON c.id = m.collection_id
-WHERE c.user_id = $1 AND l.archived_at IS NOT NULL
-ORDER BY l.created_at DESC, l.id DESC
-LIMIT 20 OFFSET $2;

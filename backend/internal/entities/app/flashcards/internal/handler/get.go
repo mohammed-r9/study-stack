@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"study-stack/internal/entities/app/flashcards/internal/service"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
@@ -14,21 +15,36 @@ func (h *Handler) GetFlashcards(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
-	// one | many
-	quantity := c.Query("quantity")
+	// study | list
+	quantity := c.Query("mode")
 	if quantity == "" {
 		log.Println("invalid query type")
 		return appErrors.BadData
 	}
 
-	// to be refactored
-	if quantity == "one" {
+	switch quantity {
+	case "study":
 		flashcard, err := h.svc.GetAndUseFlashcard(c.Context(), userData.UserID)
 		if err != nil {
 			log.Println(err)
 			return err
 		}
 		return c.JSON(flashcard)
+
+	case "list":
+		lastSeenIdStr := c.Query("last_seen_flashcard_id", "")
+		lastSeenId, err := utils.ParseOptionalUUID(lastSeenIdStr)
+		if err != nil {
+			return err
+		}
+		flashcardsPage, err := h.svc.GetFlashCardPage(c.Context(), service.GetFlashCardPageParams{
+			UserID:            userData.UserID,
+			LastSeenFlashcard: lastSeenId,
+		})
+		if err != nil {
+			return err
+		}
+		return c.JSON(flashcardsPage)
 	}
-	return nil
+	return appErrors.BadData
 }

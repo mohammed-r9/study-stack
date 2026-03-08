@@ -16,5 +16,11 @@ export const queryKeys = {
 		signedURL: (lectureId: string) =>
 			[...queryKeys.library.all, "lecture", lectureId, "signed-url"] as const,
 	},
-	flashcard: ["flashcard"] as const,
+	flashcards: {
+		all: ["flashcards"] as const,
+		list: () =>
+			[...queryKeys.flashcards.all, "list"] as const,
+		study: () =>
+			[...queryKeys.flashcards.all, "study"] as const,
+	}
 }

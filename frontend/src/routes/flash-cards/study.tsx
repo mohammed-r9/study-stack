@@ -3,7 +3,7 @@ import Flashcard from './-components/flashcard'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useFlashcard } from '@/lib/queries/flashcards'
-import { AlertTriangle, ArrowRight } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Layers, StepBack } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   Empty,
@@ -14,7 +14,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 
-export const Route = createFileRoute('/flash-cards')({
+export const Route = createFileRoute('/flash-cards/study')({
   component: RouteComponent,
 })
 
@@ -43,6 +43,13 @@ function RouteComponent() {
 
   return (
     <div className="p-4 w-full min-h-screen flex flex-col items-center justify-center gap-6">
+      <Button asChild>
+        <Link to="/flash-cards/list" search={{ view: 'grid' }}>
+          {' '}
+          <Layers className="h-4 w-4" />
+          View all flashcards
+        </Link>
+      </Button>
       <div className="w-full max-w-md flex justify-center">
         <AnimatePresence mode="wait">
           <motion.div

@@ -7,6 +7,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -39,6 +40,64 @@ func (q *Queries) CreateFlashcard(ctx context.Context, arg CreateFlashcardParams
 		arg.UserID,
 	)
 	return err
+}
+
+const getFlashcardsPage = `-- name: GetFlashcardsPage :many
+SELECT f.id, f.material_id, f.front, f.back, f.created_at, f.updated_at, f.last_used, m.title AS material_title
+FROM flashcards f
+JOIN materials m ON m.id = f.material_id
+JOIN collections c ON c.id = m.collection_id
+WHERE c.user_id = $1 AND f.id < $2
+ORDER BY f.id DESC
+LIMIT 20
+`
+
+type GetFlashcardsPageParams struct {
+	UserID              uuid.UUID `json:"user_id"`
+	LastSeenFlashcardID uuid.UUID `json:"last_seen_flashcard_id"`
+}
+
+type GetFlashcardsPageRow struct {
+	ID            uuid.UUID `json:"id"`
+	MaterialID    uuid.UUID `json:"material_id"`
+	Front         string    `json:"front"`
+	Back          string    `json:"back"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	LastUsed      time.Time `json:"last_used"`
+	MaterialTitle string    `json:"material_title"`
+}
+
+func (q *Queries) GetFlashcardsPage(ctx context.Context, arg GetFlashcardsPageParams) ([]GetFlashcardsPageRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFlashcardsPage, arg.UserID, arg.LastSeenFlashcardID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFlashcardsPageRow
+	for rows.Next() {
+		var i GetFlashcardsPageRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.MaterialID,
+			&i.Front,
+			&i.Back,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.LastUsed,
+			&i.MaterialTitle,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getOldestFlashcard = `-- name: getOldestFlashcard :one

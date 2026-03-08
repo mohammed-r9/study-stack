@@ -104,7 +104,17 @@ export type Flashcard = {
 	id: string
 	back: string
 	front: string
+	material_title: string
 	last_used: Date
 	created_at: Date
 	updated_at: Date
+}
+
+export type GetAllFlashcardParams = {
+	last_seen_flashcard_id: string
+}
+
+export type GetAllFlashcardsRes = {
+	flashcards: Flashcard[]
+	has_next_page: boolean
 }

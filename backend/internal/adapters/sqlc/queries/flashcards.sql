@@ -21,3 +21,13 @@ LIMIT 1;
 UPDATE flashcards
 	SET last_used = NOW()
 	WHERE id = $1;
+
+
+-- name: GetFlashcardsPage :many
+SELECT f.*, m.title AS material_title
+FROM flashcards f
+JOIN materials m ON m.id = f.material_id
+JOIN collections c ON c.id = m.collection_id
+WHERE c.user_id = @user_id AND f.id < @last_seen_flashcard_id
+ORDER BY f.id DESC
+LIMIT 20;

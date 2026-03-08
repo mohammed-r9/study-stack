@@ -45,7 +45,7 @@ function RouteComponent() {
                 <Link
                   to="/materials/$id/add"
                   params={{ id }}
-                  search={{ title }}
+                  search={{ title: title, showAlert: false }}
                   className="flex items-center gap-2"
                 >
                   Add a lecture

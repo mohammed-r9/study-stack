@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, User, UserLibrary } from "./types";
+import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllFlashcardParams, GetAllFlashcardsRes, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, User, UserLibrary } from "./types";
 import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
@@ -121,7 +121,11 @@ class HttpClient {
 	}
 
 	public async getOneFlashcard() {
-		return this.api.get<Flashcard>("/flashcards?quantity=one")
+		return this.api.get<Flashcard>("/flashcards?mode=study")
+	}
+
+	public async getAllFlashcards(params: GetAllFlashcardParams) {
+		return this.api.get<GetAllFlashcardsRes>(`/flashcards?mode=list&last_seen_flashcard_id=${params.last_seen_flashcard_id}`)
 	}
 
 }

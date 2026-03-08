@@ -37,14 +37,14 @@ func registerRoutes(a *fiber.App, h *handler.Handler) {
 	refreshLimiter := middleware.RateLimitMiddleware(middleware.RateLimitConfig{
 		Max:        10,
 		Window:     time.Minute,
-		KeyBuilder: utils.BuildRatelimitKeyForPublicRoutes,
+		KeyBuilder: utils.BuildRatelimitKeyForRefresh,
 		Prefix:     consts.RL_REFRESH,
 	})
 
 	authLimiter := middleware.RateLimitMiddleware(middleware.RateLimitConfig{
 		Max:        10,
 		Window:     time.Minute,
-		KeyBuilder: utils.BuildRatelimitKeyForPublicRoutes,
+		KeyBuilder: utils.BuildRatelimitKeyForAuthedUser,
 		Prefix:     consts.RL_AUTH,
 	})
 

@@ -28,6 +28,7 @@ type Querier interface {
 	GetAllUnarchivedMaterialsInCollection(ctx context.Context, arg GetAllUnarchivedMaterialsInCollectionParams) ([]Material, error)
 	GetArchivedCollectionByID(ctx context.Context, arg GetArchivedCollectionByIDParams) (Collection, error)
 	GetCollectionByID(ctx context.Context, arg GetCollectionByIDParams) (Collection, error)
+	GetFlashcardsPage(ctx context.Context, arg GetFlashcardsPageParams) ([]GetFlashcardsPageRow, error)
 	GetLectureByID(ctx context.Context, arg GetLectureByIDParams) (Lecture, error)
 	GetLectureFileKey(ctx context.Context, arg GetLectureFileKeyParams) (GetLectureFileKeyRow, error)
 	GetMaterialByID(ctx context.Context, arg GetMaterialByIDParams) (Material, error)
@@ -39,8 +40,6 @@ type Querier interface {
 	InsertMaterial(ctx context.Context, arg InsertMaterialParams) error
 	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
-	ListActiveLectures(ctx context.Context, arg ListActiveLecturesParams) ([]Lecture, error)
-	ListArchivedLectures(ctx context.Context, arg ListArchivedLecturesParams) ([]Lecture, error)
 	ListLectures(ctx context.Context, arg ListLecturesParams) ([]ListLecturesRow, error)
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)

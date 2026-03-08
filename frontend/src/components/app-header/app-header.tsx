@@ -24,7 +24,7 @@ export const AppHeader = () => {
       </div>
       <div className="flex gap-4 items-center">
         <NavLink to="/materials">Materials</NavLink>
-        <NavLink to="/flash-cards">Flash cards</NavLink>
+        <NavLink to="/flash-cards/study">Flash cards</NavLink>
       </div>
       <div>
         <SignedIn>
