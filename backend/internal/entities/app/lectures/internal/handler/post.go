@@ -33,10 +33,13 @@ func (h *Handler) InsertLecture(c *fiber.Ctx) error {
 		log.Println("invalid file")
 		return appErrors.BadData
 	}
-	err = h.svc.InsertLecture(c.Context(), userData.UserID, materialID, lectureTitle, file)
+	lecture, err := h.svc.InsertLecture(c.Context(), userData.UserID, materialID, lectureTitle, file)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	return c.Status(fiber.StatusCreated).SendString("Lecture uploaded successfully")
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Lecture uploaded successfully",
+		"lecture": lecture,
+	})
 }

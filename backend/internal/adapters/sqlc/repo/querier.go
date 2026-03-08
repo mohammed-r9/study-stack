@@ -16,7 +16,7 @@ type Querier interface {
 	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) error
 	CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error
-	CreateLecture(ctx context.Context, arg CreateLectureParams) error
+	CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error)
 	DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (int64, error)
 	DeleteLecture(ctx context.Context, arg DeleteLectureParams) (int64, error)
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)

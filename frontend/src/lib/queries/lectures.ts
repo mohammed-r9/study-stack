@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { httpClient } from "../api"
-import type { createLectureReq } from "../api/types"
+import type { createLectureReq, Lecture } from "../api/types"
 import { toast } from "sonner"
 import { queryKeys } from "./keys"
 import { useRouter } from "@tanstack/react-router"
@@ -11,15 +11,35 @@ export function useCreateLecture(materialID: string, title: string) {
 	return useMutation({
 		mutationFn: async (body: createLectureReq) => {
 			const res = await httpClient.createLecture(body)
-			return res.data
+			return res.data.lecture
 		},
-		onSuccess: () => {
-			toast.success('Lecture uploaded successfully')
-			query.invalidateQueries({
-				queryKey: queryKeys.library.lectures(materialID),
-				refetchType: "all"
-			})
-			router.navigate({ to: "/materials/$id", params: { id: materialID }, search: { title: title } })
+		onSuccess: (newLecture) => {
+			query.setQueryData(
+				queryKeys.library.lectures(materialID),
+				(old: any) => {
+					if (!old) {
+						return {
+							pages: [{ lectures: [newLecture.lecture] }],
+							pageParams: [undefined],
+						};
+					}
+					return {
+						...old,
+						pages: old.pages.map((page: any, index: number) =>
+							index === 0
+								? { ...page, lectures: [newLecture, ...page.lectures] }
+								: page
+						),
+					};
+				}
+			);
+
+			router.navigate({
+				to: "/materials/$id",
+				params: { id: materialID },
+				search: { title: title }
+			});
+			toast.success('Lecture uploaded successfully');
 		},
 		onError: (err: any) => {
 			toast.error(err?.response?.data?.message || err?.message || 'Failed to upload lecture')

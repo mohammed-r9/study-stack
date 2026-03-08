@@ -1,4 +1,4 @@
--- name: CreateLecture :exec
+-- name: CreateLecture :one
 INSERT INTO lectures (id, material_id, title, file_key, file_size)
 SELECT $1, $2, $3, $4, $5
 WHERE EXISTS (
@@ -6,7 +6,8 @@ WHERE EXISTS (
     FROM materials m
     JOIN collections c ON c.id = m.collection_id
     WHERE m.id = $2 AND c.user_id = $6
-);
+)
+RETURNING *;
 
 -- name: GetLectureByID :one
 SELECT l.*

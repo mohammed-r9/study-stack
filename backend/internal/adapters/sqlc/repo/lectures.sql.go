@@ -33,7 +33,7 @@ func (q *Queries) ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) 
 	return result.RowsAffected()
 }
 
-const createLecture = `-- name: CreateLecture :exec
+const createLecture = `-- name: CreateLecture :one
 INSERT INTO lectures (id, material_id, title, file_key, file_size)
 SELECT $1, $2, $3, $4, $5
 WHERE EXISTS (
@@ -42,6 +42,7 @@ WHERE EXISTS (
     JOIN collections c ON c.id = m.collection_id
     WHERE m.id = $2 AND c.user_id = $6
 )
+RETURNING id, material_id, title, file_key, file_size, created_at, updated_at, archived_at
 `
 
 type CreateLectureParams struct {
@@ -53,8 +54,8 @@ type CreateLectureParams struct {
 	UserID     uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) error {
-	_, err := q.db.ExecContext(ctx, createLecture,
+func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error) {
+	row := q.db.QueryRowContext(ctx, createLecture,
 		arg.ID,
 		arg.MaterialID,
 		arg.Title,
@@ -62,7 +63,18 @@ func (q *Queries) CreateLecture(ctx context.Context, arg CreateLectureParams) er
 		arg.FileSize,
 		arg.UserID,
 	)
-	return err
+	var i Lecture
+	err := row.Scan(
+		&i.ID,
+		&i.MaterialID,
+		&i.Title,
+		&i.FileKey,
+		&i.FileSize,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
 const deleteLecture = `-- name: DeleteLecture :execrows

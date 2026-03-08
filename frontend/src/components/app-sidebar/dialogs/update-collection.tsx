@@ -89,7 +89,7 @@ export default function UpdateCollectionDialog({
               )}
             </form.AppField>
           </FieldGroup>
-          <DialogFooter className="flex mt-4 w-full">
+          <div className="flex mt-4 w-full bg-background gap-4">
             <Button variant="destructive" className="gap-2 flex-1">
               <Trash2 className="size-4" />
               Delete
@@ -97,7 +97,7 @@ export default function UpdateCollectionDialog({
             <Button type="submit" className="flex-1">
               Save Changes
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

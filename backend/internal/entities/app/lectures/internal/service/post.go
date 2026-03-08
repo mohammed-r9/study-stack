@@ -11,37 +11,37 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUID, lectureTitle string, file *multipart.FileHeader) error {
+func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUID, lectureTitle string, file *multipart.FileHeader) (repo.Lecture, error) {
 	if userID == uuid.Nil || materialID == uuid.Nil || lectureTitle == "" {
-		return appErrors.BadData
+		return repo.Lecture{}, appErrors.BadData
 	}
 	if file.Size > 50*1024*1024 {
-		return appErrors.FileTooLarge
+		return repo.Lecture{}, appErrors.FileTooLarge
 	}
 	if !strings.HasSuffix(file.Filename, ".pdf") {
-		return appErrors.BadData
+		return repo.Lecture{}, appErrors.BadData
 	}
 	src, err := file.Open()
 	if err != nil {
-		return err
+		return repo.Lecture{}, err
 	}
 	defer src.Close()
 
 	fileKey, err := utils.GenerateRandomBase64(16)
 	if err != nil {
-		return err
+		return repo.Lecture{}, err
 	}
 	err = s.bucket.Upload(ctx, fileKey, src, "application/pdf")
 	if err != nil {
-		return err
+		return repo.Lecture{}, err
 	}
 
 	lectureID, err := uuid.NewV7()
 	if err != nil {
-		return err
+		return repo.Lecture{}, err
 	}
 
-	err = s.repo.CreateLecture(ctx, repo.CreateLectureParams{
+	lecture, err := s.repo.CreateLecture(ctx, repo.CreateLectureParams{
 		UserID:     userID,
 		ID:         lectureID,
 		Title:      lectureTitle,
@@ -49,6 +49,9 @@ func (s *Service) InsertLecture(ctx context.Context, userID, materialID uuid.UUI
 		FileKey:    fileKey,
 		FileSize:   file.Size,
 	})
+	if err != nil {
+		return repo.Lecture{}, err
+	}
 
-	return err
+	return lecture, err
 }

@@ -53,7 +53,7 @@ export default function FlashcardListItem({
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem className="cursor-pointer">
               <Pencil className="mr-2 h-4 w-4" />
               Edit Card
