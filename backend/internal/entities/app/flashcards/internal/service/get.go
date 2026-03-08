@@ -18,8 +18,8 @@ func (s *Service) GetAndUseFlashcard(ctx context.Context, userID uuid.UUID) (rep
 }
 
 type flashcardPage struct {
-	Flashcards  []repo.Flashcard `json:"flashcards"`
-	HasNextPage bool             `json:"has_next_page"`
+	Flashcards  []repo.GetFlashcardsPageRow `json:"flashcards"`
+	HasNextPage bool                        `json:"has_next_page"`
 }
 type GetFlashCardPageParams struct {
 	UserID            uuid.UUID

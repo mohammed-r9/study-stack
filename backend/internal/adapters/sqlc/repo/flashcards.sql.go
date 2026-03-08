@@ -42,6 +42,30 @@ func (q *Queries) CreateFlashcard(ctx context.Context, arg CreateFlashcardParams
 	return err
 }
 
+const deleteFlashcard = `-- name: DeleteFlashcard :execrows
+DELETE FROM flashcards f
+WHERE f.id = $1
+  AND material_id IN (
+    SELECT m.id
+    FROM materials m
+    JOIN collections c ON c.id = m.collection_id
+    WHERE c.user_id = $2
+  )
+`
+
+type DeleteFlashcardParams struct {
+	FlashcardID uuid.UUID `json:"flashcard_id"`
+	UserID      uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteFlashcard, arg.FlashcardID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getFlashcardsPage = `-- name: GetFlashcardsPage :many
 SELECT f.id, f.material_id, f.front, f.back, f.created_at, f.updated_at, f.last_used, m.title AS material_title
 FROM flashcards f

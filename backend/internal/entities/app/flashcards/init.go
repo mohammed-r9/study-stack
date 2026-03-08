@@ -27,4 +27,5 @@ func registerRoutes(a *fiber.App, h *handler.Handler) {
 	flashcards := a.Group("/flashcards", middleware.Authenticate)
 	flashcards.Post("/", h.CreateFlashcard)
 	flashcards.Get("/", h.GetFlashcards)
+	flashcards.Delete("/:id", h.DeleteFlashcard)
 }

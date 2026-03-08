@@ -22,7 +22,6 @@ UPDATE flashcards
 	SET last_used = NOW()
 	WHERE id = $1;
 
-
 -- name: GetFlashcardsPage :many
 SELECT f.*, m.title AS material_title
 FROM flashcards f
@@ -31,3 +30,13 @@ JOIN collections c ON c.id = m.collection_id
 WHERE c.user_id = @user_id AND f.id < @last_seen_flashcard_id
 ORDER BY f.id DESC
 LIMIT 20;
+
+-- name: DeleteFlashcard :execrows
+DELETE FROM flashcards f
+WHERE f.id = @flashcard_id
+  AND material_id IN (
+    SELECT m.id
+    FROM materials m
+    JOIN collections c ON c.id = m.collection_id
+    WHERE c.user_id = @user_id
+  );

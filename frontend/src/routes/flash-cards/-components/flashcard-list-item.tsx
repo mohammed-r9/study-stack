@@ -26,7 +26,7 @@ export default function FlashcardListItem({
   last_used,
 }: Props) {
   return (
-    <Card className="group w-full transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
+    <Card className="group w-full transition-all duration-200 hover:border-primary/50 hover:shadow-sm flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
@@ -67,7 +67,7 @@ export default function FlashcardListItem({
         </DropdownMenu>
       </CardHeader>
 
-      <CardContent className="grid gap-4 py-4">
+      <CardContent className="grid gap-4 py-4 flex-1">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase text-muted-foreground/70">

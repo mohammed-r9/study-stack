@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import FlashcardListItem from './-components/flashcard-list-item'
 import { Button } from '@/components/ui/button'
 import { LayoutGrid, List, Plus } from 'lucide-react'
@@ -7,7 +7,12 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useInfiniteFlashcards } from '@/lib/queries/flashcards'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { toast } from 'sonner'
+import { ButtonGroup } from '@/components/ui/button-group'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 type Search = {
   view: 'grid' | 'list'
@@ -56,24 +61,35 @@ export default function RouteComponent() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center rounded-md border bg-muted/50 p-1">
-              <Button
-                variant={view === 'list' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setViewMode('list')}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={view === 'grid' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setViewMode('grid')}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </div>
+            <ButtonGroup className="flex gap-1">
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant={view === 'list' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>List view</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant={view === 'grid' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Grid view</TooltipContent>
+              </Tooltip>
+            </ButtonGroup>
 
             <Button
               className="gap-2"
