@@ -40,3 +40,16 @@ WHERE f.id = @flashcard_id
     JOIN collections c ON c.id = m.collection_id
     WHERE c.user_id = @user_id
   );
+
+-- name: UpdateFlashcard :execrows
+UPDATE flashcards f
+SET
+    f.front = CASE WHEN @front <> '' THEN @front ELSE front END,
+    f.back  = CASE WHEN @back  <> '' THEN @back  ELSE back  END
+WHERE f.id = @flashcard_id
+  AND material_id IN (
+      SELECT m.id
+      FROM materials m
+      JOIN collections c ON c.id = m.collection_id
+      WHERE c.user_id = @user_id
+  );

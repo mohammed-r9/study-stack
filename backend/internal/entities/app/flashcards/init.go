@@ -28,4 +28,5 @@ func registerRoutes(a *fiber.App, h *handler.Handler) {
 	flashcards.Post("/", h.CreateFlashcard)
 	flashcards.Get("/", h.GetFlashcards)
 	flashcards.Delete("/:id", h.DeleteFlashcard)
+	flashcards.Patch("/:id", h.UpdateFlashcard)
 }

@@ -21,12 +21,12 @@ type flashcardPage struct {
 	Flashcards  []repo.GetFlashcardsPageRow `json:"flashcards"`
 	HasNextPage bool                        `json:"has_next_page"`
 }
-type GetFlashCardPageParams struct {
+type GetFlashcardPageParams struct {
 	UserID            uuid.UUID
 	LastSeenFlashcard *uuid.UUID
 }
 
-func (s *Service) GetFlashCardPage(ctx context.Context, params GetFlashCardPageParams) (flashcardPage, error) {
+func (s *Service) GetFlashcardPage(ctx context.Context, params GetFlashcardPageParams) (flashcardPage, error) {
 	if params.UserID == uuid.Nil {
 		return flashcardPage{}, appErrors.BadData
 	}

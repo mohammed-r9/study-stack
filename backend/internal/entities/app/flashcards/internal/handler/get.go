@@ -37,7 +37,7 @@ func (h *Handler) GetFlashcards(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		flashcardsPage, err := h.svc.GetFlashCardPage(c.Context(), service.GetFlashCardPageParams{
+		flashcardsPage, err := h.svc.GetFlashcardPage(c.Context(), service.GetFlashcardPageParams{
 			UserID:            userData.UserID,
 			LastSeenFlashcard: lastSeenId,
 		})

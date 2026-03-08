@@ -124,6 +124,40 @@ func (q *Queries) GetFlashcardsPage(ctx context.Context, arg GetFlashcardsPagePa
 	return items, nil
 }
 
+const updateFlashcard = `-- name: UpdateFlashcard :execrows
+UPDATE flashcards f
+SET
+    f.front = CASE WHEN $1 <> '' THEN $1 ELSE front END,
+    f.back  = CASE WHEN $2  <> '' THEN $2  ELSE back  END
+WHERE f.id = $3
+  AND material_id IN (
+      SELECT m.id
+      FROM materials m
+      JOIN collections c ON c.id = m.collection_id
+      WHERE c.user_id = $4
+  )
+`
+
+type UpdateFlashcardParams struct {
+	Front       interface{} `json:"front"`
+	Back        interface{} `json:"back"`
+	FlashcardID uuid.UUID   `json:"flashcard_id"`
+	UserID      uuid.UUID   `json:"user_id"`
+}
+
+func (q *Queries) UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateFlashcard,
+		arg.Front,
+		arg.Back,
+		arg.FlashcardID,
+		arg.UserID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getOldestFlashcard = `-- name: getOldestFlashcard :one
 SELECT f.id, f.material_id, f.front, f.back, f.created_at, f.updated_at, f.last_used
 FROM flashcards f
