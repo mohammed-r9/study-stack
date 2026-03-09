@@ -15,21 +15,16 @@ type UpdateFlashcardParams struct {
 	Back        string
 }
 
-func (s *Service) UpdateFlashcard(ctx context.Context, params UpdateFlashcardParams) error {
+func (s *Service) UpdateFlashcard(ctx context.Context, params UpdateFlashcardParams) (repo.Flashcard, error) {
 	if (params.UserID == uuid.Nil || params.FlashcardID == uuid.Nil) || (params.Front == "" && params.Back == "") {
-		return appErrors.BadData
+		return repo.Flashcard{}, appErrors.BadData
 	}
 
-	rowsAffected, err := s.repo.UpdateFlashcard(ctx, repo.UpdateFlashcardParams{
+	return s.repo.UpdateFlashcard(ctx, repo.UpdateFlashcardParams{
 		UserID:      params.UserID,
 		FlashcardID: params.FlashcardID,
 		Front:       params.Front,
 		Back:        params.Back,
 	})
 
-	if rowsAffected == 0 {
-		return appErrors.NoChange
-	}
-
-	return err
 }

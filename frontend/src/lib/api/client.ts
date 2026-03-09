@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllFlashcardParams, GetAllFlashcardsRes, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, User, UserLibrary } from "./types";
+import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllFlashcardParams, GetAllFlashcardsRes, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, UpdateFlashcardParams, User, UserLibrary } from "./types";
 import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
@@ -19,31 +19,27 @@ class HttpClient {
 		// interceptors
 		// attach the token to authenticate requests
 		this.api.interceptors.request.use(
-			(config) => {
-				const token = useAuthStore.getState().accessToken
+			async (config) => {
+				if (config.url?.endsWith("/refresh")) return config;
+
+				const token = useAuthStore.getState().accessToken;
+
 				if (token) {
-					config.headers.Authorization = `Bearer ${token}`;
+					const payload = JSON.parse(atob(token.split('.')[1]));
+					const expiresIn = payload.exp * 1000 - Date.now();
+
+					if (expiresIn < (60000 / 2)) {
+						const tokenRes = await this.refreshToken();
+						const newToken = tokenRes.data.access_token;
+						useAuthStore.getState().setAccessToken(newToken);
+						config.headers.Authorization = `Bearer ${newToken}`;
+					} else {
+						config.headers.Authorization = `Bearer ${token}`;
+					}
 				}
 				return config;
 			},
 			(error) => Promise.reject(error)
-		);
-		this.api.interceptors.response.use(
-			(response) => response,
-			async (error) => {
-				if (error.response?.status === 401 && !error.config.url.endsWith("/refresh")) {
-					try {
-						const token = await this.refreshToken();
-						useAuthStore.getState().setAccessToken(token.data.access_token);
-						return Promise.reject(error);
-
-					} catch (refreshError) {
-						useAuthStore.getState().logout();
-						return Promise.reject(refreshError);
-					}
-				}
-				return Promise.reject(error);
-			}
 		);
 
 	}
@@ -126,6 +122,14 @@ class HttpClient {
 
 	public async getAllFlashcards(params: GetAllFlashcardParams) {
 		return this.api.get<GetAllFlashcardsRes>(`/flashcards?mode=list&last_seen_flashcard_id=${params.last_seen_flashcard_id}`)
+	}
+
+	public async updateFlashcard(params: UpdateFlashcardParams) {
+		return this.api.patch<Flashcard>(`/flashcards/${params.id}`, { back: params.back, front: params.front })
+	}
+
+	public async deleteFlashcard(id: string) {
+		return this.api.delete<string>(`/flashcards/${id}`)
 	}
 
 }

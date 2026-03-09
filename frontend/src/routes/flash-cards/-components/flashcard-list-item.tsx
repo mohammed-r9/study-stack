@@ -7,8 +7,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge' // Assuming you have badge installed
-import { MoreHorizontal, Pencil, Trash, BookOpen, Layers } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { MoreHorizontal, Trash, BookOpen, Layers } from 'lucide-react'
+import UpdateFlashcardDialog from './update-flashcard'
+import { useDeleteFlashcard } from '@/lib/queries/flashcards'
 
 type Props = {
   id: string
@@ -25,6 +27,7 @@ export default function FlashcardListItem({
   back,
   last_used,
 }: Props) {
+  const { mutate } = useDeleteFlashcard()
   return (
     <Card className="group w-full transition-all duration-200 hover:border-primary/50 hover:shadow-sm flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -54,12 +57,20 @@ export default function FlashcardListItem({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem className="cursor-pointer">
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit Card
-            </DropdownMenuItem>
+            <UpdateFlashcardDialog flashcardId={id} />
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              className="cursor-pointer text-destructive focus:text-destructive"
+              onClick={() => {
+                if (
+                  !confirm(
+                    'Are you sure that you want to delete the flashcard?',
+                  )
+                )
+                  return
+                mutate({ id: id })
+              }}
+            >
               <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>

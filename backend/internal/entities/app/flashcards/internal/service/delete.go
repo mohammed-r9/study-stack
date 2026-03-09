@@ -13,23 +13,14 @@ type DeleteParams struct {
 	FlashcardID uuid.UUID
 }
 
-func (s *Service) DeleteFlashcard(ctx context.Context, params DeleteParams) error {
+func (s *Service) DeleteFlashcard(ctx context.Context, params DeleteParams) (uuid.UUID, error) {
 	if params.UserID == uuid.Nil || params.FlashcardID == uuid.Nil {
-		return appErrors.BadData
+		return uuid.Nil, appErrors.BadData
 	}
 
-	rowsAffected, err := s.repo.DeleteFlashcard(ctx, repo.DeleteFlashcardParams{
+	return s.repo.DeleteFlashcard(ctx, repo.DeleteFlashcardParams{
 		FlashcardID: params.FlashcardID,
 		UserID:      params.UserID,
 	})
 
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
-		return appErrors.NotFound
-	}
-
-	return nil
 }

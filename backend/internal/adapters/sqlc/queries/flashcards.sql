@@ -31,7 +31,7 @@ WHERE c.user_id = @user_id AND f.id < @last_seen_flashcard_id
 ORDER BY f.id DESC
 LIMIT 20;
 
--- name: DeleteFlashcard :execrows
+-- name: DeleteFlashcard :one
 DELETE FROM flashcards f
 WHERE f.id = @flashcard_id
   AND material_id IN (
@@ -39,17 +39,18 @@ WHERE f.id = @flashcard_id
     FROM materials m
     JOIN collections c ON c.id = m.collection_id
     WHERE c.user_id = @user_id
-  );
+  )
+RETURNING f.id;
 
--- name: UpdateFlashcard :execrows
-UPDATE flashcards f
-SET
-    f.front = CASE WHEN @front <> '' THEN @front ELSE front END,
-    f.back  = CASE WHEN @back  <> '' THEN @back  ELSE back  END
-WHERE f.id = @flashcard_id
-  AND material_id IN (
-      SELECT m.id
-      FROM materials m
-      JOIN collections c ON c.id = m.collection_id
-      WHERE c.user_id = @user_id
-  );
+-- name: UpdateFlashcard :one
+UPDATE flashcards
+SET 
+    front = CASE WHEN @front <> '' THEN @front ELSE front END,
+    back  = CASE WHEN @back  <> '' THEN @back  ELSE back  END,
+    updated_at = CURRENT_TIMESTAMP
+FROM materials m
+JOIN collections c ON c.id = m.collection_id
+WHERE flashcards.material_id = m.id
+  AND flashcards.id = @flashcard_id
+  AND c.user_id = @user_id
+RETURNING flashcards.*;

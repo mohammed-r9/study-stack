@@ -42,7 +42,7 @@ func (q *Queries) CreateFlashcard(ctx context.Context, arg CreateFlashcardParams
 	return err
 }
 
-const deleteFlashcard = `-- name: DeleteFlashcard :execrows
+const deleteFlashcard = `-- name: DeleteFlashcard :one
 DELETE FROM flashcards f
 WHERE f.id = $1
   AND material_id IN (
@@ -51,6 +51,7 @@ WHERE f.id = $1
     JOIN collections c ON c.id = m.collection_id
     WHERE c.user_id = $2
   )
+RETURNING f.id
 `
 
 type DeleteFlashcardParams struct {
@@ -58,12 +59,11 @@ type DeleteFlashcardParams struct {
 	UserID      uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, deleteFlashcard, arg.FlashcardID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, deleteFlashcard, arg.FlashcardID, arg.UserID)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getFlashcardsPage = `-- name: GetFlashcardsPage :many
@@ -124,18 +124,18 @@ func (q *Queries) GetFlashcardsPage(ctx context.Context, arg GetFlashcardsPagePa
 	return items, nil
 }
 
-const updateFlashcard = `-- name: UpdateFlashcard :execrows
-UPDATE flashcards f
-SET
-    f.front = CASE WHEN $1 <> '' THEN $1 ELSE front END,
-    f.back  = CASE WHEN $2  <> '' THEN $2  ELSE back  END
-WHERE f.id = $3
-  AND material_id IN (
-      SELECT m.id
-      FROM materials m
-      JOIN collections c ON c.id = m.collection_id
-      WHERE c.user_id = $4
-  )
+const updateFlashcard = `-- name: UpdateFlashcard :one
+UPDATE flashcards
+SET 
+    front = CASE WHEN $1 <> '' THEN $1 ELSE front END,
+    back  = CASE WHEN $2  <> '' THEN $2  ELSE back  END,
+    updated_at = CURRENT_TIMESTAMP
+FROM materials m
+JOIN collections c ON c.id = m.collection_id
+WHERE flashcards.material_id = m.id
+  AND flashcards.id = $3
+  AND c.user_id = $4
+RETURNING flashcards.id, flashcards.material_id, flashcards.front, flashcards.back, flashcards.created_at, flashcards.updated_at, flashcards.last_used
 `
 
 type UpdateFlashcardParams struct {
@@ -145,17 +145,24 @@ type UpdateFlashcardParams struct {
 	UserID      uuid.UUID   `json:"user_id"`
 }
 
-func (q *Queries) UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateFlashcard,
+func (q *Queries) UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (Flashcard, error) {
+	row := q.db.QueryRowContext(ctx, updateFlashcard,
 		arg.Front,
 		arg.Back,
 		arg.FlashcardID,
 		arg.UserID,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+	var i Flashcard
+	err := row.Scan(
+		&i.ID,
+		&i.MaterialID,
+		&i.Front,
+		&i.Back,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.LastUsed,
+	)
+	return i, err
 }
 
 const getOldestFlashcard = `-- name: getOldestFlashcard :one

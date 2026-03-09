@@ -1,6 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "./keys";
 import { httpClient } from "../api";
+import { toast } from "sonner";
+import type { UpdateFlashcardParams } from "../api/types";
 
 export const useFlashcard = (cursor: number) =>
 	useQuery({
@@ -30,5 +32,67 @@ export const useInfiniteFlashcards = () => {
 		},
 
 		staleTime: Infinity
+	})
+}
+
+export const useMutateFlashcard = () => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async ({ body: params }: { body: UpdateFlashcardParams }) => {
+			const res = await httpClient.updateFlashcard(params)
+			return res.data
+		},
+		mutationKey: queryKeys.flashcards.list(),
+
+		onSuccess: (newFlashcard) => {
+			queryClient.setQueryData(
+				queryKeys.flashcards.list(),
+				(old: any) => {
+					return {
+						...old,
+						pages: old.pages.map((page: any) => ({
+							...page,
+							flashcards: page.flashcards?.map((f: any) =>
+								f.id === newFlashcard.id ? newFlashcard : f
+							) || []
+						}))
+					}
+				}
+			)
+
+			toast.success('Flashcard updated successfully');
+		},
+	})
+}
+
+
+export const useDeleteFlashcard = () => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async ({ id }: { id: string }) => {
+			const res = await httpClient.deleteFlashcard(id)
+			return res?.data
+		},
+		mutationKey: queryKeys.flashcards.list(),
+
+		onSuccess: (deletedId) => {
+			queryClient.setQueryData(
+				queryKeys.flashcards.list(),
+				(old: any) => {
+					if (!old) return old;
+
+					return {
+						...old,
+						pages: old.pages.map((page: any) => ({
+							...page,
+							flashcards: page.flashcards.filter((f: any) => f.id !== deletedId)
+						}))
+					};
+				}
+			);
+			toast.success('Flashcard deleted successfully');
+		},
 	})
 }

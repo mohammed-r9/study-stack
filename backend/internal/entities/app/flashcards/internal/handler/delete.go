@@ -27,7 +27,7 @@ func (h *Handler) DeleteFlashcard(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = h.svc.DeleteFlashcard(c.Context(), service.DeleteParams{
+	deletedID, err := h.svc.DeleteFlashcard(c.Context(), service.DeleteParams{
 		UserID:      userData.UserID,
 		FlashcardID: flashcardID,
 	})
@@ -36,7 +36,5 @@ func (h *Handler) DeleteFlashcard(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Deleted successfully",
-	})
+	return c.Status(fiber.StatusOK).SendString(deletedID.String())
 }

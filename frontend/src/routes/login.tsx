@@ -5,6 +5,7 @@ import { FieldGroup } from '@/components/ui/field'
 import { useAppForm } from '@/hooks/form'
 import { httpClient } from '@/lib/api'
 import { loginSchema } from '@/lib/schemas/auth'
+import { useAuthStore } from '@/lib/store/auth'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/login')({
 
 function RouteComponent() {
   const navigate = useNavigate()
+  const setToken = useAuthStore.getState().setAccessToken
+
   const form = useAppForm({
     defaultValues: {
       email: '',
@@ -21,7 +24,11 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       try {
-        await httpClient.login({ email: value.email, password: value.password })
+        const res = await httpClient.login({
+          email: value.email,
+          password: value.password,
+        })
+        setToken(res.data.access_token)
         toast.success('Login successful')
         navigate({ to: '/materials', replace: true })
       } catch (e: any) {

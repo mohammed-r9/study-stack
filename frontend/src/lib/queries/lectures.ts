@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { httpClient } from "../api"
-import type { createLectureReq } from "../api/types"
+import type { createLectureReq, Flashcard, UpdateFlashcardParams } from "../api/types"
 import { toast } from "sonner"
 import { queryKeys } from "./keys"
 import { useRouter } from "@tanstack/react-router"
@@ -84,3 +84,5 @@ export function useSignedURL(lectureId: string) {
 		staleTime: 5 * 1000 * 60
 	})
 }
+
+

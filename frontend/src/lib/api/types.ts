@@ -118,3 +118,9 @@ export type GetAllFlashcardsRes = {
 	flashcards: Flashcard[]
 	has_next_page: boolean
 }
+
+export type UpdateFlashcardParams = {
+	id: string
+	front: string
+	back: string
+}

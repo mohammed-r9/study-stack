@@ -17,7 +17,7 @@ type Querier interface {
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) (Collection, error)
 	CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error
 	CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error)
-	DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (int64, error)
+	DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (uuid.UUID, error)
 	DeleteLecture(ctx context.Context, arg DeleteLectureParams) (int64, error)
 	GetAllArchivedCollections(ctx context.Context, userID uuid.UUID) ([]Collection, error)
 	GetAllArchivedMaterialsInCollection(ctx context.Context, arg GetAllArchivedMaterialsInCollectionParams) ([]Material, error)
@@ -50,7 +50,7 @@ type Querier interface {
 	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (Collection, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (Collection, error)
-	UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (int64, error)
+	UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (Flashcard, error)
 	UpdateLectureTitle(ctx context.Context, arg UpdateLectureTitleParams) (int64, error)
 	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (int64, error)

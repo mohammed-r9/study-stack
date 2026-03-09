@@ -42,7 +42,7 @@ func (h *Handler) UpdateFlashcard(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
-	err = h.svc.UpdateFlashcard(c.Context(), service.UpdateFlashcardParams{
+	flashcard, err := h.svc.UpdateFlashcard(c.Context(), service.UpdateFlashcardParams{
 		UserID:      userData.UserID,
 		FlashcardID: flashcardID,
 		Front:       req.Front,
@@ -53,7 +53,5 @@ func (h *Handler) UpdateFlashcard(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Updated successfully",
-	})
+	return c.Status(fiber.StatusOK).JSON(flashcard)
 }
