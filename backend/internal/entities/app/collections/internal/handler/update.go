@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"study-stack/internal/adapters/sqlc/repo"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
@@ -36,15 +37,18 @@ func (h *Handler) UpdateCollection(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
+	collection := repo.Collection{}
 	if req.Title != nil {
-		if err := h.svc.UpdateTitle(c.Context(), collectionID, userData.UserID, *req.Title); err != nil {
+		collection, err = h.svc.UpdateTitle(c.Context(), collectionID, userData.UserID, *req.Title)
+		if err != nil {
 			log.Printf("error updating title: %v\n", err)
 			return err
 		}
 	}
 
 	if req.Description != nil {
-		if err := h.svc.UpdateDescription(c.Context(), collectionID, userData.UserID, *req.Description); err != nil {
+		collection, err = h.svc.UpdateDescription(c.Context(), collectionID, userData.UserID, *req.Description)
+		if err != nil {
 			log.Printf("error updating description: %v\n", err)
 			return err
 		}
@@ -57,5 +61,5 @@ func (h *Handler) UpdateCollection(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	return c.Status(fiber.StatusCreated).JSON(collection)
 }

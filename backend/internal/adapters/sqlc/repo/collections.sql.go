@@ -33,16 +33,10 @@ func (q *Queries) ArchiveCollection(ctx context.Context, arg ArchiveCollectionPa
 	return result.RowsAffected()
 }
 
-const createCollection = `-- name: CreateCollection :exec
+const createCollection = `-- name: CreateCollection :one
 INSERT INTO collections(id, user_id, title, description)
-SELECT
-    $1, $2, $3, $4
-WHERE (
-    SELECT COUNT(*)
-    FROM collections
-    WHERE user_id = $2
-      AND archived_at IS NULL
-) < 20
+    VALUES($1, $2, $3, $4)
+RETURNING id, user_id, title, description, created_at, updated_at, archived_at
 `
 
 type CreateCollectionParams struct {
@@ -52,14 +46,24 @@ type CreateCollectionParams struct {
 	Description string    `json:"description"`
 }
 
-func (q *Queries) CreateCollection(ctx context.Context, arg CreateCollectionParams) error {
-	_, err := q.db.ExecContext(ctx, createCollection,
+func (q *Queries) CreateCollection(ctx context.Context, arg CreateCollectionParams) (Collection, error) {
+	row := q.db.QueryRowContext(ctx, createCollection,
 		arg.ID,
 		arg.UserID,
 		arg.Title,
 		arg.Description,
 	)
-	return err
+	var i Collection
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
 const getAllArchivedCollections = `-- name: GetAllArchivedCollections :many
@@ -238,6 +242,19 @@ func (q *Queries) GetCollectionByID(ctx context.Context, arg GetCollectionByIDPa
 	return i, err
 }
 
+const getCollectionsCount = `-- name: GetCollectionsCount :one
+SELECT count(*)
+FROM collections
+WHERE user_id = $1
+`
+
+func (q *Queries) GetCollectionsCount(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCollectionsCount, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const unarchiveCollection = `-- name: UnarchiveCollection :execrows
 UPDATE collections
 SET archived_at = NULL,
@@ -266,11 +283,12 @@ func (q *Queries) UnarchiveCollection(ctx context.Context, arg UnarchiveCollecti
 	return result.RowsAffected()
 }
 
-const updateCollectionDescription = `-- name: UpdateCollectionDescription :execrows
+const updateCollectionDescription = `-- name: UpdateCollectionDescription :one
 UPDATE collections
     SET description = $1,
     updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3
+RETURNING id, user_id, title, description, created_at, updated_at, archived_at
 `
 
 type UpdateCollectionDescriptionParams struct {
@@ -279,19 +297,27 @@ type UpdateCollectionDescriptionParams struct {
 	UserID      uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateCollectionDescription, arg.Description, arg.ID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (Collection, error) {
+	row := q.db.QueryRowContext(ctx, updateCollectionDescription, arg.Description, arg.ID, arg.UserID)
+	var i Collection
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
-const updateCollectionTitle = `-- name: UpdateCollectionTitle :execrows
+const updateCollectionTitle = `-- name: UpdateCollectionTitle :one
 UPDATE collections
     SET title = $1,
     updated_at = CURRENT_TIMESTAMP
     WHERE id = $2 AND user_id = $3
+RETURNING id, user_id, title, description, created_at, updated_at, archived_at
 `
 
 type UpdateCollectionTitleParams struct {
@@ -300,10 +326,17 @@ type UpdateCollectionTitleParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateCollectionTitle, arg.Title, arg.ID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (Collection, error) {
+	row := q.db.QueryRowContext(ctx, updateCollectionTitle, arg.Title, arg.ID, arg.UserID)
+	var i Collection
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }

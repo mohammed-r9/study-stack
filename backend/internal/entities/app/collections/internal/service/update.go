@@ -37,45 +37,28 @@ func (s *Service) UpdateIsArchived(ctx context.Context, collectionID, userID uui
 	return nil
 }
 
-func (s *Service) UpdateTitle(ctx context.Context, collectionID, userID uuid.UUID, title string) error {
+func (s *Service) UpdateTitle(ctx context.Context, collectionID, userID uuid.UUID, title string) (repo.Collection, error) {
 	if len(title) < 3 {
-		return appErrors.BadData
+		return repo.Collection{}, appErrors.BadData
 	}
 
-	rowsAffected, err := s.repo.UpdateCollectionTitle(ctx, repo.UpdateCollectionTitleParams{
+	return s.repo.UpdateCollectionTitle(ctx, repo.UpdateCollectionTitleParams{
 		Title:  title,
 		ID:     collectionID,
 		UserID: userID,
 	})
 
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return appErrors.NotFound
-	}
-	return nil
-
 }
 
-func (s *Service) UpdateDescription(ctx context.Context, collectionID, userID uuid.UUID, desc string) error {
+func (s *Service) UpdateDescription(ctx context.Context, collectionID, userID uuid.UUID, desc string) (repo.Collection, error) {
 	if len(desc) < 3 {
-		return appErrors.BadData
+		return repo.Collection{}, appErrors.BadData
 	}
 
-	rowsAffected, err := s.repo.UpdateCollectionDescription(ctx, repo.UpdateCollectionDescriptionParams{
+	return s.repo.UpdateCollectionDescription(ctx, repo.UpdateCollectionDescriptionParams{
 		Description: desc,
 		ID:          collectionID,
 		UserID:      userID,
 	})
-
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
-		return appErrors.NotFound
-	}
-	return nil
 
 }

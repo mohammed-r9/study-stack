@@ -31,14 +31,15 @@ func (h *Handler) CreateCollection(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
-	if err := h.svc.CreateCollection(c.Context(), service.CreateCollectionParams{
-		UserID:     userData.UserID,
-		Title:      req.Title,
-		Desription: req.Description,
-	}); err != nil {
+	collection, err := h.svc.CreateCollection(c.Context(), service.CreateCollectionParams{
+		UserID:      userData.UserID,
+		Title:       req.Title,
+		Description: req.Description,
+	})
+	if err != nil {
 		log.Printf("error while creating collection: %v\n", err)
 		return err
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	return c.Status(fiber.StatusCreated).JSON(collection)
 }

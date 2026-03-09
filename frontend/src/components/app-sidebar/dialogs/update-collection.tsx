@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,6 +41,7 @@ export default function UpdateCollectionDialog({
         return
       }
       setOpen(false)
+      form.reset()
       toast.success('Collection updated successfully')
     },
     validators: {

@@ -54,7 +54,7 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <ScrollArea className="overflow-y-auto h-[60svh] mask-[linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
               <SidebarMenu>
-                {collections?.data?.map((collection: Collection) => (
+                {collections?.map((collection: Collection) => (
                   <CollectionItem
                     key={collection.id}
                     collection={collection}

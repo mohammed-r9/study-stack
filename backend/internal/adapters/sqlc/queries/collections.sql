@@ -1,13 +1,12 @@
--- name: CreateCollection :exec
+-- name: CreateCollection :one
 INSERT INTO collections(id, user_id, title, description)
-SELECT
-    $1, $2, $3, $4
-WHERE (
-    SELECT COUNT(*)
-    FROM collections
-    WHERE user_id = $2
-      AND archived_at IS NULL
-) < 20;
+    VALUES($1, $2, $3, $4)
+RETURNING *;
+
+-- name: GetCollectionsCount :one
+SELECT count(*)
+FROM collections
+WHERE user_id = $1;
 
 -- name: ArchiveCollection :execrows
 UPDATE collections
@@ -31,17 +30,19 @@ WHERE collections.id = $1
         AND active.archived_at IS NULL
   ) < 20;
 
--- name: UpdateCollectionTitle :execrows
+-- name: UpdateCollectionTitle :one
 UPDATE collections
     SET title = $1,
     updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2 AND user_id = $3;
+    WHERE id = $2 AND user_id = $3
+RETURNING *;
 
--- name: UpdateCollectionDescription :execrows
+-- name: UpdateCollectionDescription :one
 UPDATE collections
     SET description = $1,
     updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2 AND user_id = $3;
+    WHERE id = $2 AND user_id = $3
+RETURNING *;
 
 -- name: GetArchivedCollectionByID :one
 SELECT id, user_id, title, description, created_at, updated_at, archived_at

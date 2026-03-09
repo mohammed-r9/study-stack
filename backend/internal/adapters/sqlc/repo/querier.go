@@ -14,7 +14,7 @@ type Querier interface {
 	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
 	ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (int64, error)
 	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
-	CreateCollection(ctx context.Context, arg CreateCollectionParams) error
+	CreateCollection(ctx context.Context, arg CreateCollectionParams) (Collection, error)
 	CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error
 	CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error)
 	DeleteFlashcard(ctx context.Context, arg DeleteFlashcardParams) (int64, error)
@@ -29,6 +29,7 @@ type Querier interface {
 	GetAllUnarchivedMaterialsInCollection(ctx context.Context, arg GetAllUnarchivedMaterialsInCollectionParams) ([]Material, error)
 	GetArchivedCollectionByID(ctx context.Context, arg GetArchivedCollectionByIDParams) (Collection, error)
 	GetCollectionByID(ctx context.Context, arg GetCollectionByIDParams) (Collection, error)
+	GetCollectionsCount(ctx context.Context, userID uuid.UUID) (int64, error)
 	GetFlashcardsPage(ctx context.Context, arg GetFlashcardsPageParams) ([]GetFlashcardsPageRow, error)
 	GetLectureByID(ctx context.Context, arg GetLectureByIDParams) (Lecture, error)
 	GetLectureFileKey(ctx context.Context, arg GetLectureFileKeyParams) (GetLectureFileKeyRow, error)
@@ -46,8 +47,8 @@ type Querier interface {
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
 	UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (int64, error)
 	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
-	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (int64, error)
-	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (int64, error)
+	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (Collection, error)
+	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (Collection, error)
 	UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (int64, error)
 	UpdateLectureTitle(ctx context.Context, arg UpdateLectureTitleParams) (int64, error)
 	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error)
