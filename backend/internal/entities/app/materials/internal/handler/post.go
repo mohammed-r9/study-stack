@@ -31,10 +31,11 @@ func (h *Handler) InsertMaterial(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
-	if err := h.svc.InsertMaterial(c.Context(), req.Title, userData.UserID, req.CollectionID); err != nil {
-		log.Printf("error inseting material: %v\n", err)
+	material, err := h.svc.InsertMaterial(c.Context(), req.Title, userData.UserID, req.CollectionID)
+	if err != nil {
+		log.Printf("error inserting material: %v\n", err)
 		return err
 	}
 
-	return c.SendStatus(fiber.StatusCreated)
+	return c.Status(fiber.StatusCreated).JSON(material)
 }

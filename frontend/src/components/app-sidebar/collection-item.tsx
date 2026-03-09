@@ -70,7 +70,7 @@ export default function CollectionItem({
             </div>
           ) : (
             <SidebarMenuSub>
-              {materialsData?.data?.map?.((material: Material) => (
+              {materialsData?.map((material: Material) => (
                 <SidebarMenuSubItem key={material.id} className="h-8 mt-1">
                   <SidebarMenuSubButton asChild>
                     <Link

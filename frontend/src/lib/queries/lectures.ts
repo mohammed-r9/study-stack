@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { httpClient } from "../api"
-import type { createLectureReq, Lecture } from "../api/types"
+import type { createLectureReq } from "../api/types"
 import { toast } from "sonner"
 import { queryKeys } from "./keys"
 import { useRouter } from "@tanstack/react-router"
@@ -17,17 +17,21 @@ export function useCreateLecture(materialID: string, title: string) {
 			query.setQueryData(
 				queryKeys.library.lectures(materialID),
 				(old: any) => {
+					const newPage = { lectures: [newLecture], has_next_page: false };
+					console.log(old)
+
 					if (!old) {
 						return {
-							pages: [{ lectures: [newLecture.lecture] }],
-							pageParams: [undefined],
+							pages: [newPage],
+							pageParams: [""],
 						};
 					}
+
 					return {
 						...old,
 						pages: old.pages.map((page: any, index: number) =>
 							index === 0
-								? { ...page, lectures: [newLecture, ...page.lectures] }
+								? { ...page, lectures: [newLecture, ...(page.lectures || [])] }
 								: page
 						),
 					};

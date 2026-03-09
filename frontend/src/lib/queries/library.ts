@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { httpClient } from "../api"
 import { queryKeys } from "./keys"
-import type { Collection, CreateCollectionReq, CreateMaterialReq, UpdateCollectionReq } from "../api/types"
+import type { Collection, CreateCollectionReq, CreateMaterialReq, Material, UpdateCollectionReq } from "../api/types"
+import type { AxiosError } from "axios"
+import { toast } from "sonner"
 
 type UseMaterialsOptions = {
 	archived?: boolean
@@ -13,7 +15,10 @@ export const useMaterials = (
 ) => {
 	const { archived = false, enabled = true } = options ?? {}
 	return useQuery({
-		queryFn: () => httpClient.getMaterialsByCollection(collectionID, archived),
+		queryFn: async () => {
+			const res = await httpClient.getMaterialsByCollection(collectionID, archived)
+			return res?.data
+		},
 		queryKey: queryKeys.library.materials(collectionID),
 		staleTime: Infinity,
 		enabled: enabled,
@@ -38,7 +43,7 @@ export const useCreateCollection = () => {
 	return useMutation({
 		mutationFn: async ({ body }: { body: CreateCollectionReq }) => {
 			const res = await httpClient.newCollection(body)
-			return res.data
+			return res?.data
 		},
 		onSuccess: (newCollection) => {
 			console.table(newCollection)
@@ -46,6 +51,10 @@ export const useCreateCollection = () => {
 				return old ? [...old, newCollection] : [newCollection]
 			})
 		},
+		onError: (e) => {
+			const err = e as AxiosError
+			if (err.status === 403) toast.error("You are only allowed to have a maximum of 20 collections")
+		}
 	})
 }
 
@@ -66,16 +75,18 @@ export const useMutateCollection = (id: string) => {
 		},
 	})
 }
-// queryClient.invalidateQueries({ queryKey: queryKeys.library.materials(collectionID) })
 export const useCreateMaterial = (collectionID: string) => {
 	const queryClient = useQueryClient()
 
 	return useMutation({
-		mutationFn: ({ body }: { body: CreateMaterialReq }) => httpClient.newMaterial(body),
-		onSuccess: (newMaterial) => {
-			queryClient.setQueryData(queryKeys.library.materials(collectionID), (old: Collection[]) => {
-				if (!old) return [newMaterial.data]
-				return [...old, newMaterial.data]
+		mutationFn: async ({ body }: { body: CreateMaterialReq }) => {
+			const res = await httpClient.newMaterial(body)
+			return res?.data
+		},
+		onSuccess: (newMaterial: Material) => {
+			queryClient.setQueryData(queryKeys.library.materials(collectionID), (old: Material[]) => {
+				if (!old) return [newMaterial]
+				return [...old, newMaterial]
 			})
 		}
 	})

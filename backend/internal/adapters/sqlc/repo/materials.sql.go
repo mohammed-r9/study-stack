@@ -224,36 +224,61 @@ func (q *Queries) GetMaterialByID(ctx context.Context, arg GetMaterialByIDParams
 	return i, err
 }
 
-const insertMaterial = `-- name: InsertMaterial :exec
+const getMaterialsCount = `-- name: GetMaterialsCount :one
+SELECT count(*)
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = $1 AND m.collection_id = $2
+`
+
+type GetMaterialsCountParams struct {
+	UserID       uuid.UUID `json:"user_id"`
+	CollectionID uuid.UUID `json:"collection_id"`
+}
+
+func (q *Queries) GetMaterialsCount(ctx context.Context, arg GetMaterialsCountParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getMaterialsCount, arg.UserID, arg.CollectionID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const insertMaterial = `-- name: InsertMaterial :one
 INSERT INTO materials (id, collection_id, title)
-SELECT $1, $2, $3
-WHERE (
-    SELECT COUNT(*) 
-    FROM materials 
-    WHERE collection_id = $2
-) < 20
-AND EXISTS (
-    SELECT 1 
-    FROM collections 
-    WHERE id = $2 AND user_id = $4
-)
+SELECT 
+    $1,
+    c.id,
+    $2
+FROM collections c
+WHERE c.id = $3
+AND c.user_id = $4
+RETURNING id, collection_id, title, created_at, updated_at, archived_at
 `
 
 type InsertMaterialParams struct {
 	ID           uuid.UUID `json:"id"`
-	CollectionID uuid.UUID `json:"collection_id"`
 	Title        string    `json:"title"`
+	CollectionID uuid.UUID `json:"collection_id"`
 	UserID       uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) InsertMaterial(ctx context.Context, arg InsertMaterialParams) error {
-	_, err := q.db.ExecContext(ctx, insertMaterial,
+func (q *Queries) InsertMaterial(ctx context.Context, arg InsertMaterialParams) (Material, error) {
+	row := q.db.QueryRowContext(ctx, insertMaterial,
 		arg.ID,
-		arg.CollectionID,
 		arg.Title,
+		arg.CollectionID,
 		arg.UserID,
 	)
-	return err
+	var i Material
+	err := row.Scan(
+		&i.ID,
+		&i.CollectionID,
+		&i.Title,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
 const unarchiveMaterial = `-- name: UnarchiveMaterial :execrows

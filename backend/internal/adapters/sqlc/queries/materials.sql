@@ -1,16 +1,19 @@
--- name: InsertMaterial :exec
+-- name: InsertMaterial :one
 INSERT INTO materials (id, collection_id, title)
-SELECT $1, $2, $3
-WHERE (
-    SELECT COUNT(*) 
-    FROM materials 
-    WHERE collection_id = $2
-) < 20
-AND EXISTS (
-    SELECT 1 
-    FROM collections 
-    WHERE id = $2 AND user_id = $4
-);
+SELECT 
+    @id,
+    c.id,
+    @title
+FROM collections c
+WHERE c.id = @collection_id
+AND c.user_id = @user_id
+RETURNING *;
+
+-- name: GetMaterialsCount :one
+SELECT count(*)
+FROM materials m
+JOIN collections c ON m.collection_id = c.id
+WHERE c.user_id = @user_id AND m.collection_id = @collection_id;
 
 -- name: GetMaterialByID :one
 SELECT 

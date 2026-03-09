@@ -34,12 +34,13 @@ type Querier interface {
 	GetLectureByID(ctx context.Context, arg GetLectureByIDParams) (Lecture, error)
 	GetLectureFileKey(ctx context.Context, arg GetLectureFileKeyParams) (GetLectureFileKeyRow, error)
 	GetMaterialByID(ctx context.Context, arg GetMaterialByIDParams) (Material, error)
+	GetMaterialsCount(ctx context.Context, arg GetMaterialsCountParams) (int64, error)
 	GetSessionByHash(ctx context.Context, tokenHash string) (GetSessionByHashRow, error)
 	GetTokenByHash(ctx context.Context, hash string) (Token, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserLibrary(ctx context.Context, userID uuid.UUID) ([]GetUserLibraryRow, error)
-	InsertMaterial(ctx context.Context, arg InsertMaterialParams) error
+	InsertMaterial(ctx context.Context, arg InsertMaterialParams) (Material, error)
 	InsertToken(ctx context.Context, arg InsertTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) error
 	ListLectures(ctx context.Context, arg ListLecturesParams) ([]ListLecturesRow, error)

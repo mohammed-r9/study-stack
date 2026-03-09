@@ -24,7 +24,7 @@ func (s *Service) CreateCollection(ctx context.Context, params CreateCollectionP
 		return repo.Collection{}, err
 	}
 
-	if count > 20 {
+	if count >= 20 {
 		return repo.Collection{}, appErrors.Forbidden
 	}
 	return s.repo.CreateCollection(ctx, repo.CreateCollectionParams{

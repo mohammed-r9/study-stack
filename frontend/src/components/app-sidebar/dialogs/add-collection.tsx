@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -12,7 +11,7 @@ import { FieldGroup } from '@/components/ui/field'
 import { useAppForm } from '@/hooks/form'
 import { useCreateCollection } from '@/lib/queries/library'
 import { insertCollectionSchema } from '@/lib/schemas/post'
-import { FolderPlus, Plus } from 'lucide-react'
+import { FolderPlus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -33,7 +32,6 @@ export function AddCollectionDialog() {
         },
       })
       if (isError) {
-        toast.error('Failed to update collection')
         return
       }
       setOpen(false)
