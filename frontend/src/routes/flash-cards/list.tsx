@@ -36,7 +36,7 @@ export default function RouteComponent() {
       search: (prev) => ({ ...prev, view: newMode }),
     })
   }
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteFlashcards()
 
   const { ref, inView } = useInView()
@@ -93,6 +93,7 @@ export default function RouteComponent() {
 
             <Button
               className="gap-2"
+              size={'lg'}
               onClick={() => {
                 navigate({ to: '/materials', search: { alert: true } })
               }}

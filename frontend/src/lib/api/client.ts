@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL } from "../const";
-import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllFlashcardParams, GetAllFlashcardsRes, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, UpdateFlashcardParams, User, UserLibrary } from "./types";
+import type { Collection, CreateCollectionReq, CreateFlashCardBody, createLectureReq, CreateMaterialReq, Flashcard, GetAllFlashcardParams, GetAllFlashcardsRes, GetAllLecturesParams, GetAllLecturesRes, LoginReq, Material, RefreshRes, RegisterReq, SignedURL, UpdateCollectionReq, UpdateFlashcardParams, UpdateMaterialParams, User, UserLibrary } from "./types";
 import { buildLectureFormData, getCSRFCookie } from "./utils";
 import { useAuthStore } from "../store/auth";
 import { toast } from "sonner";
@@ -130,6 +130,10 @@ class HttpClient {
 
 	public async deleteFlashcard(id: string) {
 		return this.api.delete<string>(`/flashcards/${id}`)
+	}
+
+	public async updateMaterial(params: UpdateMaterialParams) {
+		return this.api.patch<Material>(`/materials/${params.id}`, { title: params.title })
 	}
 
 }

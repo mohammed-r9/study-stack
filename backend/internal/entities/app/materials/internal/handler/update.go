@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"study-stack/internal/adapters/sqlc/repo"
 	appErrors "study-stack/internal/shared/app_errors"
 	"study-stack/internal/shared/utils"
 
@@ -32,12 +33,13 @@ func (h *Handler) UpdateMaterial(c *fiber.Ctx) error {
 		return appErrors.BadData
 	}
 
+	material := repo.Material{}
 	if req.Title != nil {
-		err = h.svc.UpdateMaterialTitle(c.Context(), *req.Title, materialID, userData.UserID)
+		material, err = h.svc.UpdateMaterialTitle(c.Context(), *req.Title, materialID, userData.UserID)
 	}
 
 	if req.ToArchive != nil {
-		err = h.svc.UpdateMaterialArchivedAt(c.Context(), *req.ToArchive, materialID, userData.UserID)
+		material, err = h.svc.UpdateMaterialArchivedAt(c.Context(), *req.ToArchive, materialID, userData.UserID)
 	}
 
 	if err != nil {
@@ -45,5 +47,6 @@ func (h *Handler) UpdateMaterial(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	log.Println(material)
+	return c.Status(fiber.StatusOK).JSON(material)
 }

@@ -3,7 +3,7 @@ import Flashcard from './-components/flashcard'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useFlashcard } from '@/lib/queries/flashcards'
-import { AlertTriangle, ArrowRight, Layers, StepBack } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Layers } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   Empty,
@@ -33,7 +33,7 @@ function RouteComponent() {
           <EmptyTitle>No flashcards found</EmptyTitle>
           <EmptyDescription>Please add some flashcards first.</EmptyDescription>
           <EmptyContent>
-            <Button asChild variant={'secondary'}>
+            <Button asChild variant={'secondary'} size={'lg'}>
               <Link to="/materials">Go to materials</Link>
             </Button>
           </EmptyContent>
@@ -43,7 +43,7 @@ function RouteComponent() {
 
   return (
     <div className="p-4 w-full min-h-screen flex flex-col items-center justify-center gap-6">
-      <Button asChild>
+      <Button asChild size={'lg'}>
         <Link to="/flash-cards/list" search={{ view: 'grid' }}>
           {' '}
           <Layers className="h-4 w-4" />

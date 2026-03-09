@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { httpClient } from "../api"
 import { queryKeys } from "./keys"
-import type { Collection, CreateCollectionReq, CreateMaterialReq, Material, UpdateCollectionReq } from "../api/types"
+import type { Collection, CreateCollectionReq, CreateMaterialReq, Material, UpdateCollectionReq, UpdateMaterialParams } from "../api/types"
 import type { AxiosError } from "axios"
 import { toast } from "sonner"
+import { useNavigate } from "@tanstack/react-router"
 
 type UseMaterialsOptions = {
 	archived?: boolean
@@ -92,3 +93,35 @@ export const useCreateMaterial = (collectionID: string) => {
 	})
 }
 
+
+export const useMutateMaterial = () => {
+	const queryClient = useQueryClient()
+	const navigate = useNavigate()
+
+	return useMutation({
+		mutationFn: async ({ params }: { params: UpdateMaterialParams }) => {
+			const res = await httpClient.updateMaterial(params)
+			return res.data
+		},
+		onSuccess: (updatedMaterial: Material) => {
+			queryClient.setQueryData(
+				queryKeys.library.materials(updatedMaterial.collection_id),
+				(old?: Material[]) => {
+					return old?.map((m) => (m.id === updatedMaterial.id ? updatedMaterial : m))
+				}
+			)
+
+			toast.success("Material updated successfully")
+
+			navigate({
+				to: "/materials/$id",
+				params: { id: String(updatedMaterial.id) },
+				search: (prev) => ({
+					...prev,
+					title: updatedMaterial.title,
+					alert: false
+				})
+			})
+		}
+	})
+} 

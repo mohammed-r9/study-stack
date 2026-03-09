@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -68,9 +67,11 @@ export function AddMaterialDialog({ collectionID }: { collectionID: string }) {
               )}
             </form.AppField>
           </FieldGroup>
-          <DialogFooter className="flex justify-between mt-4">
-            <Button type="submit">Create Material</Button>
-          </DialogFooter>
+          <div className="flex justify-between mt-4">
+            <Button type="submit" size={'lg'} className="flex-1">
+              Create Material
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

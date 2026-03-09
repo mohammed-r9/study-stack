@@ -78,7 +78,7 @@ export function AddCollectionDialog() {
             </form.AppField>
           </FieldGroup>
           <div className="flex justify-between mt-4">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" size={'lg'}>
               Create Collection
             </Button>
           </div>

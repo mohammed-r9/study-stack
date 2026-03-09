@@ -73,20 +73,7 @@ WHERE c.user_id = $1
   AND m.collection_id = $2
 LIMIT 20;
 
--- name: ArchiveMaterial :execrows
-UPDATE materials
-SET archived_at = CURRENT_TIMESTAMP,
-    updated_at = CURRENT_TIMESTAMP
-WHERE materials.id = $1 
-  AND materials.archived_at IS NULL
-  AND EXISTS (
-      SELECT 1 
-      FROM collections 
-      WHERE collections.id = materials.collection_id 
-        AND collections.user_id = $2
-  );
-
--- name: UnarchiveMaterial :execrows
+-- name: UnarchiveMaterial :one 
 UPDATE materials
 SET archived_at = NULL,
     updated_at = CURRENT_TIMESTAMP
@@ -103,17 +90,38 @@ WHERE materials.id = $1
       FROM materials 
       WHERE collection_id = materials.collection_id 
         AND archived_at IS NULL
-  ) < 20;
+  ) < 20
+RETURNING materials.*;
 
+-- name: ArchiveMaterial :one 
+UPDATE materials
+SET archived_at = CURRENT_TIMESTAMP,
+    updated_at = CURRENT_TIMESTAMP
+WHERE materials.id = $1 
+  AND materials.archived_at IS NOT NULL
+  AND EXISTS (
+      SELECT 1 
+      FROM collections 
+      WHERE collections.id = materials.collection_id 
+        AND collections.user_id = $2
+  )
+  AND (
+      SELECT COUNT(*) 
+      FROM materials 
+      WHERE collection_id = materials.collection_id 
+        AND archived_at IS NULL
+  ) < 20
+RETURNING materials.*;
 
--- name: UpdateMaterialTitle :execrows
-UPDATE materials m
+-- name: UpdateMaterialTitle :one
+UPDATE materials
 SET title = $1,
     updated_at = CURRENT_TIMESTAMP
-WHERE m.id = $2
+WHERE materials.id = $2
   AND EXISTS (
       SELECT 1 
       FROM collections c 
-      WHERE c.id = m.collection_id 
+      WHERE c.id = materials.collection_id 
         AND c.user_id = $3
-  );
+  )
+RETURNING *;

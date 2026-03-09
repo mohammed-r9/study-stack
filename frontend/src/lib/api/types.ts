@@ -124,3 +124,8 @@ export type UpdateFlashcardParams = {
 	front: string
 	back: string
 }
+
+export type UpdateMaterialParams = {
+	id: string
+	title: string
+}

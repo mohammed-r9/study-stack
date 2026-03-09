@@ -84,7 +84,7 @@ export default function CollectionItem({
                           'bg-primary/20 text-accent-foreground hover:bg-primary/20!',
                       }}
                     >
-                      <BookOpen className="mr-2" />
+                      <BookOpen className="mr-2 " />
                       {material.title}
                     </Link>
                   </SidebarMenuSubButton>

@@ -10,7 +10,7 @@ type NavLinkProps = LinkProps
 export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
   (props, ref) => {
     return (
-      <Button asChild variant={'ghost'}>
+      <Button asChild variant={'ghost'} size={'lg'}>
         <Link {...props} ref={ref} />
       </Button>
     )

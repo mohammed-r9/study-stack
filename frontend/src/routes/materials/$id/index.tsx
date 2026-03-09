@@ -53,7 +53,7 @@ function RouteComponent() {
                   Please add some lectures first.
                 </EmptyDescription>
                 <EmptyContent>
-                  <Button asChild variant={'secondary'}>
+                  <Button asChild variant={'secondary'} size={'lg'}>
                     <Link
                       to="/materials/$id/add"
                       params={{ id }}

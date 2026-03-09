@@ -90,11 +90,11 @@ export default function UpdateCollectionDialog({
             </form.AppField>
           </FieldGroup>
           <div className="flex mt-4 w-full bg-background gap-4">
-            <Button variant="destructive" className="gap-2 flex-1">
+            <Button variant="destructive" className="gap-2 flex-1" size={'lg'}>
               <Trash2 className="size-4" />
               Delete
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" className="flex-1" size={'lg'}>
               Save Changes
             </Button>
           </div>

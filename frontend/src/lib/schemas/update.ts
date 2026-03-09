@@ -16,15 +16,10 @@ export const updateCollectionSchema = z.object({
 
 
 export const updateMaterialSchema = z.object({
-	new_title: z
+	title: z
 		.string()
 		.refine((val) => val === "" || val.length >= 6, {
 			message: "Title should be at least 6 characters",
-		}),
-	new_description: z
-		.string()
-		.refine((val) => val === "" || val.length >= 24, {
-			message: "Description should be at least 24 characters",
 		}),
 })
 

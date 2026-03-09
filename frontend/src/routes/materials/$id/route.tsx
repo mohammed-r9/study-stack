@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import AddFlashcard from './-components/add-flashcard'
+import { UpdateMaterialDialog } from '@/components/app-sidebar/dialogs/update-material'
 
 export type MaterialSerach = {
   title: string
@@ -41,7 +42,7 @@ function RouteComponent() {
 
           {!isAddRoute && (
             <div className="flex gap-4">
-              <Button asChild>
+              <Button asChild size={'lg'}>
                 <Link
                   to="/materials/$id/add"
                   params={{ id }}
@@ -53,6 +54,7 @@ function RouteComponent() {
                 </Link>
               </Button>
 
+              <UpdateMaterialDialog id={id} />
               <AddFlashcard materialId={id} />
             </div>
           )}

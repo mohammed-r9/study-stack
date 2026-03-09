@@ -75,12 +75,12 @@ function RouteComponent() {
             </form.AppField>
           </FieldGroup>
           <div className="mt-3 flex flex-col gap-3">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" size={'lg'}>
               Login
             </Button>
             <div className="flex flex-col items-center">
               Don't have an account yet?{' '}
-              <Button asChild variant={'link'} className="inline">
+              <Button asChild variant={'link'} className="inline" size={'lg'}>
                 <Link to="/register">Create an account</Link>
               </Button>
             </div>

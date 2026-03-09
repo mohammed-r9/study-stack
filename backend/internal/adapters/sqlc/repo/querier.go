@@ -13,7 +13,7 @@ import (
 type Querier interface {
 	ArchiveCollection(ctx context.Context, arg ArchiveCollectionParams) (int64, error)
 	ArchiveLecture(ctx context.Context, arg ArchiveLectureParams) (int64, error)
-	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error)
+	ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (Material, error)
 	CreateCollection(ctx context.Context, arg CreateCollectionParams) (Collection, error)
 	CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error
 	CreateLecture(ctx context.Context, arg CreateLectureParams) (Lecture, error)
@@ -47,12 +47,12 @@ type Querier interface {
 	NewUserSession(ctx context.Context, arg NewUserSessionParams) error
 	UnarchiveCollection(ctx context.Context, arg UnarchiveCollectionParams) (int64, error)
 	UnarchiveLecture(ctx context.Context, arg UnarchiveLectureParams) (int64, error)
-	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error)
+	UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (Material, error)
 	UpdateCollectionDescription(ctx context.Context, arg UpdateCollectionDescriptionParams) (Collection, error)
 	UpdateCollectionTitle(ctx context.Context, arg UpdateCollectionTitleParams) (Collection, error)
 	UpdateFlashcard(ctx context.Context, arg UpdateFlashcardParams) (Flashcard, error)
 	UpdateLectureTitle(ctx context.Context, arg UpdateLectureTitleParams) (int64, error)
-	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error)
+	UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (Material, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (int64, error)
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (int64, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (int64, error)

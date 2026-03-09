@@ -46,7 +46,7 @@ export default function AddFlashcard({ materialId }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={'secondary'}>
+        <Button variant={'secondary'} size={'lg'}>
           Add a flashcard
           <Plus className="w-4 h-4" />
         </Button>
@@ -69,7 +69,9 @@ export default function AddFlashcard({ materialId }: Props) {
           <form.AppField name="back">
             {() => <AppField type="text" id="back" label="Back" />}
           </form.AppField>
-          <Button type="submit">Create</Button>
+          <Button type="submit" size={'lg'}>
+            Create
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

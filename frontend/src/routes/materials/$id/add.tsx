@@ -77,7 +77,7 @@ function RouteComponent() {
           </form.AppField>
         </FieldGroup>
         <FieldGroup className="mt-4">
-          <Button>
+          <Button size={'lg'} type="submit">
             {' '}
             <ArrowUp /> Upload Lecture{' '}
           </Button>

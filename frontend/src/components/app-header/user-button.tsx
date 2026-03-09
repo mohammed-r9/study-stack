@@ -40,7 +40,11 @@ export function UserButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="rounded-full h-9 w-9">
-        <Button variant="ghost" className="flex items-center gap-2 p-2">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 p-2"
+          size={'lg'}
+        >
           <Avatar className="h-8 w-8">
             <AvatarFallback>
               {user?.data?.name?.charAt(0).toUpperCase()}

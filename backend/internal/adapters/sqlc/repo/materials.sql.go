@@ -11,18 +11,25 @@ import (
 	"github.com/google/uuid"
 )
 
-const archiveMaterial = `-- name: ArchiveMaterial :execrows
+const archiveMaterial = `-- name: ArchiveMaterial :one
 UPDATE materials
 SET archived_at = CURRENT_TIMESTAMP,
     updated_at = CURRENT_TIMESTAMP
 WHERE materials.id = $1 
-  AND materials.archived_at IS NULL
+  AND materials.archived_at IS NOT NULL
   AND EXISTS (
       SELECT 1 
       FROM collections 
       WHERE collections.id = materials.collection_id 
         AND collections.user_id = $2
   )
+  AND (
+      SELECT COUNT(*) 
+      FROM materials 
+      WHERE collection_id = materials.collection_id 
+        AND archived_at IS NULL
+  ) < 20
+RETURNING materials.id, materials.collection_id, materials.title, materials.created_at, materials.updated_at, materials.archived_at
 `
 
 type ArchiveMaterialParams struct {
@@ -30,12 +37,18 @@ type ArchiveMaterialParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, archiveMaterial, arg.ID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) ArchiveMaterial(ctx context.Context, arg ArchiveMaterialParams) (Material, error) {
+	row := q.db.QueryRowContext(ctx, archiveMaterial, arg.ID, arg.UserID)
+	var i Material
+	err := row.Scan(
+		&i.ID,
+		&i.CollectionID,
+		&i.Title,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
 const getAllArchivedMaterialsInCollection = `-- name: GetAllArchivedMaterialsInCollection :many
@@ -281,7 +294,7 @@ func (q *Queries) InsertMaterial(ctx context.Context, arg InsertMaterialParams) 
 	return i, err
 }
 
-const unarchiveMaterial = `-- name: UnarchiveMaterial :execrows
+const unarchiveMaterial = `-- name: UnarchiveMaterial :one
 UPDATE materials
 SET archived_at = NULL,
     updated_at = CURRENT_TIMESTAMP
@@ -299,6 +312,7 @@ WHERE materials.id = $1
       WHERE collection_id = materials.collection_id 
         AND archived_at IS NULL
   ) < 20
+RETURNING materials.id, materials.collection_id, materials.title, materials.created_at, materials.updated_at, materials.archived_at
 `
 
 type UnarchiveMaterialParams struct {
@@ -306,25 +320,32 @@ type UnarchiveMaterialParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, unarchiveMaterial, arg.ID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) UnarchiveMaterial(ctx context.Context, arg UnarchiveMaterialParams) (Material, error) {
+	row := q.db.QueryRowContext(ctx, unarchiveMaterial, arg.ID, arg.UserID)
+	var i Material
+	err := row.Scan(
+		&i.ID,
+		&i.CollectionID,
+		&i.Title,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }
 
-const updateMaterialTitle = `-- name: UpdateMaterialTitle :execrows
-UPDATE materials m
+const updateMaterialTitle = `-- name: UpdateMaterialTitle :one
+UPDATE materials
 SET title = $1,
     updated_at = CURRENT_TIMESTAMP
-WHERE m.id = $2
+WHERE materials.id = $2
   AND EXISTS (
       SELECT 1 
       FROM collections c 
-      WHERE c.id = m.collection_id 
+      WHERE c.id = materials.collection_id 
         AND c.user_id = $3
   )
+RETURNING id, collection_id, title, created_at, updated_at, archived_at
 `
 
 type UpdateMaterialTitleParams struct {
@@ -333,10 +354,16 @@ type UpdateMaterialTitleParams struct {
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (q *Queries) UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateMaterialTitle, arg.Title, arg.ID, arg.UserID)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
+func (q *Queries) UpdateMaterialTitle(ctx context.Context, arg UpdateMaterialTitleParams) (Material, error) {
+	row := q.db.QueryRowContext(ctx, updateMaterialTitle, arg.Title, arg.ID, arg.UserID)
+	var i Material
+	err := row.Scan(
+		&i.ID,
+		&i.CollectionID,
+		&i.Title,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ArchivedAt,
+	)
+	return i, err
 }

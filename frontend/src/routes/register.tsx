@@ -53,7 +53,7 @@ function RouteComponent() {
         >
           <FieldGroup>
             <form.AppField name="name">
-              {(field) => (
+              {() => (
                 <AppField
                   type="text"
                   id="name"
@@ -63,7 +63,7 @@ function RouteComponent() {
               )}
             </form.AppField>
             <form.AppField name="email">
-              {(field) => (
+              {() => (
                 <AppField
                   type="email"
                   id="email"
@@ -74,7 +74,7 @@ function RouteComponent() {
             </form.AppField>
             <div className="flex gap-3">
               <form.AppField name="password">
-                {(field) => (
+                {() => (
                   <AppField
                     type="password"
                     id="password"
@@ -85,7 +85,7 @@ function RouteComponent() {
               </form.AppField>
 
               <form.AppField name="confirm_password">
-                {(field) => (
+                {() => (
                   <AppField
                     type="password"
                     id="confirm_password"
@@ -97,12 +97,12 @@ function RouteComponent() {
             </div>
           </FieldGroup>
           <div className="mt-3 flex flex-col gap-3">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" size={'lg'}>
               Register
             </Button>
             <div className="flex flex-col items-center">
               Already have an account?{' '}
-              <Button asChild variant={'link'} className="inline">
+              <Button asChild variant={'link'} className="inline" size={'lg'}>
                 <Link to="/login">Login</Link>
               </Button>
             </div>

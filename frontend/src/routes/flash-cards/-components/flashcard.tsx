@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
+import { Repeat } from 'lucide-react'
 
 type Props = {
   front: string | undefined
@@ -51,7 +52,10 @@ export default function Flashcard({ front, back }: Props) {
             </CardContent>
 
             <div className="flex justify-end">
-              <Button onClick={() => setFlip((prev) => !prev)}>Flip</Button>
+              <Button onClick={() => setFlip((prev) => !prev)} size={'lg'}>
+                <Repeat />
+                Flip
+              </Button>
             </div>
           </Card>
         </motion.div>
