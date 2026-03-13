@@ -30,6 +30,28 @@ type Flashcard struct {
 	LastUsed   time.Time `json:"last_used"`
 }
 
+type ImageFlashcard struct {
+	ID         uuid.UUID `json:"id"`
+	MaterialID uuid.UUID `json:"material_id"`
+	Title      string    `json:"title"`
+	ImageKey   string    `json:"image_key"`
+	ImageSize  int64     `json:"image_size"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	LastUsed   time.Time `json:"last_used"`
+}
+
+type ImageLabel struct {
+	ID        uuid.UUID `json:"id"`
+	ImageID   uuid.UUID `json:"image_id"`
+	XStart    float64   `json:"x_start"`
+	XEnd      float64   `json:"x_end"`
+	YStart    float64   `json:"y_start"`
+	YEnd      float64   `json:"y_end"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type Lecture struct {
 	ID         uuid.UUID  `json:"id"`
 	MaterialID uuid.UUID  `json:"material_id"`

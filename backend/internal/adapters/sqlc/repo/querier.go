@@ -57,7 +57,9 @@ type Querier interface {
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (int64, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (int64, error)
 	UseToken(ctx context.Context, hash string) (int64, error)
+	createImageFlashcard(ctx context.Context, arg createImageFlashcardParams) (ImageFlashcard, error)
 	getOldestFlashcard(ctx context.Context, userID uuid.UUID) (Flashcard, error)
+	insertImageLabel(ctx context.Context, arg insertImageLabelParams) (ImageLabel, error)
 	useFlashcard(ctx context.Context, id uuid.UUID) (int64, error)
 	verifyUserEmail(ctx context.Context, id uuid.UUID) (int64, error)
 }
