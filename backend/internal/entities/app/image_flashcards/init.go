@@ -5,7 +5,7 @@ import (
 	"log"
 	"study-stack/internal/entities/app/image_flashcards/internal/handler"
 	S3 "study-stack/internal/s3"
-	"study-stack/internal/shared/middleware"
+	// "study-stack/internal/shared/middleware"
 	"sync"
 
 	"github.com/go-playground/validator/v10"

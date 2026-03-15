@@ -15,7 +15,9 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaterialsRouteRouteImport } from './routes/materials/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ImageFlashcardIndexRouteImport } from './routes/image-flashcard/index'
 import { Route as LectureIdRouteImport } from './routes/lecture.$id'
+import { Route as ImageFlashcardAddRouteImport } from './routes/image-flashcard/add'
 import { Route as FlashCardsStudyRouteImport } from './routes/flash-cards/study'
 import { Route as FlashCardsListRouteImport } from './routes/flash-cards/list'
 import { Route as MaterialsIdRouteRouteImport } from './routes/materials/$id/route'
@@ -53,9 +55,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImageFlashcardIndexRoute = ImageFlashcardIndexRouteImport.update({
+  id: '/image-flashcard/',
+  path: '/image-flashcard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LectureIdRoute = LectureIdRouteImport.update({
   id: '/lecture/$id',
   path: '/lecture/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImageFlashcardAddRoute = ImageFlashcardAddRouteImport.update({
+  id: '/image-flashcard/add',
+  path: '/image-flashcard/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FlashCardsStudyRoute = FlashCardsStudyRouteImport.update({
@@ -99,7 +111,9 @@ export interface FileRoutesByFullPath {
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
   '/flash-cards/list': typeof FlashCardsListRoute
   '/flash-cards/study': typeof FlashCardsStudyRoute
+  '/image-flashcard/add': typeof ImageFlashcardAddRoute
   '/lecture/$id': typeof LectureIdRoute
+  '/image-flashcard/': typeof ImageFlashcardIndexRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
@@ -113,7 +127,9 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/flash-cards/list': typeof FlashCardsListRoute
   '/flash-cards/study': typeof FlashCardsStudyRoute
+  '/image-flashcard/add': typeof ImageFlashcardAddRoute
   '/lecture/$id': typeof LectureIdRoute
+  '/image-flashcard': typeof ImageFlashcardIndexRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id': typeof MaterialsIdIndexRoute
@@ -129,7 +145,9 @@ export interface FileRoutesById {
   '/materials/$id': typeof MaterialsIdRouteRouteWithChildren
   '/flash-cards/list': typeof FlashCardsListRoute
   '/flash-cards/study': typeof FlashCardsStudyRoute
+  '/image-flashcard/add': typeof ImageFlashcardAddRoute
   '/lecture/$id': typeof LectureIdRoute
+  '/image-flashcard/': typeof ImageFlashcardIndexRoute
   '/materials/$id/add': typeof MaterialsIdAddRoute
   '/materials/$id/edit': typeof MaterialsIdEditRoute
   '/materials/$id/': typeof MaterialsIdIndexRoute
@@ -146,7 +164,9 @@ export interface FileRouteTypes {
     | '/materials/$id'
     | '/flash-cards/list'
     | '/flash-cards/study'
+    | '/image-flashcard/add'
     | '/lecture/$id'
+    | '/image-flashcard/'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
@@ -160,7 +180,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/flash-cards/list'
     | '/flash-cards/study'
+    | '/image-flashcard/add'
     | '/lecture/$id'
+    | '/image-flashcard'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id'
@@ -175,7 +197,9 @@ export interface FileRouteTypes {
     | '/materials/$id'
     | '/flash-cards/list'
     | '/flash-cards/study'
+    | '/image-flashcard/add'
     | '/lecture/$id'
+    | '/image-flashcard/'
     | '/materials/$id/add'
     | '/materials/$id/edit'
     | '/materials/$id/'
@@ -190,7 +214,9 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   FlashCardsListRoute: typeof FlashCardsListRoute
   FlashCardsStudyRoute: typeof FlashCardsStudyRoute
+  ImageFlashcardAddRoute: typeof ImageFlashcardAddRoute
   LectureIdRoute: typeof LectureIdRoute
+  ImageFlashcardIndexRoute: typeof ImageFlashcardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -237,11 +263,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/image-flashcard/': {
+      id: '/image-flashcard/'
+      path: '/image-flashcard'
+      fullPath: '/image-flashcard/'
+      preLoaderRoute: typeof ImageFlashcardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lecture/$id': {
       id: '/lecture/$id'
       path: '/lecture/$id'
       fullPath: '/lecture/$id'
       preLoaderRoute: typeof LectureIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/image-flashcard/add': {
+      id: '/image-flashcard/add'
+      path: '/image-flashcard/add'
+      fullPath: '/image-flashcard/add'
+      preLoaderRoute: typeof ImageFlashcardAddRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/flash-cards/study': {
@@ -325,7 +365,9 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   FlashCardsListRoute: FlashCardsListRoute,
   FlashCardsStudyRoute: FlashCardsStudyRoute,
+  ImageFlashcardAddRoute: ImageFlashcardAddRoute,
   LectureIdRoute: LectureIdRoute,
+  ImageFlashcardIndexRoute: ImageFlashcardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -12,37 +12,38 @@ import (
 )
 
 const insertImageLabel = `-- name: insertImageLabel :one
-INSERT INTO image_labels (id, image_id, x_start, x_end, y_start, y_end) 
+INSERT INTO image_labels (id, image_id, x_start_percentage, y_start_percentage, width_percentage, height_percentage) 
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING image_labels.id, image_labels.image_id, image_labels.x_start, image_labels.x_end, image_labels.y_start, image_labels.y_end, image_labels.created_at, image_labels.updated_at
+RETURNING image_labels.id, image_labels.image_id, image_labels.x_start_percentage, image_labels.y_start_percentage, image_labels.height_percentage, image_labels.width_percentage, image_labels.rotation, image_labels.created_at, image_labels.updated_at
 `
 
 type insertImageLabelParams struct {
-	ID      uuid.UUID `json:"id"`
-	ImageID uuid.UUID `json:"image_id"`
-	XStart  float64   `json:"x_start"`
-	XEnd    float64   `json:"x_end"`
-	YStart  float64   `json:"y_start"`
-	YEnd    float64   `json:"y_end"`
+	ID               uuid.UUID `json:"id"`
+	ImageID          uuid.UUID `json:"image_id"`
+	XStartPercentage float64   `json:"x_start_percentage"`
+	YStartPercentage float64   `json:"y_start_percentage"`
+	WidthPercentage  float64   `json:"width_percentage"`
+	HeightPercentage float64   `json:"height_percentage"`
 }
 
 func (q *Queries) insertImageLabel(ctx context.Context, arg insertImageLabelParams) (ImageLabel, error) {
 	row := q.db.QueryRowContext(ctx, insertImageLabel,
 		arg.ID,
 		arg.ImageID,
-		arg.XStart,
-		arg.XEnd,
-		arg.YStart,
-		arg.YEnd,
+		arg.XStartPercentage,
+		arg.YStartPercentage,
+		arg.WidthPercentage,
+		arg.HeightPercentage,
 	)
 	var i ImageLabel
 	err := row.Scan(
 		&i.ID,
 		&i.ImageID,
-		&i.XStart,
-		&i.XEnd,
-		&i.YStart,
-		&i.YEnd,
+		&i.XStartPercentage,
+		&i.YStartPercentage,
+		&i.HeightPercentage,
+		&i.WidthPercentage,
+		&i.Rotation,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

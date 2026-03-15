@@ -42,14 +42,15 @@ type ImageFlashcard struct {
 }
 
 type ImageLabel struct {
-	ID        uuid.UUID `json:"id"`
-	ImageID   uuid.UUID `json:"image_id"`
-	XStart    float64   `json:"x_start"`
-	XEnd      float64   `json:"x_end"`
-	YStart    float64   `json:"y_start"`
-	YEnd      float64   `json:"y_end"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID               uuid.UUID `json:"id"`
+	ImageID          uuid.UUID `json:"image_id"`
+	XStartPercentage float64   `json:"x_start_percentage"`
+	YStartPercentage float64   `json:"y_start_percentage"`
+	HeightPercentage float64   `json:"height_percentage"`
+	WidthPercentage  float64   `json:"width_percentage"`
+	Rotation         int32     `json:"rotation"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type Lecture struct {

@@ -18,14 +18,16 @@ export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
 )
 export const AppHeader = () => {
   return (
-    <Card className="sticky top-0 z-50 rounded-none p-2 mb-0 w-full shadow-none flex justify-between flex-row px-10 border-t-0">
+    <Card className="sticky top-0 z-50 rounded-none py-2 mb-0 w-full shadow-none flex justify-between items-center flex-row px-10 border-t-0">
       <div>
         <ModeToggle />
       </div>
-      <div className="flex gap-4 items-center">
-        <NavLink to="/materials">Materials</NavLink>
-        <NavLink to="/flash-cards/study">Flash cards</NavLink>
-      </div>
+      <SignedIn>
+        <div className="flex gap-4 items-center">
+          <NavLink to="/materials">Materials</NavLink>
+          <NavLink to="/flash-cards/study">Flash cards</NavLink>
+        </div>
+      </SignedIn>
       <div>
         <SignedIn>
           <UserButton />

@@ -35,7 +35,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     return (
       <TooltipProvider>
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="h-screen flex flex-col">
           <AppHeader />
 
           <div className="flex-1 overflow-hidden">

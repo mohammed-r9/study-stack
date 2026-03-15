@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 export function SignedIn({ children }: { children: ReactNode }) {
   const accessToken = useAuthStore((state) => state.accessToken)
-  const isAuthenticated = !!accessToken
+  const isAuthenticated: boolean = !!accessToken
 
   if (!isAuthenticated) return null
 
@@ -12,7 +12,7 @@ export function SignedIn({ children }: { children: ReactNode }) {
 
 export function SignedOut({ children }: { children: ReactNode }) {
   const accessToken = useAuthStore((state) => state.accessToken)
-  const isAuthenticated = !!accessToken
+  const isAuthenticated: boolean = !!accessToken
 
   if (isAuthenticated) return null
 
